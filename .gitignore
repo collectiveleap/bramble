@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Phoenix VCS local store
+.phoenix/
+.phoenix.bak-presync/
+
+# Local Claude state
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
+
+# OS
+.DS_Store
