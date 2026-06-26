@@ -1,0 +1,178 @@
+---
+id: spec.user-primitives
+name: Specification of User Primitives
+version: 0.1.0
+---
+
+The user-facing, table-stakes capabilities for a networked-notes / outliner / PKM product, described in DAG terms and **written assuming the internal primitives** in the Specification of Internal Primitives (SIP). Each capability `traces:` to the internal primitives it relies on, so an internal-primitive gap auto-flags the user capabilities it breaks. This spec is **system-agnostic** and is evaluated separately against an existing system X (see `R-Conformance-Format`).
+
+**The table-stakes set.** Four capabilities, and only these, define the conformance floor:
+
+- **UP-1 — Atomic unit & outline.** Content is a nested outline of individually-addressable Nodes; a Node may appear in more than one location.
+- **UP-2 — Links & backlinks.** The user links to a Node; the target surfaces a backlinks view of what links to it.
+- **UP-3 — Granular addressing.** Any Node is a link destination, including a Node nested beneath others.
+- **UP-4 — Transclusion.** A referenced Node renders inline, edit-through, and on demand.
+
+**Resolution rule.** Where Roam, Tana, and Obsidian differ on a shared capability, the floor takes **Tana's** observable semantics. Tana's *exclusive* layer — supertags as typed objects, typed fields, calendar/search nodes — sits ABOVE this floor and is not table-stakes. Candidate capabilities that are plausibly table-stakes but unverified as shared (daily-note/journal, search/query) live in the appendix, outside the conformance floor.
+
+**Scope.** These specs define WHAT the substrate (SIP) and the user-facing capabilities (this spec) are — not HOW a user invokes them. Concrete interaction — link syntax (`@` vs `[[ ]]`), panels, clicks, the gestures to expand or collapse an outline — is out of scope, and is the subject of separate user-experience specifications. Notation used here (e.g. `[[X]]`) is illustrative of a capability, never a required syntax. The `UP-<n>` feature and `UP-<n>.<concern>` requirement IDs are stable reference targets, so a user-experience spec can cite the capability a given interaction implements.
+
+## Rules
+
+```mdl
+rule R-Conformance-Format:
+  desc: |
+    This spec is EVALUATED against an external system X to yield a
+    per-requirement compliance verdict and a gap analysis. Three
+    conventions support that downstream use, layered on top of
+    R-Spec-Entry-Conventions (positive language, abstract #T,
+    refer-don't-restate, divorce-from-rendering, one-concern-per-req):
+
+    1. CONFORMANCE TEST. Every `req` carries ONE OR MORE
+       conformance-test clauses — a `then` (with `given`, and
+       optional `when`) — and those clauses are SUFFICIENT to decide
+       conformance: if they hold of X, X satisfies the req's concern.
+       No req is definition-only. User-primitive reqs are written at
+       USER-OBSERVABLE altitude (what the user can do and see),
+       phrased in DAG terms, not at data-model or implementation
+       altitude.
+
+    2. PROBES. Every `req` carries a `probes:` block: the questions
+       to put to X that size the work to satisfy the req when X fails
+       it. A probe that does not lead to a concrete, sizable unit of
+       work is mis-pitched — revise the req's altitude.
+
+    3. TRACES. Every `feat` carries a `traces:` block naming the
+       internal-primitive IDs (`IP-<n>`) it assumes, so an
+       internal-primitive gap auto-flags the user capabilities it
+       breaks.
+
+    IDs: user primitives are `UP-<n>`; each req is named for its
+    single concern — `UP-<n>.<concern>` — per R-Spec-Entry-Conventions
+    clause 5.
+```
+
+## Primitives
+
+```mdl
+feat UP-1: Atomic unit and outline
+  traces:
+    - IP-1
+    - IP-2
+  desc: |
+    The user works in a nested outline whose every item is an
+    individually-addressable Node whose content may be text or non-text, not an opaque blob. A Node
+    can appear in more than one location at once (it has more than one
+    structural predecessor) while remaining one thing. This is the
+    surface that IP-1 (Node identity) and IP-2 (structural edges,
+    multi-predecessor) present to the user.
+  req UP-1.outline:
+    given: a Node in focus, shown to the user
+    then:
+      - its successor Nodes render as a nested outline beneath it
+      - each visible Node is individually addressable — the user can target or copy a link to a single Node, including a Node nested beneath others
+    probes:
+      - In X, can the user address or link a single bullet/block, or only a top-level container (e.g. a page or file)?
+      - Does X present content as an outline of discrete units the user can act on one at a time?
+  req UP-1.multi-location:
+    given: a Node with two structural predecessors
+    then: the Node is shown beneath each of its predecessors in the outline
+    probes:
+      - Can one unit appear in more than one place in X's outline at the same time?
+      - When the user puts a unit in a second place, does X show it in both?
+  req UP-1.stable-under-edit:
+    given: a Node that is the target of a link from elsewhere
+    when: the user edits the Node's content, or gives it an additional structural predecessor (co-locates or moves it)
+    then: the existing link still resolves to the Node
+    probes:
+      - In X, do links to a unit survive editing the unit's content and a save round-trip?
+      - Do links survive the unit being moved or co-located in another place?
+  req UP-1.any-content-type:
+    given: a Node whose content is non-text (e.g. a drawing, an audio clip, or an interactive widget)
+    then: the user can address, link to, nest, and embed it the same as a text Node
+    probes:
+      - Can the user create, link to, nest, and embed non-text units in X the same way as text units?
+```
+
+```mdl
+feat UP-2: Links and backlinks
+  traces:
+    - IP-3
+  desc: |
+    The user links from inside one Node's content to another Node — a
+    linked edge — without disturbing the outline. The target Node
+    surfaces a backlinks view: the set of Nodes that link to it,
+    populated automatically by reverse traversal of incoming linked
+    edges (IP-3.backlinks). The view is the floor; a query language
+    over links sits above it.
+  req UP-2.link:
+    given: a Node A being edited
+    when: the user inserts a link to Node T
+    then:
+      - a link to T appears inline in A's content
+      - A's outline is unchanged — T is not added as a successor of A
+    probes:
+      - Can the user link to another unit from within a unit's content in X?
+      - Does linking leave the referrer's outline structure untouched (no nesting of the target)?
+  req UP-2.backlinks-view:
+    given: a Node T that is the target of links from Nodes A and C
+    then: T presents a backlinks view that includes A and C
+    probes:
+      - Does X show, on a unit, the set of other units that link to it?
+      - Is that view populated automatically, without the author creating a return link?
+```
+
+```mdl
+feat UP-3: Granular addressing
+  traces:
+    - IP-1
+    - IP-3
+  desc: |
+    Any Node is a valid link destination, including a Node nested
+    beneath others — not only a Node at the structural top. This is the
+    user-facing consequence of every Node carrying its own identity
+    (IP-1.identity); address stability across edits is UP-1.stable-under-edit.
+  req UP-3.any-node-target:
+    given: any Node T in the store, including one that is a structural successor of another Node
+    when: the user creates a link to T
+    then: the link resolves to exactly T, not to a container or top-level Node around it
+    probes:
+      - Can the user link to a specific bullet/block in X, or only to a top-level container?
+      - Does the resulting link resolve to that exact unit rather than its enclosing container?
+```
+
+```mdl
+feat UP-4: Transclusion
+  traces:
+    - IP-2
+    - IP-3
+  desc: |
+    The same content, rendered live in more than one place, edit-through.
+    Two routes reach it: a Node with several structural predecessors is
+    one vertex shown in each location (IP-2.shared-identity); and a
+    linked edge can be expanded inline to render its target in place
+    (IP-3.expand). Either way an edit flows to the one underlying Node,
+    and inline expansion is on demand.
+  req UP-4.edit-through:
+    given: a Node shown at two or more locations (it has several structural predecessors)
+    when: the user edits it at one location
+    then: the change is shown at every location where the Node appears
+    probes:
+      - When a unit appears in multiple places in X, does editing it in one update the others, or are the appearances independent copies?
+  req UP-4.embed:
+    given: a Node A with a linked edge to Node T
+    when: the user expands the link inline
+    then:
+      - T's content renders inline within A
+      - editing the inline-rendered T changes T itself (one Node), and the inline rendering reflects later changes to T
+    probes:
+      - Can the user render a referenced unit inline (embed/transclude) in X?
+      - Does the embedded content stay in sync with its source and edit through to it, rather than being a detached copy?
+```
+
+## Appendix — candidate extensions (not table-stakes)
+
+These capabilities are plausibly table-stakes for the class but are **not** part of the conformance floor: the research verified them for Tana only, not as shared across Roam, Tana, and Obsidian. They are recorded here so a downstream evaluation can opt to include them, and so their status is explicit rather than silently omitted. Each would need its own verification pass before promotion into the numbered `UP-*` set.
+
+- **Daily note / journal.** A first-class time axis: a Node per calendar day reachable by date, where dated content gathers. In DAG terms it is a Node addressed by date with linked edges from anything `@`-mentioning that date. *(Verified for Tana's calendar nodes; Roam's Daily Notes and Obsidian's Daily Notes plugin are well known but were not in the verified corpus.)*
+- **Search / query.** A live, saved query whose results update as the store changes — in DAG terms, a Node whose successors are computed by a predicate rather than authored. *(Verified for Tana's search nodes; Roam `{{query}}` and Obsidian search/Dataview were not in the verified corpus.)*

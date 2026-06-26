@@ -1,0 +1,189 @@
+---
+id: spec.internal-primitives
+name: Specification of Internal Primitives
+version: 0.1.0
+---
+
+The internal data-model primitives for a networked-notes / outliner / PKM substrate, expressed as a directed acyclic graph (DAG). This spec is **system-agnostic**: it describes the substrate a conforming system must present, independent of how that system stores or renders it. It is evaluated separately against an existing system X to produce a compliance verdict and a gap analysis (see `R-Conformance-Format`). The companion **Specification of User Primitives** is written assuming these primitives.
+
+**The model, in DAG terms.** One design choice drives the whole spec: where reference-based tools introduce a *reference* to avoid creating another edge, this substrate creates a **real edge** instead. Multiplicity is native to the graph; there is no separate reference primitive.
+
+- **Node** — the atomic unit of content and the only kind of vertex.
+- **Structural edge** — a directed `predecessor → successor` relation. A Node may have a *set* of structural predecessors (multi-predecessor is first-class); the structural subgraph is **acyclic** — this is the DAG backbone. There is no designated root: the structural top is the **emergent** set of Nodes with no incoming structural edge. A Node reached by two structural paths is one and the same vertex, so an edit in one location is an edit everywhere.
+- **Linked edge** — a directed cross-reference (the `[[X]]` mention). It does not place its target in the successor outline; it renders lazily (collapsed by default, expand-on-demand). **Linked edges may form cycles.** A Node's *backlinks* are its incoming linked edges, recovered by reverse traversal — there is no stored back-edge.
+
+**Terminology** follows the established house DAG convention: PREDECESSOR / SUCCESSOR for edge direction, and a `kind` taxonomy over edges (*structural* / *linked*, with *embed* — inline expansion of a linked edge — reserved). PARENT / CHILD are avoided: in a DAG a Node has a set of predecessors, not a single parent.
+
+## Rules
+
+```mdl
+rule R-Conformance-Format:
+  desc: |
+    This spec is EVALUATED against an external system X to yield a
+    per-requirement compliance verdict and a gap analysis. Three
+    conventions support that downstream use, layered on top of
+    R-Spec-Entry-Conventions (positive language, abstract #T,
+    refer-don't-restate, divorce-from-rendering, one-concern-per-req):
+
+    1. CONFORMANCE TEST. Every `req` carries ONE OR MORE
+       conformance-test clauses — a `then` (with `given`, and
+       optional `when`) — and those clauses are SUFFICIENT to decide
+       conformance: if they hold of X, X satisfies the req's concern.
+       No req is definition-only; a purely definitional statement is
+       recast as a testable invariant. Write at INVARIANT altitude —
+       data-model truths that hold however X is built — not at
+       implementation altitude. The test must read the same whether X
+       stores the substrate as files, rows, or objects.
+
+    2. PROBES. Every `req` carries a `probes:` block: the questions
+       to put to X that size the work to satisfy the req when X
+       fails it. A probe that does not lead to a concrete, sizable
+       unit of work is mis-pitched — revise the req's altitude.
+
+    3. TRACES (user-primitive spec only). Every user-facing `feat`
+       carries a `traces:` block naming the internal-primitive IDs
+       it assumes, so an internal-primitive gap auto-flags the user
+       capabilities it breaks.
+
+    IDs: internal primitives are `IP-<n>`; each req is named for its
+    single concern — `IP-<n>.<concern>` — per R-Spec-Entry-Conventions
+    clause 5, rather than a bare ordinal.
+```
+
+## Primitives
+
+```mdl
+feat IP-1: Node
+  desc: |
+    The Node is the atomic unit of authored content and the sole
+    vertex kind in the graph. Everything else in this spec is an
+    edge between Nodes or a property of a Node. A Node's identity is
+    independent of both its content and its edges: it is the stable
+    handle that structural and linked edges point at, and that a
+    multi-location Node shares across every location.
+  req IP-1.content:
+    given: any unit of authored content in the store
+    then:
+      - the unit is carried by a Node, and Node is the only kind of content vertex in the graph
+      - content nests — a Node may be a structural successor of another Node, and that nested Node is itself a first-class Node, not an opaque part of its predecessor
+    probes:
+      - What is X's smallest independently-identified content unit — a top-level container (e.g. a file or page), or a nested element (block, bullet, paragraph)?
+      - Does X have one kind of content vertex, or several disjoint content types that would each need mapping onto Node?
+  req IP-1.content-type:
+    given: a Node
+    then:
+      - the Node's content is of a content type, and the set of content types is open — text and non-text alike (e.g. a drawing, an audio clip, an interactive widget)
+      - every primitive in this spec — identity, structural and linked edges, addressing, expansion — applies to the Node uniformly, independent of its content type
+    probes:
+      - Can a unit in X hold non-text content (e.g. image, drawing, audio, embedded widget) as a first-class unit?
+      - Do identity, nesting, linking, backlinks, and embedding behave the same for non-text units as for text units?
+  req IP-1.identity:
+    given: a store of Nodes
+    when: a Node is created
+    then:
+      - the Node receives an identifier distinct from every other Node in the store
+      - the identifier resolves to that one Node for the store's lifetime
+    probes:
+      - Does X assign an identifier to each atomic content unit, or only to top-level containers (e.g. files or pages)?
+      - Is the identifier unique across the whole store, not merely within one top-level container?
+      - After a unit is deleted, can its identifier be reassigned to a different unit?
+  req IP-1.stable-identity:
+    given: a Node resolved by its identifier
+    when: the Node's content is edited, or structural/linked edges incident to the Node are added or removed
+    then: the identifier continues to resolve to the same Node
+    probes:
+      - Does a unit's identity survive content edits and a save / re-serialization round-trip?
+      - Does identity survive the unit being moved, or gaining an additional location (a second structural predecessor)?
+```
+
+```mdl
+feat IP-2: Structural edge
+  desc: |
+    A structural edge is a directed PREDECESSOR → SUCCESSOR relation
+    between two Nodes. Structural edges carry the outline: a Node's
+    successors are the Nodes that render beneath it. A Node may have a
+    SET of structural predecessors — multi-predecessor is first-class,
+    so one Node appears in more than one outline location while
+    remaining a single vertex. The structural subgraph is acyclic;
+    this is the DAG backbone. (Identity persistence across edge
+    changes is IP-1.stable-identity; not restated here.)
+
+    Dependency: IP-2.multi-predecessor, IP-2.shared-identity, and
+    IP-2.acyclic presuppose IP-2.direction — a system with no
+    directed structural-edge model leaves the three of them
+    vacuously unmet, and IP-2.direction is the first gap to close.
+  req IP-2.direction:
+    given: a structural edge
+    then:
+      - it has exactly one predecessor Node and one successor Node
+      - the relation is directed — predecessor → successor is distinguishable from its reverse
+    probes:
+      - Does X model outline/containment as directed edges between units, or as an opaque ordered child-list / folder nesting with no edge entity?
+      - Can the two endpoints of a structural relation be told apart by direction?
+  req IP-2.multi-predecessor:
+    given: a Node S with structural predecessor P1
+    when: a structural edge from a different Node P2 to S is added
+    then:
+      - S has both P1 and P2 among its structural predecessors
+      - S appears beneath each of P1 and P2 in the outline
+    probes:
+      - Can a single unit sit under more than one container at once in X, or is each unit limited to one parent?
+      - If X permits a unit in several places, are those places one unit or independent copies?
+  req IP-2.shared-identity:
+    given: a Node S with two or more structural predecessors
+    when: S's content is edited at one of its locations
+    then: the same change is observed at every location where S appears
+    probes:
+      - When a unit appears in multiple places in X, does editing it in one place update all of them (one vertex), or are the appearances independent copies?
+  req IP-2.acyclic:
+    given: the set of structural edges in the store
+    then:
+      - no Node is its own structural ancestor — the structural subgraph admits a topological ordering
+      - following successor edges from any Node terminates
+    probes:
+      - Does X prevent a unit from being nested, transitively, inside itself?
+      - Can structural relationships in X cause outline expansion to run away, or is termination guaranteed?
+```
+
+```mdl
+feat IP-3: Linked edge
+  desc: |
+    A linked edge is a directed cross-reference from a Node to a
+    target Node — the substrate form of a `[[X]]` mention. It is
+    type-distinct from a structural edge: it does NOT make its target
+    a successor in the outline. Linked edges may form cycles (mutual
+    links are admitted). A Node's backlinks are its incoming linked
+    edges, recovered by reverse traversal — there is no stored
+    back-edge. A linked edge may be expanded inline (embed), resolving
+    to the same target vertex; expansion is on-demand, so a linked
+    cycle never forces unbounded rendering.
+  req IP-3.cross-reference:
+    given: a linked edge from Node A to Node T
+    then:
+      - T is reachable from A as a linked reference, and the relation is type-distinct from a structural edge
+      - A's outline is unchanged — T does not become a structural successor of A
+    probes:
+      - Does X distinguish a lightweight cross-reference from outline containment, or does referencing a unit also nest it?
+      - Can a reference target any unit, leaving the referrer's outline structure untouched?
+  req IP-3.may-cycle:
+    given: a linked edge from Node A to Node B
+    when: a linked edge from B to A is added
+    then: both linked edges exist — the cycle is admitted
+    probes:
+      - Can two units reference each other in X, or does X reject the reciprocal reference?
+  req IP-3.backlinks:
+    given: a Node T targeted by linked edges from Nodes A and C
+    then: the set of T's linked predecessors {A, C} is recoverable by reverse traversal of linked edges
+    probes:
+      - Can X enumerate "what links here" for an arbitrary unit?
+      - Is the inbound set derivable without the author having created an explicit return reference?
+  req IP-3.expand:
+    given: a linked edge from Node A to Node T, expanded inline at A
+    when: the inline-rendered T is edited
+    then:
+      - the edit applies to T itself — the expansion resolves to the same vertex, not a copy
+      - expansion is on-demand, so a linked-edge cycle through T does not expand unboundedly
+    probes:
+      - When X renders a referenced unit inline, does editing it change the source unit (one vertex), or a detached copy?
+      - Does inline expansion of references proceed one level on demand, bounding cyclic references?
+```
