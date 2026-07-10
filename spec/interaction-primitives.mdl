@@ -1,0 +1,34 @@
+---
+id: spec.interaction-primitives
+name: Specification of Interaction Primitives
+version: 0.1.0
+status: stub
+---
+
+<!-- derives-from: [UP-1, UP-2, UP-3, UP-4]; role: neutral; status: not-started -->
+
+The system-agnostic interaction primitives — the user-facing gestures and
+experience — for a networked-notes / outliner / PKM product. Written assuming
+the Specification of Internal Primitives (SIP) and Specification of User
+Primitives (SUP). Interaction is described abstractly (a gesture that nests a
+node, a gesture that inserts a link) and names no particular system. A reference
+realization (`implementations/tana/`) documents one concrete isomorphic
+instance; a target gap analysis evaluates a system against this spec plus that
+realization.
+
+IDs are `UX-<n>.<concern>` (per R-Spec-Entry-Conventions).
+
+## Rules
+
+STUB — to be authored (stage S2). Mirror `R-Conformance-Format` from the SIP/SUP:
+conformance-test clauses (`given`/`when`/`then`), `probes:`, and `traces:` to
+UP-/IP- IDs.
+
+## Primitives
+
+STUB — to be authored (stage S2). Candidate feats, each tracing to the SUP
+capability it makes interactive:
+
+- `UX-1` Outline interaction (nest / indent / outdent / reorder / zoom) — traces `UP-1`
+- `UX-2` Link & address interaction (insert a link, address a node) — traces `UP-2`, `UP-3`
+- `UX-3` Transclusion interaction (embed inline, edit-through) — traces `UP-4`
