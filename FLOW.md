@@ -23,11 +23,14 @@ identity (row menu = "Delete row" only; addressing stops at the whole object), s
 no existing surface reproduces Tana's every-bullet-is-a-Node primitive; but the
 ECHO substrate is strong and reusable (identity, refs, relations, backlinks,
 edit-through embed, in-flow `@`-link). Visual diff is deferred to post-plugin (the
-new surface is built to `visual-spec.md`, then diffed). **Next action:** **S4 ·
-design** the Bramble outliner plugin (node-per-row first-class ECHO objects)
-realizing R + S2, built to R's visual-spec. The neutral spec now **accommodates
-typed Nodes** (`IP-1.typed-node`), so S4 may model outline rows as *typed* ECHO
-objects with the spec's blessing.
+new surface is built to `visual-spec.md`, then diffed). **S4 · design is underway** (`implementations/dxos/design.md`). **Sub-design 1 —
+substrate data model — is settled:** a Node is *any typed ECHO `Obj`* (leveraging
+`IP-1.typed-node`); structural edges are *reified multi-predecessor Relations*
+(fractional-ordered, app-kept-acyclic — closing ECHO's owner+reference
+divergence); linked edges are `Ref`s; an outline is the view of a Node's
+structural-successor subtree. **Next action:** brainstorm **sub-design 2 —
+outline surface + gestures** (the S2/R interaction + rendering, built to R's
+visual-spec).
 
 ## Pipeline & status
 
@@ -40,7 +43,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | R · Reference realization (Tana) | `implementations/tana/` | reference | current |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed) |
-| S4 · DXOS design | `implementations/dxos/design.md` | target | not-started |
+| S4 · DXOS design | `implementations/dxos/design.md` | target | authoring (§1 substrate model done) |
 | S5 · Plan | `implementations/dxos/plans/` | target | not-started |
 | S6 · Plugin code | (hosting deferred) | target | not-started |
 
