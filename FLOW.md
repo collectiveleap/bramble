@@ -79,6 +79,12 @@ propagated to SUP (resolution rule + appendix) and README (decision log), and
 `implementations/dxos/gap-analysis.md` (verdict: ECHO **pass**). Design:
 `plan/2026-07-11-typed-node-accommodation-design.md`.
 
+**Resolved — 2026-07-11 · SIP outline-terminology (move-up):** scrubbed "outline"
+(a *view* notion) from SIP invariant clauses in favour of structural terms
+(Bramble is the DAG; the outline is a view onto it). `IP-2.multi-predecessor`
+then[1] reworded to a pure structural claim (adopts `gap-analysis.md` §6);
+re-reviewed that verdict — **unchanged (divergent)**.
+
 ## Superpowers hand-off
 
 Dev stages (S4 design, S5 plan, S6 build) run the superpowers cycle
