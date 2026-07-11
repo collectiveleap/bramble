@@ -60,7 +60,11 @@ feat IP-1: Node
     edge between Nodes or a property of a Node. A Node's identity is
     independent of both its content and its edges: it is the stable
     handle that structural and linked edges point at, and that a
-    multi-location Node shares across every location.
+    multi-location Node shares across every location. A Node MAY
+    additionally carry a schema-type — a named type with typed fields —
+    that classifies it; typing is optional and does not change what a
+    Node is, and every primitive in this spec applies to a typed Node
+    exactly as to an untyped one.
   req IP-1.content:
     given: any unit of authored content in the store
     then:
@@ -77,6 +81,15 @@ feat IP-1: Node
     probes:
       - Can a unit in X hold non-text content (e.g. image, drawing, audio, embedded widget) as a first-class unit?
       - Do identity, nesting, linking, backlinks, and embedding behave the same for non-text units as for text units?
+  req IP-1.typed-node:
+    given: a Node that carries a schema-type (a named type with typed fields), in a system that supports typing
+    then:
+      - the typed Node is a Node like any other — identity, structural and linked edges, addressing, and expansion apply to it unchanged by its type
+      - typing is optional and additive: a Node with no type is equally first-class, and adding or removing a type preserves the Node's identity and its incident edges
+    probes:
+      - Can a Node in X carry a named type with typed fields, or is every Node untyped?
+      - If X has typed Nodes, are they addressable, nestable, linkable, and embeddable the same as untyped Nodes — or does typing move them into a separate object space outside the outline/graph?
+      - Does adding or removing a Node's type preserve its identity and incident edges?
   req IP-1.identity:
     given: a store of Nodes
     when: a Node is created

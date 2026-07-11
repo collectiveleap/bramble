@@ -20,12 +20,12 @@ One design choice drives everything: **where reference-based tools introduce a "
 
 Read this before revising — these choices are intentional, not accidents.
 
-1. **User behavior follows Roam/Tana/Obsidian, at Tana's semantics where the three differ.** Tana's *exclusive* layer (supertags, typed fields, calendar/search nodes) is above the floor.
+1. **User behavior follows Roam/Tana/Obsidian, at Tana's semantics where the three differ.** Typed objects (Tana supertags / DXOS ECHO types) and calendar/search nodes sit above the floor — optional, not table-stakes; typed objects are *accommodated but not required* by the SIP (`IP-1.typed-node`).
 2. **The internal model deliberately diverges from all three:** real edges, not references; **multi-predecessor** structural edges, not single-owner; **typed** edges (structural vs linked). A system can satisfy the SUP while failing the SIP (e.g. Tana — see validation).
 3. **Acyclicity binds the structural subgraph only.** Linked edges may cycle; inline expansion is on demand, so cycles never force unbounded rendering.
 4. **Scope = core 4 user primitives.** Daily-note/journal and search/query are candidate extensions in the SUP appendix, outside the conformance floor (verified for Tana only, not as shared).
 5. **Backlinks — split bar.** SIP requires inbound linked edges be enumerable/reverse-traversable; SUP requires a user-visible backlinks view. A query language is above the floor.
-6. **Content type is open.** A Node may hold text or non-text (drawing/audio/widget…); all primitives apply uniformly. No type is enumerated.
+6. **Content type is open.** A Node may hold text or non-text (drawing/audio/widget…); all primitives apply uniformly. No type is enumerated. Distinct axis: a Node MAY also carry a *schema-type* (a named type with typed fields) — optional and additive, accommodated by `IP-1.typed-node`, not required.
 7. **Interaction mechanics are out of scope** (`@` vs `[[ ]]`, panels, clicks, expand/collapse). Separate UX specs own those and cite the `UP-*` IDs.
 
 ## Conventions (when editing the specs)
