@@ -30,6 +30,12 @@ Every authored content unit materializes as an `Obj` of `EntityKind.Object`, the
 - **Probe — can a unit hold non-text content as a first-class unit?:** YES — Sketch/Canvas (drawing) and plugin-file (blob) via the identical `Type.makeObject`/`Obj.make` path; the content-type set is open.
 - **Probe — do identity/nesting/linking/backlinks/embedding behave the same for non-text?:** YES at substrate level — all defined on `Obj` generically. ("interactive widget"/"audio clip" as named in the req are not located as shipping schemas — UNVERIFIED as concrete types — but this does not affect the open-set invariant.)
 
+### IP-1.typed-node — SIP — **pass** (confidence: high)
+*(Added 2026-07-11 via the typed-Node move-up — see `plan/2026-07-11-typed-node-accommodation-design.md`; code-evidenced + live-confirmed, not part of the original adjudicated set.)* ECHO's typed objects are ordinary `Obj`s of `EntityKind.Object` bearing a schema (`Type.makeObject`; `Obj.make` imposes no content-type/schema whitelist, `Obj.ts:172-212`), so a typed Node carries full identity/edges/addressing exactly as an untyped one (see `IP-1.content-type` above). Typing is **additive** — a schema is the object's own property, not a separate object space: the Create Object picker's types (Document, Table, Sketch, Person, Outline) all materialize as first-class addressable `Obj`s (confirmed live 2026-07-11 — an Outline object has its own URI and object-level "Copy link"). The accommodation invariant holds: typing does not move a Node out of the outline/graph.
+- **Probe — can a Node carry a named type with typed fields?:** YES — schema-typed objects via `Type.makeObject`; the type is the object's schema.
+- **Probe — typed Nodes addressable/nestable/linkable/embeddable as untyped?:** YES — all defined on `Obj` generically, independent of schema.
+- **Probe — add/remove type preserves identity and edges?:** YES at substrate — `EntityId` is schema-independent (`IP-1.stable-identity`); a schema-change gesture was not exercised live (that leg UNVERIFIED), but the id is content/edge/schema-independent by construction.
+
 ### IP-1.identity — SIP — **pass** (confidence: medium)
 Every `Obj` receives a ULID `EntityId` at creation (`create-object.ts:100`; `entity-id.ts:14-17,116-118`), unique within a space (`EID.ts:116-128`), with a resolvable URI (`Obj.getURI`, `Obj.ts:512-515`). Deletion is a tombstone marker, not id reclamation (`deleted.ts:8-19`); new objects draw fresh ULIDs with no free-list.
 - **What would raise to high:** In a running Composer, soft-delete a Node then attempt to resolve its `EntityId` via the query layer (does the URI still resolve to the tombstone?), and attempt to re-create an object supplying the tombstoned id via `Obj.make` `MakeProps.id` (is reuse rejected?). Also confirm whether the spec's "store" maps to one space or a multi-space store, fixing the uniqueness grain.
@@ -151,6 +157,7 @@ The `![label](dxn)` block embed renders as an atomic inline block widget (`previ
 |---|---|---|---|---|
 | IP-1.content | SIP | pass | medium | All authored content is an `Obj` of `EntityKind.Object`; Relation/Type are edge/meta. |
 | IP-1.content-type | SIP | pass | high | `Obj.make` imposes no content-type whitelist; the content-type set is open by construction. |
+| IP-1.typed-node | SIP | pass | high | ECHO typed objects are `Obj`s bearing a schema; identity/edges/addressing unchanged by type (accommodation invariant holds). |
 | IP-1.identity | SIP | pass | medium | Every `Obj` gets a ULID `EntityId`, unique within a space; deletion tombstones, no id reuse. |
 | IP-1.stable-identity | SIP | pass | high | Id fixed at creation, untouched by edit/move/serialization round-trip. |
 | IP-2.direction | SIP | pass | high | `Relation` is a reified directed edge with distinct Source/Target; Parent is a directed back-link. |

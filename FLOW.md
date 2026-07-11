@@ -25,7 +25,9 @@ ECHO substrate is strong and reusable (identity, refs, relations, backlinks,
 edit-through embed, in-flow `@`-link). Visual diff is deferred to post-plugin (the
 new surface is built to `visual-spec.md`, then diffed). **Next action:** **S4 ·
 design** the Bramble outliner plugin (node-per-row first-class ECHO objects)
-realizing R + S2, built to R's visual-spec.
+realizing R + S2, built to R's visual-spec. The neutral spec now **accommodates
+typed Nodes** (`IP-1.typed-node`), so S4 may model outline rows as *typed* ECHO
+objects with the spec's blessing.
 
 ## Pipeline & status
 
@@ -69,7 +71,13 @@ a `derives-from` header listing the upstream req IDs it depends on.
 
 ### Pending propagations
 
-_(none)_
+_(none open.)_
+
+**Resolved — 2026-07-11 · typed-Node accommodation (move-up):** added SIP
+`IP-1.typed-node` (a Node MAY carry a schema-type; *accommodate, not require*);
+propagated to SUP (resolution rule + appendix) and README (decision log), and
+`implementations/dxos/gap-analysis.md` (verdict: ECHO **pass**). Design:
+`plan/2026-07-11-typed-node-accommodation-design.md`.
 
 ## Superpowers hand-off
 
