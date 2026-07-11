@@ -28,9 +28,14 @@ substrate data model — is settled:** a Node is *any typed ECHO `Obj`* (leverag
 `IP-1.typed-node`); structural edges are *reified multi-predecessor Relations*
 (fractional-ordered, app-kept-acyclic — closing ECHO's owner+reference
 divergence); linked edges are `Ref`s; an outline is the view of a Node's
-structural-successor subtree. **Next action:** brainstorm **sub-design 2 —
-outline surface + gestures** (the S2/R interaction + rendering, built to R's
-visual-spec).
+structural-successor subtree. **Sub-design 2 — surface + gestures — is settled**
+too: **hybrid rendering** (a bespoke outline shell + per-row content = inline text
+editor *or* the object's `Section` Surface), gesture→structural-`Edge` mapping,
+**local per-user** view-state, built to R's visual-spec — grounded in DXOS plugin
+patterns and *corroborated by* (not evolved from) the prior `plugin-bramble`, a
+pre-spec iteration deliberately restarted. **Next action:** sub-designs 3
+(reference/embed/backlinks — largely Composer markdown reuse) & 4 (hosting
+feasibility), then `writing-plans` for the build.
 
 ## Pipeline & status
 
@@ -43,7 +48,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | R · Reference realization (Tana) | `implementations/tana/` | reference | current |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed) |
-| S4 · DXOS design | `implementations/dxos/design.md` | target | authoring (§1 substrate model done) |
+| S4 · DXOS design | `implementations/dxos/design.md` | target | authoring (§1 substrate + §2 surface/gestures done) |
 | S5 · Plan | `implementations/dxos/plans/` | target | not-started |
 | S6 · Plugin code | (hosting deferred) | target | not-started |
 

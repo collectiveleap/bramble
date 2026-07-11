@@ -106,11 +106,80 @@ Concretely:
 - Performance of Relation-per-edge at outline scale — to validate; the hybrid (iii)
   or an ordering-index cache is the hedge.
 
+### Grounding & prior art
+
+This design is **fresh and spec-driven** (the flow drives; the earlier
+`~/sandbox/plugin-bramble` was a pre-spec, messy iteration deliberately
+restarted — no traceability, no neutral/impl layers, no UX rigor, not
+floor-first). It is **grounded in DXOS's real plugin patterns** and
+**corroborated** by prior bramble, whose useful learnings are adopted as
+*design guidance* (re-derived clean, not code-lifted):
+
+- **Plugin skeleton** — `AppPlugin.add{Schema,Surface,CreateObject,OperationHandler,Translations}Module` (canonical shape in `plugin-markdown`); create-object + surface file shapes from `plugin-outliner`.
+- **Reified edge** — `Type.makeRelation({ source: Node, target: Node })` + an `order` field, created via `Relation.make`; live exemplar `plugin-connector`'s `SyncBinding`. Prior bramble's `Edge` (source→target + `order` + cycle detection + `orderBetween` + multi-parent + reparent) independently converged on this model — corroboration.
+- **Indexed traversal (P2)** — children/parents via `Query.select(Filter.id(x)).sourceOf/targetOf(Edge)`, not whole-typename in-memory scans (prior bramble's inefficiency).
+- **Hide rows from the generic navtree (P3)** — `SystemType`/`Hidden` annotation on the Node type.
+- **Edges-only (N1)** — no inline `children` field (prior bramble's dual representation forced a painful migration).
+- **Deferred, floor-first** — prior bramble's above-floor layer (edge `kind` taxonomy, Runs/Steps, supertags/fields, DSRP framing) is **not** in the floor plugin.
+
 ---
 
 ## §2 Outline surface + gestures
 
-_(pending — next sub-design.)_
+The view/interaction layer over §1, realizing R (behavioral + visual) and the S2
+interaction laws.
+
+### Rendering — hybrid (decision (3))
+
+A **bespoke outline shell** (React) owns the structure, chrome (bullet / indent
+guide / disclosure chevron, per `visual-spec.md`), caret-flow, keyboard, and
+gestures. Each **row's content** renders by Node kind:
+
+- **Text node** → an inline text editor (per-row CodeMirror bound to the Node's
+  text), reusing Composer's markdown extensions for the in-flow `@`-link /
+  block-embed.
+- **Typed-object node** (Person / Task / Document / Sketch …) → the object's
+  **`Section` Surface**: `<Surface type={AppSurface.Section} data={{ subject: node }} limit={1} />`, wrapped in the outline chrome.
+
+This delivers §1(ii)'s heterogeneous typed rows *and* a real editable outline —
+the key **net-new** composition (no existing plugin renders an outline whose rows
+are each their own type's Surface). A **fallback `Section` surface** covers bare
+nodes with no registered surface.
+
+### Gesture → substrate mapping
+
+| Gesture (R behavior) | Substrate / view operation | S2 law |
+|---|---|---|
+| Indent / outdent | rewire the focused Node's structural `Edge` (predecessor → preceding-sibling / grandparent); cycle-checked; `order` set | `UX-direct` |
+| Reorder up/down | change the `Edge`'s `order` (`orderBetween` neighbours) | `UX-direct` |
+| Insert `@`-reference | insert a **linked** `Ref` in text via `useLinkQuery` (`[label](uri)`); `@@` = block-embed | `UX-inflow` |
+| Co-locate (multi-location) | **add a second** structural `Edge` to the Node — the gesture Tana lacks (Bramble's edge-native advantage) | `UX-direct` |
+| Expand / collapse, Zoom | **local per-user view-state**, keyed by edge/node id — *not* substrate | — |
+| (all store mutations) | ECHO reactive subscription → immediate re-render | `UX-immediate` |
+| Undo | gesture-granular — see open item | `UX-reversible` |
+
+Acyclicity is enforced at gesture time on every structural-`Edge` add/move (§1);
+ECHO reactivity gives immediacy for free.
+
+### Visual conformance
+
+The shell + chrome are **built to `implementations/tana/visual-spec.md`** (tokens:
+InterVariable; oklch ink/muted/faint ramp; bullet 15×15; chevron; reference chip
+`rgb(41 125 217)`; expansion-panel border `oklch(0.896)`). Verification: fill the
+Composer `app` selectors in `visual/tana-outline.json` and run `diff-styles.mjs`
+once the surface exists.
+
+### Reuse vs net-new
+
+- **Reuse:** `Surface` for typed rows (the stack/kanban idiom); `useLinkQuery`
+  `@`/`@@` for linked edges + embed; ECHO reactivity for immediacy.
+- **Net-new:** the outline shell driving per-row Surfaces with continuous
+  caret-flow / gestures across heterogeneous rows; the fallback `Section` surface.
+
+### Open item (to verify in the plan)
+
+- **Undo** — whether ECHO/Composer exposes gesture-granular undo, or the plugin
+  maintains an app-level undo stack, for `UX-reversible`.
 
 ## §3 Reference / embed / backlinks integration
 
