@@ -103,7 +103,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 
 - **Trigger:** Type `@` in a node's content; an inline search list opens at the cursor. (On an empty node: `@` → `Enter` to select a node, then `Space` to turn it into an inline reference.)
 - **Response:** Typing keywords filters the list live; `Enter` selects the target and inserts an inline reference at the cursor, editing continuing in place. `Cmd`+`Enter` instead creates a new node in the Library and inserts a reference to it. With text selected first, `@` then `Enter` inserts the reference using the selected text as its **alias**.
-- **Visual/layout:** The reference renders inline as a linked node token showing the target's title. It is a *"carbon copy"* — references share the target's node id, so editing the reference edits the original and every other reference of that node.
+- **Visual/layout:** The reference renders inline as an **atomic** linked token showing the target's title — cursoring into it from the surrounding text selects the whole reference (a rounded-rectangle highlight); it is **not** editable in the text flow. Being a *"carbon copy"* of the target's id, the token always displays the target's current title, and edits made to the target (at its source or in an expansion panel) update every reference of it.
 - **Edge cases:** Any node is reachable as the target by keyword search, including one nested beneath others — the reference stores the target's **stable id**, so it resolves to exactly that node, not an enclosing container. Selecting text before `@` aliases the reference to that text; `Cmd`+`Enter` creates-and-references a brand-new Library node.
 - **traces (capability):** `UP-2.link` — link from within a Node's content · `UP-3.any-node-target` — target any Node, incl. nested
 - **traces (manner):** `UX-inflow.link` — reference within the typing flow · `UX-inflow.address` — reach any target within the gesture · `UX-immediate.gesture` — effect shown at once
@@ -131,7 +131,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Trigger:** `Option`+click a reference expands it in a transient panel anchored **below the referrer** (above the referrer's own children), showing the referenced node and its subtree, with an ✕ to close. `Shift`+click instead opens the referenced node **zoomed in an adjacent panel** (a separate viewer). Confirmed live 2026-07-10.
 - **Response:** the panel renders the referenced node's content and children; because references share the node's id, an edit made within the expansion edits the one underlying node (edit-through), and the expansion reflects later changes to it.
 - **Visual/layout:** `Option`+click → a bordered panel inserted between the referrer's line and its children, with a close ✕ (its child renders inside, pending-node grey bullet included); `Shift`+click → the node opens zoomed in an adjacent side panel.
-- **Edge cases:** `Cmd`+`↓` does **not** expand a reference — it expands/collapses the focused node's own children (see *Expand / collapse*). Tana has **no truly in-text-flow transclusion**; reference expansion is panel-based. Expansion is on demand, so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP (an edit to the source Node propagated to its reference; shared id).
+- **Edge cases:** `Cmd`+`↓` does **not** expand a reference — it expands/collapses the focused node's own children (see *Expand / collapse*). Tana has **no truly in-text-flow transclusion**; reference expansion is panel-based, and the collapsed inline reference is an atomic token — not editable in the flow (cursoring in selects the whole reference). Editing the target happens at its source or in an expansion panel, never through the inline token. Expansion is on demand, so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP (an edit to the source Node propagated to its reference; shared id).
 - **traces (capability):** `UP-4.embed` — render a reference inline · `UP-4.edit-through` — an edit flows to the one shared Node
 - **traces (manner):** `UX-direct.expand` — expand the reference in place · `UX-immediate.gesture` — effect shown at once
 
@@ -162,5 +162,9 @@ Transclusion nuance (for S3, and a possible S2 refinement): Tana realizes
 a panel below the referrer; `Shift`-click opens a separate zoomed panel — not
 rendering inside the text flow. The neutral `UX-direct.expand` ideal ("in place,
 not a separate viewer") is met by the `Option`-click panel but not by
-`Shift`-click. Whether S2 should distinguish *in-flow inline* expansion from
-*panel* expansion is an open question for review.
+`Shift`-click. Further, the collapsed inline reference is an **atomic token** —
+not editable in the text flow (cursoring in selects it whole); edit-through
+happens at the target's source or in an expansion panel, never by editing the
+inline token. So Tana realizes `UP-4.embed`'s edit-through via the panel, not
+via an editable inline rendering. Whether S2 should distinguish *in-flow inline*
+expansion from *panel* expansion is an open question for review.
