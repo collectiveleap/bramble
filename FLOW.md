@@ -8,8 +8,11 @@
 
 ## Active work
 
-**Where we are:** management spine stood up. **Next action:** author S2 (the
-neutral interaction spec) as its own brainstorming cycle.
+**Where we are:** S2 (interaction laws) and the Tana R realization are drafted
+and cross-checked (every R behavior traces to SUP+S2; every law has an R
+instance). 13 keystroke/visual `live-check:` items remain in R, pending a live
+Tana session. **Next action:** close the R live-checks (live Tana session), then
+author S3 · UX gap analysis for DXOS/Composer.
 
 ## Pipeline & status
 
@@ -18,8 +21,8 @@ Status values: `not-started · authoring · needs-review · done`.
 | Stage | Artifact | Role | Status |
 |---|---|---|---|
 | S1 · Neutral substrate spec | `spec/internal-primitives.mdl`, `spec/user-primitives.mdl` | neutral | done |
-| S2 · Neutral interaction spec | `spec/interaction-primitives.mdl` | neutral | not-started (stub) |
-| R · Reference realization (Tana) | `implementations/tana/` | reference | not-started (stub) |
+| S2 · Neutral interaction spec | `spec/interaction-primitives.mdl` | neutral | draft |
+| R · Reference realization (Tana) | `implementations/tana/` | reference | draft (13 live-checks) |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | not-started (stub) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | not-started |

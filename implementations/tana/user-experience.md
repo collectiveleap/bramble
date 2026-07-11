@@ -88,7 +88,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Response:** the referenced node appears in the second location as a live, edit-through instance drawing from the same node id; an edit at either place updates the one underlying node.
 - **Visual/layout:** the second appearance is a reference (optionally expanded in place to show the subtree).
 - **Edge cases:** this is the **owner + reference** model, not a structural multi-predecessor edge — Tana satisfies the multi-location *capability* via references while diverging from a true multi-parent substrate (a reference-vs-target divergence the DXOS design can close more directly, since the SIP substrate is natively multi-predecessor). Edit-through confirmed 2026-07-10 via tana-local MCP: editing the referenced Node updated its reference (shared id, one underlying Node).
-- **traces (capability):** `UP-1.multi-location` — one Node shown in two places
+- **traces (capability):** `UP-1.multi-location` — one Node shown in two places · `UP-4.edit-through` — an edit flows to the one shared Node · `UP-1.stable-under-edit` — the reference survives edits to its target
 - **traces (manner):** `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
 
 ### Insert inline reference (@-mention)
@@ -124,7 +124,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Response:** the referenced node renders inline in place, showing its content/subtree; editing the inline-rendered node edits the one underlying node (shared id, edit-through), and the inline rendering reflects later changes to it.
 - **Visual/layout:** the reference expands where it sits — no navigation to a separate viewer.
 - **Edge cases:** expansion is on demand (one level), so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP: an edit to the source Node propagated to its reference (shared id); the doc states editing a reference likewise edits the original.
-- **traces (capability):** `UP-4.embed` — render a reference inline, edit-through
+- **traces (capability):** `UP-4.embed` — render a reference inline · `UP-4.edit-through` — an edit flows to the one shared Node
 - **traces (manner):** `UX-direct.expand` — expand the reference in place · `UX-immediate.gesture` — effect shown at once
 
 ### Undo
@@ -143,3 +143,8 @@ features (supertags as typed objects, typed fields, calendar/search nodes) are
 out of scope by the SUP appendix and are not documented here. The multi-location
 behavior records one reference-vs-target divergence (owner+reference, not a
 native multi-predecessor edge) — noted in that entry, not an orphan.
+
+SUP coverage: every core SUP capability req is cited by a behavior above except
+`UP-1.any-content-type` — interaction with non-text Nodes (drawings, audio,
+widgets) — which has no dedicated behavior in this floor pass and is deferred to
+a follow-up observation.
