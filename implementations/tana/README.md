@@ -18,5 +18,6 @@ reproduces. Authored by observation, not built.
   harvested values as `expect`; Composer `app` selectors filled in at S3).
 
 Status: draft (stage R) — behavioral layer authored and live-confirmed in Tana
-(all keystroke live-checks closed); visual layer started (core elements
-harvested; reference-chip and expansion-panel specimens pending).
+(all keystroke live-checks closed); visual layer complete (design tokens + all
+element specimens harvested, incl. the inline reference chip and the Option-click
+expansion panel).

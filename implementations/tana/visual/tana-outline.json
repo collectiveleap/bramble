@@ -52,6 +52,29 @@
         "font-weight": "400",
         "color": "oklch(0.444289 0.000882538 240)"
       }
+    },
+    {
+      "name": "reference-chip",
+      "source": ".inlineelement.inlinerefnode.inlineinteractive",
+      "app": "TODO(S3): Composer inline node reference",
+      "expect": {
+        "font-size": "15px",
+        "line-height": "21px",
+        "font-weight": "400",
+        "color": "rgb(41, 125, 217)",
+        "text-decoration-line": "none"
+      }
+    },
+    {
+      "name": "expansion-panel",
+      "source": ".Scrollable-module_scrollable (reference expanded via Option-click)",
+      "app": "TODO(S3): Composer inline reference expansion container",
+      "expect": {
+        "border-top-width": "1px",
+        "border-top-color": "oklch(0.896015 0.0000065447 240)",
+        "border-radius": "7.5px",
+        "box-shadow": "none"
+      }
     }
   ]
 }

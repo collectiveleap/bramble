@@ -13,9 +13,9 @@ and cross-checked (every R behavior traces to SUP+S2; every law has an R
 instance). The R **behavioral** layer is complete and live-confirmed in Tana (all
 keystroke live-checks closed). The R **visual** layer — computed-style capture
 into `implementations/tana/visual-spec.md` + a `visual-verification` mapping
-(`visual/tana-outline.json`) — is started: core outline elements harvested;
-reference-chip and expansion-panel specimens pending. **Next action:** harvest
-the pending visual specimens, then author S3 · UX gap analysis (Composer diffed
+(`visual/tana-outline.json`) — is complete: design tokens + all element
+specimens harvested (incl. the inline reference chip and the Option-click
+expansion panel). **Next action:** author S3 · UX gap analysis (Composer diffed
 against R's behavioral + visual reference via `visual-verification`).
 
 ## Pipeline & status
@@ -26,7 +26,7 @@ Status values: `not-started · authoring · needs-review · done`.
 |---|---|---|---|
 | S1 · Neutral substrate spec | `spec/internal-primitives.mdl`, `spec/user-primitives.mdl` | neutral | done |
 | S2 · Neutral interaction spec | `spec/interaction-primitives.mdl` | neutral | draft |
-| R · Reference realization (Tana) | `implementations/tana/` | reference | draft (behavioral done; visual-spec in progress) |
+| R · Reference realization (Tana) | `implementations/tana/` | reference | draft (behavioral + visual-spec done) |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | not-started (stub) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | not-started |

@@ -11,9 +11,10 @@ against the values recorded here. Companion to the behavioral realization in
 **Method.** Values are read live from the running Tana web app with
 `getComputedStyle` (the `visual-verification` skill's `harvest-styles.js`
 shape) — never eyeballed from screenshots. Source: the "Tana With Claude"
-workspace (`wsid Q5eOIZHXjKaV`), harvested 2026-07-11, Brave/Chromium. Each
-element records its real source selector as an **evidence anchor** (not a
-reproduction instruction).
+workspace — daily note `Q5eOIZHXjKaV` (and the Demo-content template
+`M4sBLGdFNfSP` for the description line and tag colour) — harvested 2026-07-11,
+Brave/Chromium. Each element records its real source selector as an **evidence
+anchor** (not a reproduction instruction).
 
 **Traceability** (see the design doc §"visual-spec traceability"): each element
 anchors to the neutral concept it *renders* (`UP-*`/`IP-*`); the style **values**
@@ -36,6 +37,9 @@ The numbers resolve to a small, consistent system:
   - `ink` — `oklch(0.283 0.0027 240)` (body + title text)
   - `muted` — `oklch(0.444 0.0009 240)` (breadcrumb, sidebar)
   - `faint` — `oklch(0.606 0.0003 240)` (supertag pills)
+  - `subtext` — `oklch(0.639 0.0002 240)` (node description line)
+  - `border` — `oklch(0.896 0.0000065 240)` (faint hairline: expansion-panel border)
+- **Accent** — `rgb(41 125 217)` (reference-blue: inline references *and* external links share it)
 - **Surface:** element backgrounds are transparent; the page surface shows through.
 
 ## Elements — floor-anchored (Composer must reproduce)
@@ -71,14 +75,40 @@ The numbers resolve to a small, consistent system:
 - **Color:** `muted` — oklch(0.444 0.0009 240)
 - **Evidence:** `.NodeAsDrilldownElement-module_label__…`
 
+### Inline reference chip (atomic token)
+- **Renders:** an inline reference to another Node → traces `UP-2.link` (link from within content) · `UX-inflow.link` (reference in the typing flow)
+- **Typography:** `body` — 15px / 21px / w400 · no underline
+- **Color:** `accent` — rgb(41 125 217) (reference-blue)
+- **Box:** padding 0 · transparent bg · no border/radius — an atomic inline token (see `user-experience.md`)
+- **Evidence:** `.inlineelement.inlinerefnode.inlineinteractive`
+
+### Reference bullet (variant)
+- **Renders:** the bullet on a referenced Node → traces `UP-2.link`
+- **Box:** 15×15 (bullet geometry as normal) · **Evidence:** `.bullet.isReference…`
+
+### Node description (subtext line)
+- **Renders:** a Node's description line → traces `IP-1` (Node content) · `UP-1.outline`
+- **Typography:** InterVariable 12px / 16.8px / w400
+- **Color:** `subtext` — oklch(0.639 0.0002 240)
+- **Evidence:** description `.editable`
+
+### Reference expansion panel (Option-click)
+- **Renders:** the inline expansion of a reference — a panel below the referrer → traces `UP-4.embed` (render a reference inline) · `UX-direct.expand` (expand in place)
+- **Border:** 1px solid `oklch(0.896 0.0000065 240)` (`border` token) · **Radius:** 7.5px · **Shadow:** none · **Background:** transparent
+- **Box:** scrollable container (~636×433 in the captured specimen)
+- **Evidence:** `.Scrollable-module_scrollable__…`
+
 ## Elements — out-of-floor (Tana-exclusive chrome; reference detail only)
 
 Anchor to no neutral concept (supertags/tasks/app-nav are outside the SUP floor);
 captured for completeness, not required for the reproduction.
 
 ### Supertag pill (name + `#` glyph)
-- **Typography:** `tag` — InterVariable 12px / 15px / w400 · **Color:** `faint` — oklch(0.606 0.0003 240)
+- **Typography:** `tag` — InterVariable 12px / 15px / w400 · **Color:** `faint` on the `#` glyph; the *name* renders in the tag's own colour (per-tag rgb, e.g. `#Person` = `rgb(132 81 223)` purple)
 - **Box:** `#` glyph padding 0 1.8px · **Evidence:** `.TemplateTag-module_tagIconHash__…`
+
+### External link
+- **Typography:** `body` — 15px w400 · no underline · **Color:** `accent` — rgb(41 125 217) (**same** reference-blue as internal references) · **Evidence:** `.inlineelement.inlinerefnode.inlinerefurl…`
 
 ### Task done-checkbox
 - **Box:** 24×21 · **Evidence:** `.NodeDoneCheckbox-module_container__…`
@@ -86,15 +116,13 @@ captured for completeness, not required for the reproduction.
 ### Sidebar item
 - **Typography:** `chrome` 14px w400 · **Color:** `muted` · **Evidence:** sidebar row
 
-## Pending specimens (need a rendered instance, harvest next)
+## Specimens — all captured
 
-These do not render in an empty daily note; to be captured from existing content
-(Demo content / Welcome to Tana):
-
-- **Inline reference chip** (mid-text atomic token) — traces `UP-2.link` · `UX-inflow.link`
-- **Option-click expansion panel** (below the referrer) — traces `UP-4.embed` · `UX-direct.expand`
-- **Reference bullet** variant (`bullet isReference …`) — traces `UP-2.link`
-- **External link** styling (`Tana community`) — out-of-floor chrome
+Every element above is harvested from a live rendered instance. The
+reference-dependent specimens (reference chip, reference bullet, expansion panel,
+external link) were captured by inserting a real reference — an `@`-mention of an
+existing Node — in the sandbox daily note, then `Option`-clicking it for the
+panel; the scratch was removed after capture (Demo content was read-only).
 
 ## Method note
 
