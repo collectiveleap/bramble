@@ -2,10 +2,10 @@
 id: spec.interaction-primitives
 name: Specification of Interaction Primitives
 version: 0.1.0
-status: stub
+status: draft
 ---
 
-<!-- derives-from: [UP-1, UP-2, UP-3, UP-4]; role: neutral; status: not-started -->
+<!-- derives-from: [UP-1, UP-2, UP-3, UP-4]; role: neutral; status: draft -->
 
 The system-agnostic interaction primitives — the user-facing gestures and
 experience — for a networked-notes / outliner / PKM product. Written assuming
@@ -16,19 +16,138 @@ realization (`implementations/tana/`) documents one concrete isomorphic
 instance; a target gap analysis evaluates a system against this spec plus that
 realization.
 
-IDs are `UX-<n>.<concern>` (per R-Spec-Entry-Conventions).
+IDs are `UX-<law>.<application>` (per R-Spec-Entry-Conventions).
 
 ## Rules
 
-STUB — to be authored (stage S2). Mirror `R-Conformance-Format` from the SIP/SUP:
-conformance-test clauses (`given`/`when`/`then`), `probes:`, and `traces:` to
-UP-/IP- IDs.
+```mdl
+rule R-Interaction-Laws:
+  desc: |
+    S2 specifies the INTERACTION MANNER over the SUP capabilities — the
+    cross-cutting laws every gesture must obey (directness, in-flow,
+    immediacy, reversibility), not the gestures themselves. It names no
+    system and no keystroke; a reference realization
+    (/implementations/tana/user-experience.md) instantiates each law
+    concretely. Layered on R-Conformance-Format from the SIP/SUP:
+
+    1. Each law is a `feat` (UX-<law>); it is CROSS-CUTTING, so its
+       `traces:` names the several SUP capabilities it governs —
+       many-to-many is the honest signature of a cross-cutting concern.
+    2. Each `req` (UX-<law>.<application>) carries a conformance-test
+       clause (given/when/then) SUFFICIENT to decide conformance, plus
+       `probes:` that size the work when a system X fails it. Written at
+       INTERACTION altitude (mode / flow / step / gesture), never at
+       keystroke altitude — the clause must read the same for any system.
+    3. Every id CITED in a body reads `<ID> <gloss>`, never bare.
+```
 
 ## Primitives
 
-STUB — to be authored (stage S2). Candidate feats, each tracing to the SUP
-capability it makes interactive:
+```mdl
+feat UX-direct: Directness
+  traces:
+    - UP-1 Atomic unit and outline
+    - UP-4 Transclusion
+  desc: |
+    Structural change is made IN PLACE, on the outline as shown, by
+    acting on the Node itself — not by opening a separate form, dialog,
+    properties panel, or structure view and editing a representation of
+    the outline there. The MANNER over UP-1 Atomic unit and outline (the
+    user reshapes the outline) and UP-4 Transclusion (the user expands a
+    reference): the SUP says the structure CAN change; this feat says the
+    user changes it by direct manipulation of what is on screen.
+  req UX-direct.outline:
+    given: a Node shown in the outline
+    when: the user nests, outdents, or reorders it
+    then:
+      - the change is made by acting on the Node in place — not through a separate form, dialog, or structure editor
+      - the outline as shown is the thing the user manipulates and the thing that changes
+    probes:
+      - In X, does the user restructure the outline directly on it, or by editing a separate panel / properties view / source representation?
+      - Is the thing manipulated the same as the thing displayed?
+  req UX-direct.expand:
+    given: a Node containing a reference to another Node
+    when: the user expands that reference inline
+    then: the expansion is a toggle on the reference in place — not a navigation to a separate viewer or a switch of context
+    probes:
+      - In X, is a referenced Node revealed inline where it sits, or by navigating away to open it?
+```
 
-- `UX-1` Outline interaction (nest / indent / outdent / reorder / zoom) — traces `UP-1`
-- `UX-2` Link & address interaction (insert a link, address a node) — traces `UP-2`, `UP-3`
-- `UX-3` Transclusion interaction (embed inline, edit-through) — traces `UP-4`
+```mdl
+feat UX-inflow: In-flow reference
+  traces:
+    - UP-2 Links and backlinks
+    - UP-3 Granular addressing
+  desc: |
+    Referencing and addressing another Node happen WITHIN the flow of
+    editing a Node's content — the user names a target from inside the
+    text they are already typing, not by switching to a separate mode,
+    dialog, or search screen and back. The MANNER over UP-2 Links and
+    backlinks (link) and UP-3 Granular addressing: the SUP says the user
+    CAN link to any Node; this feat says the gesture to do so does not
+    interrupt the editing context.
+  req UX-inflow.link:
+    given: a Node being edited, the cursor within its content
+    when: the user initiates a reference to another Node
+    then:
+      - the target is named and chosen without leaving the editing context — no separate mode, dialog, or screen to switch to and back from
+      - after insertion, editing continues from the flow with the cursor uninterrupted
+    probes:
+      - In X, is inserting a reference done within the text being typed, or via a separate insert-reference dialog opened and closed?
+      - After insertion, does the user stay in the same editing position, or return to it from a mode switch?
+  req UX-inflow.address:
+    given: the in-flow reference gesture underway
+    when: the user narrows toward a specific target
+    then: any Node is reachable as the target from within the gesture, including a Node nested beneath others — the choice is not restricted to top-level Nodes
+    probes:
+      - Can the in-flow gesture in X target a nested Node, or only top-level containers?
+      - Is the whole store of Nodes reachable from within the gesture without leaving it?
+```
+
+```mdl
+feat UX-immediate: Immediacy
+  traces:
+    - UP-1 Atomic unit and outline
+    - UP-2 Links and backlinks
+    - UP-4 Transclusion
+  desc: |
+    The effect of an interaction gesture is shown AT ONCE — there is no
+    separate commit, save, preview, build, or re-render step the user
+    must invoke to see the result. The MANNER shared across UP-1 Atomic
+    unit and outline (structural change), UP-2 Links and backlinks (a new
+    link and its backlink), and UP-4 Transclusion (an edit through a
+    shared Node): the SUP says these effects HOLD; this feat says the
+    user sees them with no intervening step.
+  req UX-immediate.gesture:
+    given: an interaction gesture that changes the store — a structural change, a new reference, or an edit to a Node shown in several places
+    when: the user completes the gesture
+    then:
+      - its effect is shown at once, with no separate commit, save, preview, or re-render step required to see it
+      - where the changed Node is shown in more than one place, every place reflects the change without a manual refresh
+    probes:
+      - In X, does a structural or reference change appear immediately, or only after a save / preview / render / refresh step?
+      - When a Node shown in several places changes, do all places update at once, or must the user refresh them?
+```
+
+```mdl
+feat UX-reversible: Reversibility
+  traces:
+    - UP-1 Atomic unit and outline
+    - UP-2 Links and backlinks
+    - UP-4 Transclusion
+  desc: |
+    Each interaction gesture is INDIVIDUALLY undoable — the user reverses
+    the last gesture and the store returns to its prior state. The MANNER
+    across every capability: whatever the user just did (nest, reorder,
+    link, expand, edit) can be taken back as a discrete step, so the
+    interface is safe to explore.
+  req UX-reversible.undo:
+    given: a completed interaction gesture that changed the store
+    when: the user issues undo
+    then:
+      - the store returns to the state immediately before that gesture
+      - undo is gesture-granular — one gesture, one undo step — not all-or-nothing for a whole session or document
+    probes:
+      - In X, can the user undo the last structural / reference / edit gesture individually?
+      - Is undo gesture-granular, or coarse (e.g. only whole-document, or absent)?
+```
