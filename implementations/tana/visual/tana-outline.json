@@ -1,0 +1,57 @@
+{
+  "view": "tana-outline",
+  "note": "Reference (expected) computed styles harvested live from Tana web (wsid Q5eOIZHXjKaV) 2026-07-11. The 'expect' values are Tana's; 'app' selectors are the DXOS/Composer targets to fill in during S3 before running diff-styles.mjs. 'source' is the Tana evidence selector. See implementations/tana/visual-spec.md.",
+  "mockup": "(live Tana web app — no committed mockup HTML; see source selectors)",
+  "app": "DXOS/Composer bramble plugin — outline surface (selectors TBD in S3)",
+  "viewport": { "width": 1456, "height": 813 },
+  "tolerances": { "length": 1, "colorChannel": 6 },
+  "regions": [
+    {
+      "name": "node-name",
+      "source": ".editable",
+      "app": "TODO(S3): Composer outline node name",
+      "expect": {
+        "font-family": "InterVariable",
+        "font-size": "15px",
+        "line-height": "21px",
+        "font-weight": "400",
+        "color": "oklch(0.282985 0.00269329 240)"
+      }
+    },
+    {
+      "name": "bullet",
+      "source": ".OutlinerItem-module_bullet__5DK3H",
+      "app": "TODO(S3): Composer node bullet",
+      "expect": { "width": "15px", "height": "15px" }
+    },
+    {
+      "name": "chevron",
+      "source": ".BulletChevron-module_container__f3Np6",
+      "app": "TODO(S3): Composer disclosure chevron",
+      "expect": { "padding": "3.75px 0px" }
+    },
+    {
+      "name": "node-title",
+      "source": ".editable.lockedName",
+      "app": "TODO(S3): Composer focused-node title (H1)",
+      "expect": {
+        "font-family": "InterVariable",
+        "font-size": "29px",
+        "line-height": "33.3615px",
+        "font-weight": "550",
+        "color": "oklch(0.282985 0.00269329 240)"
+      }
+    },
+    {
+      "name": "breadcrumb",
+      "source": ".NodeAsDrilldownElement-module_label",
+      "app": "TODO(S3): Composer breadcrumb label",
+      "expect": {
+        "font-size": "14.01px",
+        "line-height": "30px",
+        "font-weight": "400",
+        "color": "oklch(0.444289 0.000882538 240)"
+      }
+    }
+  ]
+}
