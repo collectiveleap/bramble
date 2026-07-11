@@ -83,8 +83,8 @@ The gap is concentrated in the **outline surface**, not the substrate. Per
 - **Object-level addressing + Copy link** — works (confirmed live).
 
 **Net-new (what the Bramble plugin must build):**
-- A **node-per-row outline surface** where each row is a **first-class ECHO object**
-  (its own `EntityId`/URI), so a row is addressable, `@`-linkable, multi-locatable,
+- A **node-per-row outline-view surface** whose rows each render a **first-class
+  ECHO object** — a Node with its own `EntityId`/URI — so a row is addressable, `@`-linkable, multi-locatable,
   and per-row edit-through — the Tana primitive the existing `Text`-blob /
   CodeMirror Outliner cannot provide.
 - The **manner** laws (S2) applied to that surface: direct in-place restructuring,
@@ -115,7 +115,8 @@ destination.
 ## 6. Onward
 
 Feeds **S4 · DXOS design** (`implementations/dxos/design.md`): design the Bramble
-outliner plugin — a node-per-row outline of first-class ECHO objects — realizing
-R's behavioral spec and S2's interaction laws, and built to R's visual-spec.
+outliner plugin — a node-per-row outline view over first-class ECHO objects (the
+DAG) — realizing R's behavioral spec and S2's interaction laws, and built to R's
+visual-spec.
 Sequence against the substrate dependencies in `gap-analysis.md` (per-row object
 identity + sub-object addressing is the first thing to close).

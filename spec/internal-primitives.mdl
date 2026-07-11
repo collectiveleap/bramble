@@ -10,7 +10,7 @@ The internal data-model primitives for a networked-notes / outliner / PKM substr
 
 - **Node** — the atomic unit of content and the only kind of vertex.
 - **Structural edge** — a directed `predecessor → successor` relation. A Node may have a *set* of structural predecessors (multi-predecessor is first-class); the structural subgraph is **acyclic** — this is the DAG backbone. There is no designated root: the structural top is the **emergent** set of Nodes with no incoming structural edge. A Node reached by two structural paths is one and the same vertex, so an edit in one location is an edit everywhere.
-- **Linked edge** — a directed cross-reference (the `[[X]]` mention). It does not place its target in the successor outline; it renders lazily (collapsed by default, expand-on-demand). **Linked edges may form cycles.** A Node's *backlinks* are its incoming linked edges, recovered by reverse traversal — there is no stored back-edge.
+- **Linked edge** — a directed cross-reference (the `[[X]]` mention). It does not place its target among its structural successors; it renders lazily (collapsed by default, expand-on-demand). **Linked edges may form cycles.** A Node's *backlinks* are its incoming linked edges, recovered by reverse traversal — there is no stored back-edge.
 
 **Terminology** follows the established house DAG convention: PREDECESSOR / SUCCESSOR for edge direction, and a `kind` taxonomy over edges (*structural* / *linked*, with *embed* — inline expansion of a linked edge — reserved). PARENT / CHILD are avoided: in a DAG a Node has a set of predecessors, not a single parent.
 
@@ -88,7 +88,7 @@ feat IP-1: Node
       - typing is optional and additive: a Node with no type is equally first-class, and adding or removing a type preserves the Node's identity and its incident edges
     probes:
       - Can a Node in X carry a named type with typed fields, or is every Node untyped?
-      - If X has typed Nodes, are they addressable, nestable, linkable, and embeddable the same as untyped Nodes — or does typing move them into a separate object space outside the outline/graph?
+      - If X has typed Nodes, are they addressable, nestable, linkable, and embeddable the same as untyped Nodes — or does typing move them into a separate object space outside the structural graph?
       - Does adding or removing a Node's type preserve its identity and incident edges?
   req IP-1.identity:
     given: a store of Nodes
@@ -113,10 +113,11 @@ feat IP-1: Node
 feat IP-2: Structural edge
   desc: |
     A structural edge is a directed PREDECESSOR → SUCCESSOR relation
-    between two Nodes. Structural edges carry the outline: a Node's
-    successors are the Nodes that render beneath it. A Node may have a
+    between two Nodes. Structural edges carry containment: a Node's
+    successors are the Nodes directly beneath it in the structure (an
+    outline view renders them nested beneath it). A Node may have a
     SET of structural predecessors — multi-predecessor is first-class,
-    so one Node appears in more than one outline location while
+    so one Node appears in more than one structural location while
     remaining a single vertex. The structural subgraph is acyclic;
     this is the DAG backbone. (Identity persistence across edge
     changes is IP-1.stable-identity; not restated here.)
@@ -138,7 +139,7 @@ feat IP-2: Structural edge
     when: a structural edge from a different Node P2 to S is added
     then:
       - S has both P1 and P2 among its structural predecessors
-      - S appears beneath each of P1 and P2 in the outline
+      - S is a structural successor of both P1 and P2
     probes:
       - Can a single unit sit under more than one container at once in X, or is each unit limited to one parent?
       - If X permits a unit in several places, are those places one unit or independent copies?
@@ -164,7 +165,7 @@ feat IP-3: Linked edge
     A linked edge is a directed cross-reference from a Node to a
     target Node — the substrate form of a `[[X]]` mention. It is
     type-distinct from a structural edge: it does NOT make its target
-    a successor in the outline. Linked edges may form cycles (mutual
+    a structural successor. Linked edges may form cycles (mutual
     links are admitted). A Node's backlinks are its incoming linked
     edges, recovered by reverse traversal — there is no stored
     back-edge. A linked edge may be expanded inline (embed), resolving
@@ -174,7 +175,7 @@ feat IP-3: Linked edge
     given: a linked edge from Node A to Node T
     then:
       - T is reachable from A as a linked reference, and the relation is type-distinct from a structural edge
-      - A's outline is unchanged — T does not become a structural successor of A
+      - A's structure is unchanged — T does not become a structural successor of A
     probes:
       - Does X distinguish a lightweight cross-reference from outline containment, or does referencing a unit also nest it?
       - Can a reference target any unit, leaving the referrer's outline structure untouched?
