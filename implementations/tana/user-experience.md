@@ -87,7 +87,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Trigger:** Tana has **no separate multi-parent gesture**. A node is shown in a second location by inserting a **reference** to it (the @-mention below) and expanding that reference inline to reveal its content there.
 - **Response:** the referenced node appears in the second location as a live, edit-through instance drawing from the same node id; an edit at either place updates the one underlying node.
 - **Visual/layout:** the second appearance is a reference (optionally expanded in place to show the subtree).
-- **Edge cases:** this is the **owner + reference** model, not a structural multi-predecessor edge — Tana satisfies the multi-location *capability* via references while diverging from a true multi-parent substrate (a reference-vs-target divergence the DXOS design can close more directly, since the SIP substrate is natively multi-predecessor). `[live-check: confirm expanded-reference edit-through is observed at both locations]`
+- **Edge cases:** this is the **owner + reference** model, not a structural multi-predecessor edge — Tana satisfies the multi-location *capability* via references while diverging from a true multi-parent substrate (a reference-vs-target divergence the DXOS design can close more directly, since the SIP substrate is natively multi-predecessor). Edit-through confirmed 2026-07-10 via tana-local MCP: editing the referenced Node updated its reference (shared id, one underlying Node).
 - **traces (capability):** `UP-1.multi-location` — one Node shown in two places
 - **traces (manner):** `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
 
@@ -123,7 +123,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Trigger:** `Shift`+click a reference, or focus it and press `Cmd`/`Ctrl`+`Down`. `[live-check: prior-session notes said Alt/Option-click; canonical doc says Shift+click]`
 - **Response:** the referenced node renders inline in place, showing its content/subtree; editing the inline-rendered node edits the one underlying node (shared id, edit-through), and the inline rendering reflects later changes to it.
 - **Visual/layout:** the reference expands where it sits — no navigation to a separate viewer.
-- **Edge cases:** expansion is on demand (one level), so a linked-edge cycle through the target does not expand unboundedly. `[live-check: edit-through round-trip — edit the inline expansion, confirm the original updates]`
+- **Edge cases:** expansion is on demand (one level), so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP: an edit to the source Node propagated to its reference (shared id); the doc states editing a reference likewise edits the original.
 - **traces (capability):** `UP-4.embed` — render a reference inline, edit-through
 - **traces (manner):** `UX-direct.expand` — expand the reference in place · `UX-immediate.gesture` — effect shown at once
 
