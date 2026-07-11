@@ -17,7 +17,8 @@ reproduces. Authored by observation, not built.
 - `visual/tana-outline.json` — the `visual-verification` mapping (Tana's
   harvested values as `expect`; Composer `app` selectors filled in at S3).
 
-Status: draft (stage R) — behavioral layer authored and live-confirmed in Tana
-(all keystroke live-checks closed); visual layer complete (design tokens + all
-element specimens harvested, incl. the inline reference chip and the Option-click
-expansion panel).
+Status: **current** (stage R) — behavioral layer authored and live-confirmed in
+Tana (all keystroke live-checks closed); visual layer complete (design tokens +
+all element specimens harvested, incl. the inline reference chip and the
+Option-click expansion panel). Only `UP-1.any-content-type` (non-text nodes)
+remains deferred.

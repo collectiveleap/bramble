@@ -15,8 +15,12 @@ keystroke live-checks closed). The R **visual** layer — computed-style capture
 into `implementations/tana/visual-spec.md` + a `visual-verification` mapping
 (`visual/tana-outline.json`) — is complete: design tokens + all element
 specimens harvested (incl. the inline reference chip and the Option-click
-expansion panel). **Next action:** author S3 · UX gap analysis (Composer diffed
-against R's behavioral + visual reference via `visual-verification`).
+expansion panel). R is promoted to **current** (only `UP-1.any-content-type`,
+non-text nodes, remains deferred). **Next action:** author **S3 · UX gap
+analysis** — evaluate the *live* Composer against S2 + R, surveying which
+Composer plugins/surfaces close each gap (the Outliner plugin is thin — **not**
+the destination; linking/embed/backlinks live on the markdown + Stack surfaces),
+and run `diff-styles.mjs` against `visual/tana-outline.json` for the visual side.
 
 ## Pipeline & status
 
@@ -26,9 +30,9 @@ Status values: `not-started · authoring · needs-review · done`.
 |---|---|---|---|
 | S1 · Neutral substrate spec | `spec/internal-primitives.mdl`, `spec/user-primitives.mdl` | neutral | done |
 | S2 · Neutral interaction spec | `spec/interaction-primitives.mdl` | neutral | draft |
-| R · Reference realization (Tana) | `implementations/tana/` | reference | draft (behavioral + visual-spec done) |
+| R · Reference realization (Tana) | `implementations/tana/` | reference | current |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
-| S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | not-started (stub) |
+| S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | authoring |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | not-started |
 | S5 · Plan | `implementations/dxos/plans/` | target | not-started |
 | S6 · Plugin code | (hosting deferred) | target | not-started |
