@@ -10,6 +10,6 @@ reproduces. Authored by observation, not built.
 
 - `user-experience.md` — how Tana realizes the neutral interaction spec (S2)
   concretely: visual, layout, typography, keystrokes, shortcuts — each mapped to
-  its `UX-<n>.<concern>` req.
+  its `UX-<law>.<application>` req and the `UP-*` capability it realizes.
 
-Status: stub. Authoring is stage R in `FLOW.md`.
+Status: scaffolded; behaviors awaiting Tana observation (stage R).
