@@ -16,11 +16,16 @@ into `implementations/tana/visual-spec.md` + a `visual-verification` mapping
 (`visual/tana-outline.json`) — is complete: design tokens + all element
 specimens harvested (incl. the inline reference chip and the Option-click
 expansion panel). R is promoted to **current** (only `UP-1.any-content-type`,
-non-text nodes, remains deferred). **Next action:** author **S3 · UX gap
-analysis** — evaluate the *live* Composer against S2 + R, surveying which
-Composer plugins/surfaces close each gap (the Outliner plugin is thin — **not**
-the destination; linking/embed/backlinks live on the markdown + Stack surfaces),
-and run `diff-styles.mjs` against `visual/tana-outline.json` for the visual side.
+non-text nodes, remains deferred). **S3 · UX gap analysis is done** with a
+decisive conclusion, live-confirmed against the latest Composer build: **a new
+Bramble outliner plugin is needed** — Composer's Outline rows carry no ECHO
+identity (row menu = "Delete row" only; addressing stops at the whole object), so
+no existing surface reproduces Tana's every-bullet-is-a-Node primitive; but the
+ECHO substrate is strong and reusable (identity, refs, relations, backlinks,
+edit-through embed, in-flow `@`-link). Visual diff is deferred to post-plugin (the
+new surface is built to `visual-spec.md`, then diffed). **Next action:** **S4 ·
+design** the Bramble outliner plugin (node-per-row first-class ECHO objects)
+realizing R + S2, built to R's visual-spec.
 
 ## Pipeline & status
 
@@ -32,7 +37,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | S2 · Neutral interaction spec | `spec/interaction-primitives.mdl` | neutral | draft |
 | R · Reference realization (Tana) | `implementations/tana/` | reference | current |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
-| S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | authoring |
+| S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | not-started |
 | S5 · Plan | `implementations/dxos/plans/` | target | not-started |
 | S6 · Plugin code | (hosting deferred) | target | not-started |
