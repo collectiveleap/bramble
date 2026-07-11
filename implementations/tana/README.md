@@ -12,4 +12,4 @@ reproduces. Authored by observation, not built.
   concretely: visual, layout, typography, keystrokes, shortcuts — each mapped to
   its `UX-<law>.<application>` req and the `UP-*` capability it realizes.
 
-Status: draft — behaviors authored from Tana docs; `live-check:` items pending confirmation in a live session (stage R).
+Status: draft — behaviors authored and live-confirmed in Tana; 1 `live-check:` item pending (which modifier expands a reference inline) (stage R).

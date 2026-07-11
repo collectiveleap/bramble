@@ -20,6 +20,14 @@ command (`indent`, `move-up`, `expand`, …) and do not print literal keystrokes
 literal keys below are carried from prior-session notes and flagged inline for
 confirmation in a live Tana session (search the flag token to list open items).
 
+Keys are macOS (`Cmd`); on Windows substitute `Ctrl`.
+
+**View vs. substrate.** These gestures act on the *current view*, which is an
+outline in both Tana and the DXOS/Bramble target. The underlying substrate
+differs — Tana stores a single-owner outline, the SIP a multi-predecessor DAG —
+but the outline gestures below are described at the view level, where the two
+agree.
+
 ## Entry format
 
 Each behavior is a `###` section with these fields, in order:
@@ -39,34 +47,34 @@ analysis return two separate verdicts for Composer — "capability present?" and
 
 ### Indent / nest
 
-- **Trigger:** `Tab` on the focused node. `[live-check: exact key binding]` (doc names the operation `indent`)
+- **Trigger:** `Tab` on the focused node.
 - **Response:** the node becomes a structural successor of the sibling immediately above it; it and its subtree shift one level right; the cursor stays on the node, editing uninterrupted.
 - **Visual/layout:** the node's bullet moves right one indent step, now beneath the preceding sibling.
-- **Edge cases:** with no preceding sibling at its level, there is nothing to nest under. `[live-check: no-op vs. rejected when no preceding sibling]`
+- **Edge cases:** with no preceding sibling at its level, indent is a no-op (nothing happens).
 - **traces (capability):** `UP-1.outline` — address & nest a single Node
 - **traces (manner):** `UX-direct.outline` — reshape the outline in place · `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
 
 ### Outdent
 
-- **Trigger:** `Shift`+`Tab` on the focused node. `[live-check: exact key binding]` (doc names the operation `outdent`)
+- **Trigger:** `Shift`+`Tab` on the focused node.
 - **Response:** the node detaches from its current owner and becomes that owner's following sibling, one level left, carrying its own subtree; the cursor stays on the node.
 - **Visual/layout:** the node's bullet shifts left one indent step.
-- **Edge cases:** outdenting a top-level node. `[live-check: no-op vs. some promotion — not stated in doc]`
+- **Edge cases:** outdenting a top-level node is a no-op (nothing happens).
 - **traces (capability):** `UP-1.outline` — address & nest a single Node
 - **traces (manner):** `UX-direct.outline` — reshape the outline in place · `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
 
 ### Reorder (move up / down)
 
-- **Trigger:** the `move-up` / `move-down` shortcut on the focused node, or click-and-drag the node's bullet up/down. `[live-check: exact key binding for move-up/move-down]`
+- **Trigger:** `Cmd`+`Shift`+`↑` moves the node up (swaps it with the preceding sibling); `Cmd`+`Shift`+`↓` moves it down (swaps with the following sibling). Or drag the node's bullet up/down.
 - **Response:** the node swaps position with the adjacent sibling at its level, carrying its subtree; the cursor stays on the node.
 - **Visual/layout:** the bullet (and its subtree) moves past the adjacent sibling; on drag, the bullet follows the pointer to a drop position.
-- **Edge cases:** reordering past a collapsed sibling. `[live-check: moves over the whole collapsed subtree as one unit?]`
+- **Edge cases:** move-up/down act among siblings at the same level, ignoring whether a sibling has children — the node swaps past the whole adjacent sibling (its subtree included), and the moved node carries its own subtree with it. Drag does the same and additionally can **re-parent**: dropping the node into another node's subtree when the cursor moves beneath it.
 - **traces (capability):** `UP-1.outline` — address & nest a single Node
 - **traces (manner):** `UX-direct.outline` — reshape the outline in place · `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
 
 ### Zoom into a Node
 
-- **Trigger:** `Cmd`/`Ctrl`+`.` to zoom in; `Cmd`/`Ctrl`+`,` to zoom back out. `[live-check: exact key binding]` (doc confirms zoom + breadcrumbs, not the keys)
+- **Trigger:** `Cmd`+`.` to zoom in; `Cmd`+`,` to zoom back out.
 - **Response:** the focused node becomes the panel's top — it "becomes a full page" — showing only that node and its subtree.
 - **Visual/layout:** breadcrumbs at the top of the panel show where the node lives; leave the zoom via a breadcrumb or the zoom-out key.
 - **Edge cases:** — (any node, including a nested one, can be zoomed).
@@ -75,10 +83,10 @@ analysis return two separate verdicts for Composer — "capability present?" and
 
 ### Expand / collapse
 
-- **Trigger:** `Cmd`/`Ctrl`+`Down` to expand, `Cmd`/`Ctrl`+`Up` to collapse the focused node's children. `[live-check: exact key binding]` (doc names the operations `expand`/`collapse`)
+- **Trigger:** `Cmd`+`↓` to expand, `Cmd`+`↑` to collapse the focused node's children.
 - **Response:** the node's successors show or hide beneath it in place; the node itself stays put and stays focused.
 - **Visual/layout:** the bullet's disclosure indicator reflects expanded vs. collapsed state.
-- **Edge cases:** a node with no children. `[live-check: no-op?]`
+- **Edge cases:** expanding a node with no children reveals a **pending node** — a placeholder where no node yet exists, shown by a grey bullet (vs. the black bullet of a real node); typing into the pending node brings it into existence.
 - **traces (capability):** `UP-1.outline` — address a single Node
 - **traces (manner):** `UX-direct.outline` — act on the Node in place · `UX-immediate.gesture` — effect shown at once
 
@@ -94,15 +102,15 @@ analysis return two separate verdicts for Composer — "capability present?" and
 ### Insert inline reference (@-mention)
 
 - **Trigger:** Type `@` in a node's content; an inline search list opens at the cursor. (On an empty node: `@` → `Enter` to select a node, then `Space` to turn it into an inline reference.)
-- **Response:** Typing keywords filters the list live; `Enter` selects the target and inserts an inline reference at the cursor, editing continuing in place. `Cmd`/`Ctrl`+`Enter` instead creates a new node in the Library and inserts a reference to it. With text selected first, `@` then `Enter` inserts the reference using the selected text as its **alias**.
+- **Response:** Typing keywords filters the list live; `Enter` selects the target and inserts an inline reference at the cursor, editing continuing in place. `Cmd`+`Enter` instead creates a new node in the Library and inserts a reference to it. With text selected first, `@` then `Enter` inserts the reference using the selected text as its **alias**.
 - **Visual/layout:** The reference renders inline as a linked node token showing the target's title. It is a *"carbon copy"* — references share the target's node id, so editing the reference edits the original and every other reference of that node.
-- **Edge cases:** Any node is reachable as the target by keyword search, including one nested beneath others — the reference stores the target's **stable id**, so it resolves to exactly that node, not an enclosing container. Selecting text before `@` aliases the reference to that text; `Cmd`/`Ctrl`+`Enter` creates-and-references a brand-new Library node.
+- **Edge cases:** Any node is reachable as the target by keyword search, including one nested beneath others — the reference stores the target's **stable id**, so it resolves to exactly that node, not an enclosing container. Selecting text before `@` aliases the reference to that text; `Cmd`+`Enter` creates-and-references a brand-new Library node.
 - **traces (capability):** `UP-2.link` — link from within a Node's content · `UP-3.any-node-target` — target any Node, incl. nested
 - **traces (manner):** `UX-inflow.link` — reference within the typing flow · `UX-inflow.address` — reach any target within the gesture · `UX-immediate.gesture` — effect shown at once
 
 ### Copy link to a Node
 
-- **Trigger:** open the command line (`Cmd`/`Ctrl`+`K`) and run **`get html link to node`**; or use the inline toolbar's 🔗 (link) action. `[live-check: exact command-line steps]` (the command label `get html link to node` is doc-confirmed)
+- **Trigger:** open the command line (`Cmd`+`K`) and type `get html` to filter to **Copy node link (HTML formatted)** (command `get html link to node`); or use the inline toolbar's 🔗 (link) action.
 - **Response:** a link to the exact focused node is produced (e.g. `Tana Outliner node [nodeID]: [title]`), resolving to that node's stable id.
 - **Visual/layout:** command-line palette / inline toolbar.
 - **Edge cases:** works for any node, including one nested beneath others — the link carries the node's own id, so it resolves to that node, not a container.
@@ -120,7 +128,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 
 ### Embed / expand a reference inline
 
-- **Trigger:** `Shift`+click a reference, or focus it and press `Cmd`/`Ctrl`+`Down`. `[live-check: prior-session notes said Alt/Option-click; canonical doc says Shift+click]`
+- **Trigger:** click a reference while holding a modifier (**`Shift`** per canonical doc, **`Alt`/`Option`** per prior notes), or focus it and press `Cmd`+`↓`. `[live-check: which modifier expands a reference inline — test node "A7-open-this-node-then-modifier-click-the-reference" in Test projects]`
 - **Response:** the referenced node renders inline in place, showing its content/subtree; editing the inline-rendered node edits the one underlying node (shared id, edit-through), and the inline rendering reflects later changes to it.
 - **Visual/layout:** the reference expands where it sits — no navigation to a separate viewer.
 - **Edge cases:** expansion is on demand (one level), so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP: an edit to the source Node propagated to its reference (shared id); the doc states editing a reference likewise edits the original.
@@ -129,10 +137,10 @@ analysis return two separate verdicts for Composer — "capability present?" and
 
 ### Undo
 
-- **Trigger:** `Cmd`/`Ctrl`+`Z`. `[live-check: exact binding]`
+- **Trigger:** `Cmd`+`Z`.
 - **Response:** reverses the last gesture — a structural move, a reference insertion, or a content edit — returning the store to the state immediately before it.
 - **Visual/layout:** — (no distinct surface).
-- **Edge cases:** gesture-granular — one gesture, one undo step. `[live-check: confirm granularity, not whole-session/document]`
+- **Edge cases:** gesture-granular — one gesture, one undo step — over a complete history (undo is not coarsened to whole-session or whole-document).
 - **traces (capability):** (rides on the gesture undone)
 - **traces (manner):** `UX-reversible.undo` — gesture-granular undo
 
