@@ -2,17 +2,17 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Author the neutral interaction spec (S2, `/spec/interaction-primitives.mdl`) as four cross-cutting interaction laws, and the Tana reference realization (R, `/implementations/tana/user-experience.md`) as concrete observed behavior, mutually consistent and ready for the downstream DXOS UX gap analysis.
+**Goal:** Author the neutral interaction spec (S2, `spec/interaction-primitives.mdl`) as four cross-cutting interaction laws, and the Tana reference realization (R, `implementations/tana/user-experience.md`) as concrete observed behavior, mutually consistent and ready for the downstream DXOS UX gap analysis.
 
-**Architecture:** SUP + S2 form the neutral semantic layer (capability + manner); R is the sole physical layer, tracing up to both. S2 is authored from its settled draft; R is authored from direct Tana observation to an "implement-without-watching-Tana" bar; the two are reconciled (every R entry cites ≥1 neutral id; every law has ≥1 R instance). Design: `/plan/2026-07-10-s2-r-codevelop-design.md`.
+**Architecture:** SUP + S2 form the neutral semantic layer (capability + manner); R is the sole physical layer, tracing up to both. S2 is authored from its settled draft; R is authored from direct Tana observation to an "implement-without-watching-Tana" bar; the two are reconciled (every R entry cites ≥1 neutral id; every law has ≥1 R instance). Design: `plan/2026-07-10-s2-r-codevelop-design.md`.
 
 **Tech Stack:** Markdown + MDL docs; git. No code, no build. "Tests" are file-existence, content, and `grep` checks over stable IDs.
 
 ## Global Constraints
 
 - **Repo / branch:** `~/sandbox/bramble`, this worktree's branch (`claude/flow-md-resume-cdd706`). All commits land here.
-- **Neutral-vs-implementation invariant:** nothing in `/spec/` names a system; system-specific artifacts live under `/implementations/<system>/`. S2 in `/spec/`, R in `/implementations/tana/`.
-- **Repo paths root-anchored:** reference repo files as `/spec/…`, `/implementations/…` (leading slash = repo root), never bare (a bare path reads as relative to the doc's own folder).
+- **Neutral-vs-implementation invariant:** nothing in `spec/` names a system; system-specific artifacts live under `implementations/<system>/`. S2 in `spec/`, R in `implementations/tana/`.
+- **Repo paths repo-root-relative:** reference repo files as `spec/…`, `implementations/…` — resolved from the repo/worktree root (the working directory), never with a leading slash (a leading slash is filesystem-absolute and won't resolve).
 - **Traceability header (verbatim shape)** on every downstream artifact:
   `<!-- derives-from: [<upstream req IDs>]; role: reference|target|neutral; status: not-started|draft|current|needs-review -->`
   Headers keep **bare** ids (grep anchors).
@@ -27,10 +27,10 @@
 ### Task 1: Author S2 — the four interaction-law feats
 
 **Files:**
-- Modify (replace stub body): `/spec/interaction-primitives.mdl`
+- Modify (replace stub body): `spec/interaction-primitives.mdl`
 
 **Interfaces:**
-- Consumes: SUP feat ids `UP-1 Atomic unit and outline`, `UP-2 Links and backlinks`, `UP-3 Granular addressing`, `UP-4 Transclusion` (from `/spec/user-primitives.mdl`).
+- Consumes: SUP feat ids `UP-1 Atomic unit and outline`, `UP-2 Links and backlinks`, `UP-3 Granular addressing`, `UP-4 Transclusion` (from `spec/user-primitives.mdl`).
 - Produces: S2 feat ids `UX-direct`, `UX-inflow`, `UX-immediate`, `UX-reversible` and req ids `UX-direct.outline`, `UX-direct.expand`, `UX-inflow.link`, `UX-inflow.address`, `UX-immediate.gesture`, `UX-reversible.undo` — the manner ids R and the UX gap analysis cite.
 
 - [ ] **Step 1: Replace the `## Rules` and `## Primitives` stub sections**
@@ -47,7 +47,7 @@ rule R-Interaction-Laws:
     cross-cutting laws every gesture must obey (directness, in-flow,
     immediacy, reversibility), not the gestures themselves. It names no
     system and no keystroke; a reference realization
-    (/implementations/tana/user-experience.md) instantiates each law
+    (implementations/tana/user-experience.md) instantiates each law
     concretely. Layered on R-Conformance-Format from the SIP/SUP:
 
     1. Each law is a `feat` (UX-<law>); it is CROSS-CUTTING, so its
@@ -62,7 +62,7 @@ rule R-Interaction-Laws:
 ```
 ```
 
-Then author `## Primitives` with the four feats **exactly** as specified in the design doc §4 (`/plan/2026-07-10-s2-r-codevelop-design.md`): `UX-direct` (traces UP-1, UP-4; reqs `.outline`, `.expand`), `UX-inflow` (traces UP-2, UP-3; reqs `.link`, `.address`), `UX-immediate` (traces UP-1, UP-2, UP-4; req `.gesture`), `UX-reversible` (traces UP-1, UP-2, UP-4; req `.undo`). Copy the `desc`/`given`/`when`/`then`/`probes` verbatim from design §4.
+Then author `## Primitives` with the four feats **exactly** as specified in the design doc §4 (`plan/2026-07-10-s2-r-codevelop-design.md`): `UX-direct` (traces UP-1, UP-4; reqs `.outline`, `.expand`), `UX-inflow` (traces UP-2, UP-3; reqs `.link`, `.address`), `UX-immediate` (traces UP-1, UP-2, UP-4; req `.gesture`), `UX-reversible` (traces UP-1, UP-2, UP-4; req `.undo`). Copy the `desc`/`given`/`when`/`then`/`probes` verbatim from design §4.
 
 - [ ] **Step 2: Update the frontmatter `status` and the header**
 
@@ -101,8 +101,8 @@ git commit -m "docs(spec): author S2 interaction laws (UX-direct/inflow/immediat
 ### Task 2: Scaffold R — behavior inventory, entry template, README
 
 **Files:**
-- Modify (replace stub body): `/implementations/tana/user-experience.md`
-- Modify: `/implementations/tana/README.md` (flip status note only)
+- Modify (replace stub body): `implementations/tana/user-experience.md`
+- Modify: `implementations/tana/README.md` (flip status note only)
 
 **Interfaces:**
 - Consumes: the S2 ids from Task 1 and the SUP ids.
@@ -141,7 +141,7 @@ Use this **entry template** (the `@-mention` worked example in design §5 is the
 
 - [ ] **Step 2: Flip the README status note**
 
-In `/implementations/tana/README.md`, change `Status: stub. Authoring is stage R in FLOW.md.` → `Status: scaffolded; behaviors awaiting Tana observation (stage R).` Leave the `derives-from` header bare-id and `status: not-started` until Task 3 fills content.
+In `implementations/tana/README.md`, change `Status: stub. Authoring is stage R in FLOW.md.` → `Status: scaffolded; behaviors awaiting Tana observation (stage R).` Leave the `derives-from` header bare-id and `status: not-started` until Task 3 fills content.
 
 - [ ] **Step 3: Verify the scaffold — every inventory behavior has a section and both trace lines**
 
@@ -169,7 +169,7 @@ git commit -m "docs(tana): scaffold R behavior inventory + entry template"
 **PREREQUISITE:** the Tana application, open, to observe. Do not fabricate values.
 
 **Files:**
-- Modify: `/implementations/tana/user-experience.md` (fill each `### behavior` entry)
+- Modify: `implementations/tana/user-experience.md` (fill each `### behavior` entry)
 
 **Interfaces:**
 - Consumes: the Task 2 scaffold (section headers + trace lines).
@@ -216,7 +216,7 @@ git commit -m "docs(tana): author R behaviors from Tana observation"
 
 **Files:**
 - Modify: `/FLOW.md` (pipeline status, artifact index)
-- Possibly modify: `/spec/interaction-primitives.mdl` (only if reconciliation surfaces a law fix)
+- Possibly modify: `spec/interaction-primitives.mdl` (only if reconciliation surfaces a law fix)
 
 **Interfaces:**
 - Consumes: S2 (Task 1) and R (Task 3).

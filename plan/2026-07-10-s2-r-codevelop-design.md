@@ -2,8 +2,8 @@
 
 Date: 2026-07-10
 Status: draft (awaiting review)
-Topic: how to author the neutral interaction spec (S2, `/spec/interaction-primitives.mdl`)
-and the Tana reference realization (R, `/implementations/tana/user-experience.md`)
+Topic: how to author the neutral interaction spec (S2, `spec/interaction-primitives.mdl`)
+and the Tana reference realization (R, `implementations/tana/user-experience.md`)
 as one co-developed cycle, such that a downstream DXOS/Composer gap analysis and
 implementation can reproduce Tana's user experience on a different substrate.
 
@@ -24,14 +24,14 @@ shaped around that.
 The stack has two *kinds* of layer:
 
 - **Neutral / semantic (the "meaning").** Two specs, two kinds of meaning:
-  - **SUP** (`/spec/user-primitives.mdl`) — **capability** semantics ("what"):
+  - **SUP** (`spec/user-primitives.mdl`) — **capability** semantics ("what"):
     the user can nest, link, address any Node, sees backlinks. DAG-phrased.
-  - **S2** (`/spec/interaction-primitives.mdl`) — **interaction-manner**
+  - **S2** (`spec/interaction-primitives.mdl`) — **interaction-manner**
     semantics ("how, qualitatively"): that nesting is *direct*, linking is
     *in-flow*, effects are *immediate*, gestures are *reversible*.
     Interaction-phrased. Names no keystroke.
 - **Physical (the "how, concretely").** One layer:
-  - **R** (`/implementations/tana/user-experience.md`) — the concrete Tana
+  - **R** (`implementations/tana/user-experience.md`) — the concrete Tana
     realization: keystrokes, visual placement, feedback, edge cases.
 
 So it is **not** "SUP = semantics, R = physical." It is **SUP + S2 = the neutral
@@ -329,8 +329,8 @@ mutually consistent and ready for the S3-UX gap analysis.
 
 ## 10. Non-goals
 
-- No change to the neutral-vs-implementation-specific invariant (S2 in `/spec/`,
-  R in `/implementations/tana/`).
+- No change to the neutral-vs-implementation-specific invariant (S2 in `spec/`,
+  R in `implementations/tana/`).
 - No keystroke or system name in S2.
 - No authoring of the S3-UX gap analysis, S4 design, or Composer code here —
   those are their own downstream stages.

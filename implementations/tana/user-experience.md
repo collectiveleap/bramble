@@ -3,7 +3,7 @@
 <!-- derives-from: [UX-*, UP-*]; role: reference; status: not-started -->
 
 Concrete, isomorphic realization of the neutral interaction spec
-(`/spec/interaction-primitives.mdl`) by Tana: for each behavior, the observed
+(`spec/interaction-primitives.mdl`) by Tana: for each behavior, the observed
 trigger, response, visual/layout, and edge cases — each tracing to the SUP
 capability (`UP-*`) it realizes and the S2 law (`UX-*`) it exhibits.
 
@@ -32,7 +32,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 ## Behaviors
 
 The behaviors below carry placeholder slots to be filled from Tana observation
-in stage R (see `/plan/2026-07-10-s2-r-codevelop-plan.md`, Task 3).
+in stage R (see `plan/2026-07-10-s2-r-codevelop-plan.md`, Task 3).
 
 ### Indent / nest
 

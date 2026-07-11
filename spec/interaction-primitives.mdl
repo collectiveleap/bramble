@@ -27,7 +27,7 @@ rule R-Interaction-Laws:
     cross-cutting laws every gesture must obey (directness, in-flow,
     immediacy, reversibility), not the gestures themselves. It names no
     system and no keystroke; a reference realization
-    (/implementations/tana/user-experience.md) instantiates each law
+    (implementations/tana/user-experience.md) instantiates each law
     concretely. Layered on R-Conformance-Format from the SIP/SUP:
 
     1. Each law is a `feat` (UX-<law>); it is CROSS-CUTTING, so its
