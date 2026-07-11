@@ -128,10 +128,10 @@ analysis return two separate verdicts for Composer — "capability present?" and
 
 ### Embed / expand a reference inline
 
-- **Trigger:** click a reference while holding a modifier (**`Shift`** per canonical doc, **`Alt`/`Option`** per prior notes), or focus it and press `Cmd`+`↓`. `[live-check: which modifier expands a reference inline — test node "A7-open-this-node-then-modifier-click-the-reference" in Test projects]`
-- **Response:** the referenced node renders inline in place, showing its content/subtree; editing the inline-rendered node edits the one underlying node (shared id, edit-through), and the inline rendering reflects later changes to it.
-- **Visual/layout:** the reference expands where it sits — no navigation to a separate viewer.
-- **Edge cases:** expansion is on demand (one level), so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP: an edit to the source Node propagated to its reference (shared id); the doc states editing a reference likewise edits the original.
+- **Trigger:** `Option`+click a reference expands it in a transient panel anchored **below the referrer** (above the referrer's own children), showing the referenced node and its subtree, with an ✕ to close. `Shift`+click instead opens the referenced node **zoomed in an adjacent panel** (a separate viewer). Confirmed live 2026-07-10.
+- **Response:** the panel renders the referenced node's content and children; because references share the node's id, an edit made within the expansion edits the one underlying node (edit-through), and the expansion reflects later changes to it.
+- **Visual/layout:** `Option`+click → a bordered panel inserted between the referrer's line and its children, with a close ✕ (its child renders inside, pending-node grey bullet included); `Shift`+click → the node opens zoomed in an adjacent side panel.
+- **Edge cases:** `Cmd`+`↓` does **not** expand a reference — it expands/collapses the focused node's own children (see *Expand / collapse*). Tana has **no truly in-text-flow transclusion**; reference expansion is panel-based. Expansion is on demand, so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP (an edit to the source Node propagated to its reference; shared id).
 - **traces (capability):** `UP-4.embed` — render a reference inline · `UP-4.edit-through` — an edit flows to the one shared Node
 - **traces (manner):** `UX-direct.expand` — expand the reference in place · `UX-immediate.gesture` — effect shown at once
 
@@ -156,3 +156,11 @@ SUP coverage: every core SUP capability req is cited by a behavior above except
 `UP-1.any-content-type` — interaction with non-text Nodes (drawings, audio,
 widgets) — which has no dedicated behavior in this floor pass and is deferred to
 a follow-up observation.
+
+Transclusion nuance (for S3, and a possible S2 refinement): Tana realizes
+`UP-4.embed` / `UX-direct.expand` by **panel** expansion — `Option`-click opens
+a panel below the referrer; `Shift`-click opens a separate zoomed panel — not
+rendering inside the text flow. The neutral `UX-direct.expand` ideal ("in place,
+not a separate viewer") is met by the `Option`-click panel but not by
+`Shift`-click. Whether S2 should distinguish *in-flow inline* expansion from
+*panel* expansion is an open question for review.
