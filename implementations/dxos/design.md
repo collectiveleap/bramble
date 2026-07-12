@@ -18,8 +18,8 @@ section here (grown one at a time), then planned and built:
    section — settled)*
 2. **Outline surface + gestures** — rendering + the S2/R interaction, built to R's
    visual-spec. *(settled)*
-3. **Reference / embed / backlinks integration** — reuse Composer's markdown
-   `@`-link, block-embed, "Related" panel. *(settled)*
+3. **Reference / embed / backlinks integration** — reuse Composer's `@`-picker,
+   object Surfaces, and the "Related" panel. *(settled)*
 4. **Hosting / build** — how the plugin builds and loads into Composer. *(settled — floor in-monorepo)*
 
 ---
@@ -136,8 +136,8 @@ guide / disclosure chevron, per `visual-spec.md`), caret-flow, keyboard, and
 gestures. Each **row's content** renders by Node kind:
 
 - **Text node** → an inline text editor (per-row CodeMirror bound to the Node's
-  text), reusing Composer's markdown extensions for the in-flow `@`-link /
-  block-embed.
+  text), reusing Composer's markdown extensions for the in-flow `@`-reference
+  picker.
 - **Typed-object node** (Person / Task / Document / Sketch …) → the object's
   **`Section` Surface**: `<Surface type={AppSurface.Section} data={{ subject: node }} limit={1} />`, wrapped in the outline chrome.
 
@@ -152,7 +152,8 @@ nodes with no registered surface.
 |---|---|---|
 | Indent / outdent | rewire the focused Node's structural `Edge` (predecessor → preceding-sibling / grandparent); cycle-checked; `order` set | `UX-direct` |
 | Reorder up/down | change the `Edge`'s `order` (`orderBetween` neighbours) | `UX-direct` |
-| Insert `@`-reference | insert a **linked** `Ref` in text via `useLinkQuery` (`[label](uri)`); `@@` = block-embed | `UX-inflow` |
+| Insert `@`-reference | insert a **linked** `Ref`-span (collapsed chip) via the `@`-picker | `UX-inflow` |
+| Expand a reference inline | per-occurrence local view toggle → render the target's `Section` Surface in place, edit-through (§3) | `UX-direct.expand` |
 | Co-locate (multi-location) | **add a second** structural `Edge` to the Node — the gesture Tana lacks (Bramble's edge-native advantage) | `UX-direct` |
 | Expand / collapse, Zoom | **local per-user view-state**, keyed by edge/node id — *not* substrate | — |
 | (all store mutations) | ECHO reactive subscription → immediate re-render | `UX-immediate` |
@@ -172,7 +173,7 @@ once the surface exists.
 ### Reuse vs net-new
 
 - **Reuse:** `Surface` for typed rows (the stack/kanban idiom); `useLinkQuery`
-  `@`/`@@` for linked edges + embed; ECHO reactivity for immediacy.
+  `@`-picker for the linked edge, the object Surface for its expansion; ECHO reactivity for immediacy.
 - **Net-new:** the outline shell driving per-row Surfaces with continuous
   caret-flow / gestures across heterogeneous rows; the fallback `Section` surface.
 
@@ -188,22 +189,28 @@ Realizes `UP-2` (link + backlinks), `UP-4` (embed), `UX-inflow`,
 
 ### Linked edge (`@`-mention) — a first-class `Ref`-span
 
-The in-flow `@`-picker (`useLinkQuery`) provides the `UX-inflow` gesture, but on
+The in-flow `@`-picker (`useLinkQuery`) provides the `UX-inflow` gesture; on
 select it inserts a **first-class inline `Ref`** into the node's content (a
-`RefSpan` — the node's text is a union of text-spans and ref-spans, per prior
-bramble's content model), **not** a markdown text link. This matches §1 (linked
-edge = `Ref`): the reference is a real ECHO `Ref` that renders as an inline chip
-(visual-spec accent `rgb(41 125 217)`), resolves to the target Node, and — being
-a `Ref` — **feeds the backlinks view natively** (`referencedBy`). Traces
-`UP-2.link`, `UX-inflow.link`.
+`RefSpan` — the node's text is a union of text-spans and ref-spans), **not** a
+markdown text link. It matches §1 (linked edge = `Ref`): rendered as an inline
+chip (visual-spec accent `rgb(41 125 217)`), **collapsed by default** (a mention),
+resolving to the target Node and feeding the backlinks view natively via
+`referencedBy`. Traces `UP-2.link` · `UX-inflow.link` · `IP-3.cross-reference`.
 
-### Embed / expand inline — `@@` block-embed
+### Embed — expand the linked edge inline, on demand
 
-`@@` inserts a block embed (`![label](uri)`) that portals the target's `Section`
-Surface, edit-through (Composer's existing mechanism). Traces `UP-4.embed`,
-`UX-direct.expand`. Two transclusion routes coexist, matching the SIP: this
-linked-edge inline expansion (`IP-3.expand`), and structural multi-location (a
-Node under two structural `Edge`s is one edit-through vertex, `IP-2`).
+Per the neutral spec, embed is **not a separate insertion** — it is the *same*
+linked edge **expanded inline on demand** (`UP-4.embed` / `IP-3.expand`; and R:
+Tana's `Option`-click expands the *same* reference). So a `Ref`-span carries a
+per-occurrence **local view toggle** (like outline collapse, §2): collapsed → the
+inline chip; expanded → the target Node's `Section` Surface rendered **in place**,
+**edit-through** (edits flow to the one target). The reusable piece is the
+**Surface-rendering of the target** (edit-through), *not* Composer's `@@`
+block-embed — a Composer-only authoring convention with **no UP/IP counterpart**,
+so it is dropped. Two transclusion routes coexist, both spec-grounded: this
+linked-edge expansion (`IP-3.expand`), and structural multi-location (a Node under
+two structural `Edge`s is one edit-through vertex, `IP-2`). Traces `UP-4.embed` ·
+`UX-direct.expand` · `IP-3.expand`.
 
 ### Backlinks view — the "Related" panel
 
@@ -217,10 +224,11 @@ predecessors — "where does this Node live" — are reverse-traversable via
 
 ### Reuse vs net-new
 
-- **Reuse:** `useLinkQuery` (`@` in-flow UX), block-embed (`@@`), the "Related"
-  panel, `referencedBy`.
-- **Net-new:** wiring the `@`-picker to emit a `Ref`-span (not a text link) in the
-  outline's per-row editor; rendering `Ref`-spans inline to visual-spec.
+- **Reuse:** `useLinkQuery` (`@` in-flow UX), the **Surface-rendering** of an
+  expanded reference (edit-through), the "Related" panel, `referencedBy`.
+- **Net-new:** wiring the `@`-picker to emit a `Ref`-span (not a text link); the
+  per-occurrence collapse/expand toggle on a `Ref`-span rendering the target's
+  Surface in place; rendering `Ref`-spans inline to visual-spec.
 
 ## §4 Hosting / build
 

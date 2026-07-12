@@ -81,6 +81,21 @@ a `derives-from` header listing the upstream req IDs it depends on.
   downstream artifacts that must now cover it. A req with no downstream citation
   is visibly un-realized.
 
+### Traceability validation (delivery gate)
+
+Before a downstream artifact is **delivered** (marked `current`/`done` or
+committed as complete), validate it against traceability:
+
+1. **Every element traces up.** Each behavior / gesture / element / finding cites
+   the upstream req(s) it realizes (`UP-*` / `IP-*` / `UX-*`). Nothing is
+   *un-grounded* — no mechanism imported from the target system (a UI convention,
+   an API) that lacks a neutral counterpart. (This gate is what would have caught
+   the Composer `@@` block-embed in the DXOS design — a convention with no UP/IP.)
+2. **Grep both directions.** The `derives-from` header lists the upstream reqs;
+   `grep` each confirms coverage. An element with no trace is either fixed, or
+   explicitly dispositioned (out-of-floor / move-up) — never left silent.
+3. A failed trace **blocks delivery** until resolved.
+
 ### Pending propagations
 
 _(none open.)_
