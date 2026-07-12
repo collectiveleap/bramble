@@ -36,6 +36,16 @@ Read this before revising — these choices are intentional, not accidents.
 - **No undefined UI nouns** ("document", "page") in invariant clauses; express granularity via Node + successor. Such nouns may appear only as *examples* inside probes (e.g. "a file or page").
 - **System-agnostic:** invariant clauses must read the same whether X stores the substrate as files, rows, or objects.
 
+## Spec completeness sweeps (before a spec is called complete)
+
+The failure these prevent: **specs describe a noun's *state* but under-enumerate the *verbs* on it and the *modalities* for each verb — and the implicit ones get under-realized downstream.** Two capabilities were found missing this way after the fact (`UP-1.author` = create/edit/remove; `UP-1.reshape` = reorder/move/re-nest, and its drag realization). The generalizable rule: **enumerate the full VERB set on each noun and the full MODALITY set for each verb — not just the noun's state.** Run these sweeps when authoring or revising:
+
+1. **Full verb set on each noun.** For each substrate noun (Node, edge, the outline), list every verb the user applies — create, edit, remove, **and reshape** (reorder / move / re-nest an existing unit). Reshape hides inside "it's nested"; name it as its own capability so gestures that *only* reshape (drag, indent/outdent/reorder) have something to trace to. An implicit capability is the one that gets missed.
+2. **Modality-independence.** A capability is invariant across input modality. For each capability/law, enumerate every modality it can have — keyboard, pointer-click, **direct-manipulation drag** — and treat them as interchangeable realizations. Never spec keyboard-only.
+3. **Continuous gestures.** A discrete "trigger → response" format silently misses continuous / direct-manipulation gestures (drag, resize, marquee) that have a **press → track → commit** lifecycle. Sweep for them explicitly and give each a first-class entry, not a one-liner riding on a keyboard gesture.
+
+(The reference-realization instance of these sweeps lives in `implementations/tana/user-experience.md`'s "Capture method" note.)
+
 ## How to regenerate from scratch
 
 1. Research the data model and core interactions of Roam, Tana, Obsidian from primary sources; verify shared vs unique (the `/deep-research` harness produced the original corpus).

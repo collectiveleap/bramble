@@ -1,6 +1,6 @@
 # DXOS design — the Bramble outliner plugin
 
-<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, UP-1, UP-2, UP-3, UP-4, UX-direct, UX-inflow, UX-immediate, UX-reversible]; role: target; status: current -->
+<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, UP-1, UP-1.author, UP-1.reshape, UP-2, UP-3, UP-4, UX-direct, UX-inflow, UX-immediate, UX-reversible]; role: target; status: current -->
 
 Design of the Bramble plugin for DXOS/Composer — the S4 stage. Its purpose (from
 the S3 UX gap analysis conclusion): **a new plugin is needed** — a node-per-row
@@ -148,19 +148,29 @@ nodes with no registered surface.
 
 ### Gesture → substrate mapping
 
-| Gesture (R behavior) | Substrate / view operation | S2 law |
+| Gesture (R behavior) | Substrate / view operation | S2 law · UP |
 |---|---|---|
+| Edit a Node's content (type) | edit the Node's bound text — the per-row CodeMirror with `readOnly:false` (Plan 2a shipped it read-only; 2b flips the flag) | `UX-direct` · `UP-1.author` |
+| Create a Node (`Enter`) | create a `Node` (`makeNode`) + a structural `Edge` to the parent, `order` via `orderBetween`; `Enter` mid-content **splits** — trailing text becomes the new Node's content | `UX-direct` · `UP-1.author` |
+| Delete / merge a Node (`Backspace` at start) | `removeEdge` + remove the emptied `Node`; its text merges into the preceding Node; its children `reparentEdge` onto the preceding Node | `UX-direct` · `UP-1.author` |
+| Edit the zoom-root **header** | the header renders the **same** editable per-row editor as body rows — a Node keeps its capabilities in any view position (view-position invariance); `Enter` in it creates the first child | `UX-direct` · `UP-1.author` |
 | Indent / outdent | rewire the focused Node's structural `Edge` (predecessor → preceding-sibling / grandparent); cycle-checked; `order` set | `UX-direct` |
 | Reorder up/down | change the `Edge`'s `order` (`orderBetween` neighbours) | `UX-direct` |
 | Insert `@`-reference | insert a **linked** `Ref`-span (collapsed chip) via the `@`-picker | `UX-inflow` |
 | Expand a reference inline | per-occurrence local view toggle → render the target's `Section` Surface in place, edit-through (§3) | `UX-direct.expand` |
 | Co-locate (multi-location) | **add a second** structural `Edge` to the Node — the gesture Tana lacks (Bramble's edge-native advantage) | `UX-direct` |
-| Expand / collapse, Zoom | **local per-user view-state**, keyed by edge/node id — *not* substrate | — |
+| Expand / collapse, Zoom | **local per-user view-state**, keyed by edge/node id — *not* substrate; triggered by key **or** pointer (**click the chevron** = expand/collapse; **click the bullet** = zoom) | — |
+| Drag a bullet (reorder / re-parent) | pointer input for reorder (`orderBetween`) or **re-parent** (`reparentEdge`, cycle-checked) — the *same* substrate ops as the keyboard structural gestures, reached by drag; reuses Composer's **dnd-kit** (as the navtree does). The bullet does double duty: click = zoom, press-drag = move | `UX-direct` |
 | (all store mutations) | ECHO reactive subscription → immediate re-render | `UX-immediate` |
 | Undo | gesture-granular — see open item | `UX-reversible` |
 
 Acyclicity is enforced at gesture time on every structural-`Edge` add/move (§1);
-ECHO reactivity gives immediacy for free.
+ECHO reactivity gives immediacy for free. **Authoring (`UP-1.author`)** — create /
+edit / delete — is realized by the first four rows: Plan 2a shipped the read-only
+render (per-row editors + header via one path); Plan 2b flips `readOnly:false` and
+wires the create/delete/split-merge gestures to the Plan-1 edge algebra. The header
+being the *same* editable editor as body rows is the view-position-invariance
+realization (a created/focused Node is a first-class, editable Node like any other).
 
 ### Visual conformance
 

@@ -63,9 +63,38 @@ feat UP-1: Atomic unit and outline
     The user works in a nested outline whose every item is an
     individually-addressable Node whose content may be text or non-text, not an opaque blob. A Node
     can appear in more than one location at once (it has more than one
-    structural predecessor) while remaining one thing. This is the
-    surface that IP-1 (Node identity) and IP-2 (structural edges,
-    multi-predecessor) present to the user.
+    structural predecessor) while remaining one thing. The user AUTHORS
+    this outline — creating, editing, removing, and RESHAPING (reordering
+    and re-nesting / moving) Nodes; reshape rides on IP-2's mutable edge
+    order and predecessor. A Node's
+    identity and capabilities are INVARIANT UNDER VIEW POSITION: the Node
+    in focus — shown as the view's top when the user zooms into it — is a
+    full, editable Node like any other, not a chrome title; every Node
+    primitive applies wherever the Node is shown. This is the surface that
+    IP-1 (Node identity) and IP-2 (structural edges, multi-predecessor)
+    present to the user.
+  req UP-1.author:
+    given: the outline in focus
+    when: the user creates a Node, edits a Node's content, or removes a Node
+    then:
+      - a created Node is a first-class unit of the outline — carrying its own identity, addressable, linkable, and nestable like any other Node, not a lesser row
+      - editing a Node changes that Node's content; removing a Node takes it out of the outline
+      - the same holds for the Node in focus (the view's top) as for a nested Node — authoring is not restricted to one view position
+    probes:
+      - In X, can the user create, edit, and remove individual outline units, or only whole pages / files?
+      - Is a newly created unit immediately a first-class Node (its own identity, linkable, nestable), or a lesser row that cannot be addressed on its own?
+      - Can the user edit the Node currently in focus (the zoomed-in / top Node) in place, the same as a nested one?
+  req UP-1.reshape:
+    given: a Node in the outline, among siblings and possibly beneath a predecessor
+    when: the user reorders it among its siblings, or re-nests it under a different structural predecessor (moves it)
+    then:
+      - the Node takes the new order / predecessor, carrying its own successor subtree with it
+      - the Node keeps its identity and its inbound links — reshape moves the existing Node, it does not replace it
+      - a move that would place the Node inside its own subtree is rejected, so the outline stays acyclic
+    probes:
+      - In X, can the user reorder a unit among its siblings and move it under a different parent, directly on the outline?
+      - Does a moved unit keep its identity and inbound links — does a link to it still resolve after the move?
+      - Are moves that would create a cycle prevented?
   req UP-1.outline:
     given: a Node in focus, shown to the user
     then:

@@ -39,6 +39,14 @@ rule R-Interaction-Laws:
        INTERACTION altitude (mode / flow / step / gesture), never at
        keystroke altitude — the clause must read the same for any system.
     3. Every id CITED in a body reads `<ID> <gloss>`, never bare.
+    4. MODALITY-INDEPENDENT. A law governs the gesture regardless of the
+       input modality that triggers it — a keypress, a pointer click, or a
+       direct-manipulation drag are alternative realizations of the same
+       gesture, and the law reads the same across them. A reference
+       realization must enumerate EVERY modality a system offers for a
+       gesture; a continuous / direct-manipulation gesture (e.g. drag,
+       with its press→track→commit lifecycle) is a first-class realization,
+       not an aside. Never assume keyboard-only.
 ```
 
 ## Primitives
@@ -53,9 +61,17 @@ feat UX-direct: Directness
     acting on the Node itself — not by opening a separate form, dialog,
     properties panel, or structure view and editing a representation of
     the outline there. The MANNER over UP-1 Atomic unit and outline (the
-    user reshapes the outline) and UP-4 Transclusion (the user expands a
-    reference): the SUP says the structure CAN change; this feat says the
-    user changes it by direct manipulation of what is on screen.
+    user reshapes and authors the outline) and UP-4 Transclusion (the user
+    expands a reference): the SUP says the structure CAN change; this feat
+    says the user changes it by direct manipulation of what is on screen.
+    Directness is INVARIANT UNDER VIEW POSITION (UP-1 authoring in any
+    position): the same in-place manipulation and editing applies to a Node
+    wherever it is shown — a nested row, or the focused Node rendered as the
+    view's top (the zoom-root) — the focused Node is acted on and edited in
+    place like any other, never through separate chrome. Directness is also
+    MODALITY-INDEPENDENT: the user reshapes by whatever the system offers —
+    a keypress, a click, or a direct-manipulation drag of the Node (e.g. its
+    bullet) — the law is the same across modalities.
   req UX-direct.outline:
     given: a Node shown in the outline
     when: the user nests, outdents, or reorders it

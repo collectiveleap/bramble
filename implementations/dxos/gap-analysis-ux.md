@@ -1,6 +1,6 @@
 # Gap analysis (UX) — X = DXOS / Composer
 
-<!-- derives-from: [UX-1, UX-2, UX-3, UX-4, implementations/tana/user-experience.md, implementations/tana/visual-spec.md]; role: target; status: current -->
+<!-- derives-from: [UX-direct, UX-inflow, UX-immediate, UX-reversible, UP-1.author, implementations/tana/user-experience.md, implementations/tana/visual-spec.md]; role: target; status: current -->
 
 Evaluates DXOS / Composer against the neutral interaction spec (S2,
 `spec/interaction-primitives.mdl`) and the Tana reference realization (R,
@@ -35,6 +35,7 @@ Where each R behavior could live, and the substrate-analysis capability verdict:
 
 | R behavior | Candidate surface | `gap-analysis.md` verdict |
 |---|---|---|
+| Create / edit / delete a row-as-Node | **Outline** object rows | `UP-1.author` **fail** — a created row is not a first-class Node (see §2) |
 | Indent/outdent/reorder/zoom/expand | **Outline** object | `UP-1.outline` **partial** |
 | Multi-location (one node, two places) | Collections / navtree | `UP-1.multi-location` **partial** |
 | Insert inline reference (`@`) | Markdown `@` → `[label](dxn)` | `UP-2.link` **pass** |
@@ -58,9 +59,10 @@ against the latest build:
   **whole outline object**; the fragment-less URI ceiling (`gap-analysis.md`:
   EID/DXN has no fragment) is confirmed at the UI.
 
-So `UP-1.outline` clause (b) and `UP-3.any-node-target` **fail for outline rows**,
-and — since a row has no identity — `UP-1.multi-location` and per-row
-edit-through are unreachable in the outline. **No existing surface or plugin
+So `UP-1.outline` clause (b), `UP-1.author` (create/edit/delete a *first-class*
+row-Node), and `UP-3.any-node-target` **fail for outline rows**, and — since a row
+has no identity — `UP-1.multi-location` and per-row edit-through are unreachable in
+the outline. **No existing surface or plugin
 provides an addressable-node outline** (Stack sections are addressable but flat;
 the navtree nests whole objects, not content rows). This is the gap that forces a
 new plugin; it is structural (substrate addressing + surface model), not a

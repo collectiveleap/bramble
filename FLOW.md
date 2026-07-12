@@ -44,9 +44,19 @@ cycle-checked mutation / reparent) + plugin scaffold + Composer-app registration
 Built subagent-driven (5 tasks, each per-task-reviewed; whole-branch review found
 + fixed one `reparentEdge` atomicity bug). **`moon run plugin-bramble:{test,lint}`
 green (9/9 tests, 0 lint); `composer-app:build` typecheck passes.** Merge-ready.
-**Next action:** decide the branch's fate (merge to DXOS `main` / PR / keep), then
-**Plan 2 (outline surface + gestures)** — where the R visual/UX validation gate
-against Tana activates.
+**S6 · Plan 2a (read-only outline surface) is BUILT** — same branch (7 more commits,
+now 13 total): pure `outlineRows` view-model → a registered React surface → reactive
+`useQuery(Filter.type(Edge))` edge read → nested rows (bullet/chevron/indent) → per-row
+**read-only** CodeMirror bound to each Node's text → chrome styled to R's visual-spec.
+Subagent-driven (5 tasks, each reviewed; whole-branch opus review = **READY**, read-only
+guarantee confirmed). **`plugin-bramble:{build,test,test-storybook,lint}` all green.**
+**Visual gate ran** (Storybook in chromium): 4/4 regions match Tana's target values
+exactly (header 29/33.36/550, row 15/21/400, bullet 15×15, chevron 3.75px); an inline-row
+layout bug caught **by screenshot** was fixed. **One open conformance gap (DECISION):** the
+theme names `'Inter Variable'` but the font file is **not loaded** in the Composer build, so
+text renders the system-sans fallback — closing it is a shared `@dxos/ui-theme` change
+(out-of-plugin). **Next action:** the Inter-font decision; the design §2 / gap-analysis-ux
+re-review for the `UP-1.author` move-up; then **Plan 2b (editing + gestures + view-state)**.
 
 ## Pipeline & status
 
@@ -56,12 +66,12 @@ Status values: `not-started · authoring · needs-review · done`.
 |---|---|---|---|
 | S1 · Neutral substrate spec | `spec/internal-primitives.mdl`, `spec/user-primitives.mdl` | neutral | done |
 | S2 · Neutral interaction spec | `spec/interaction-primitives.mdl` | neutral | draft |
-| R · Reference realization (Tana) | `implementations/tana/` | reference | current |
+| R · Reference realization (Tana) | `implementations/tana/` | reference | current · open live-checks (lifecycle + pointer, 2026-07-12) |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
-| S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed) |
-| S4 · DXOS design | `implementations/dxos/design.md` | target | current (design complete §1–§4) |
-| S5 · Plan | `implementations/dxos/plans/` | target | Plan 1 written (Plans 2–3 to follow) |
-| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 substrate built — branch, tests+lint+typecheck green, merge-ready |
+| S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed; `UP-1.author` verdict added) |
+| S4 · DXOS design | `implementations/dxos/design.md` | target | current (§1–§4; §2 covers authoring + editable header + pointer affordances) |
+| S5 · Plan | `implementations/dxos/plans/` | target | Plan 1 + Plan 2a written; Plan 2b next |
+| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 substrate + Plan 2a read-only surface built — branch, build/test/test-storybook/lint green, whole-branch READY |
 
 ## Artifact index
 
@@ -105,7 +115,46 @@ committed as complete), validate it against traceability:
 
 ### Pending propagations
 
-_(none open.)_
+**Resolved — 2026-07-12 · node-authoring capability (move-up, U1):** an R-capture gap
+(the editable Tana header) traced to a deeper omission — the SUP addressed/nested/
+linked Nodes but never said the user **creates, edits, or removes** one. Added SUP
+`UP-1.author` (create / edit-content / remove a Node; a created Node is a
+*first-class unit, not a lesser row* — which also formalizes the S3 identity gap).
+Added R behaviors (Edit content, Create=`Enter`, Delete/merge=`Backspace`) tracing
+it. **Propagated:** `design.md` §2 gesture-map now has authoring rows (create=`Enter`
+→ `makeNode`+`createEdge`; delete=`Backspace` → `removeEdge`+merge+`reparentEdge`;
+edit → `readOnly:false`), and `gap-analysis-ux.md` records `UP-1.author` **fail** on
+existing Outline rows. Design §2 + gap-analysis-ux back to `current`/`done`. **Plan 2b**
+carries the create/edit/delete gestures. Plan 1 (substrate) + Plan 2a (read-only) unaffected.
+
+**Resolved — 2026-07-12 · view-position invariance (move-up, U2):** the header was
+mis-captured as chrome because no spec stated a Node keeps its full identity/
+capabilities in any view position. Added the invariant to SUP `UP-1` desc (+
+`UP-1.author` focus-position clause) and an `UX-direct` S2 note (directness invariant
+under view position). R: the zoom-root renders as an **editable header**. Propagated to
+`design.md` §2 (the header is the *same* editable per-row editor as body rows).
+
+**Resolved — 2026-07-12 · reshape capability + drag; root-cause method fix (move-up, U3):**
+drag-and-drop had no first-class home. Root cause (deeper than the earlier R-capture
+gap): specs described the outline's *state* but under-enumerated the *verbs* on it
+(reshape) and the *modalities* per verb (drag). Added SUP `UP-1.reshape` (reorder /
+move / re-nest, identity- & link-preserving, acyclic) + S2 modality-independence law
+(`R-Interaction-Laws` clause 4 + `UX-direct` line: key/click/drag interchangeable;
+continuous gestures first-class). R: drag promoted to a first-class behavior; the four
+reshape behaviors retraced `UP-1.outline`→`UP-1.reshape`; §2 has a drag row (dnd-kit).
+**Instructions (prevent recurrence):** neutral **Spec completeness sweeps** added to
+`spec/README` (full verb set × modality set per noun; continuous-gesture sweep); R
+"Capture method" extended; agent memory `spec-completeness-sweeps`. Design already
+realizes reshape (§2 reorder/indent/reparent/drag rows) → `design.md` derives-from
+`UP-1.reshape`. **Plan 2c** carries drag; SIP unchanged (`IP-2` already permits it).
+
+**Open — 2026-07-12 · R capture-method + reopened live-checks:** R now carries a
+*capture-method* note (don't inherit the source doc's taxonomy — run the elementary-
+lifecycle sweep + the every-persistent-element sweep). The behaviors those sweeps
+added (lifecycle specifics; pointer affordances — click-bullet zoom, click-chevron
+expand, breadcrumb-click navigate, plain-click reference) are `[live-check pending]`
+at standard-outliner semantics, unconfirmed live. **Action:** a live Tana pass in
+the `tanawithclaude` workspace to close them (grep `live-check pending`).
 
 **Resolved — 2026-07-11 · typed-Node accommodation (move-up):** added SIP
 `IP-1.typed-node` (a Node MAY carry a schema-type; *accommodate, not require*);
