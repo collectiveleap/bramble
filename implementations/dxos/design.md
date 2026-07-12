@@ -1,6 +1,6 @@
 # DXOS design — the Bramble outliner plugin
 
-<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, UP-1, UP-2, UP-3, UP-4, UX-direct, UX-inflow, UX-immediate, UX-reversible]; role: target; status: authoring -->
+<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, UP-1, UP-2, UP-3, UP-4, UX-direct, UX-inflow, UX-immediate, UX-reversible]; role: target; status: current -->
 
 Design of the Bramble plugin for DXOS/Composer — the S4 stage. Its purpose (from
 the S3 UX gap analysis conclusion): **a new plugin is needed** — a node-per-row
@@ -17,10 +17,10 @@ section here (grown one at a time), then planned and built:
 1. **Substrate data model** — how Nodes + the structural DAG map onto ECHO. *(this
    section — settled)*
 2. **Outline surface + gestures** — rendering + the S2/R interaction, built to R's
-   visual-spec. *(pending)*
+   visual-spec. *(settled)*
 3. **Reference / embed / backlinks integration** — reuse Composer's markdown
-   `@`-link, block-embed, "Related" panel. *(pending)*
-4. **Hosting / build** — how the plugin builds and loads into Composer. *(pending)*
+   `@`-link, block-embed, "Related" panel. *(settled)*
+4. **Hosting / build** — how the plugin builds and loads into Composer. *(settled — floor in-monorepo)*
 
 ---
 
@@ -183,8 +183,59 @@ once the surface exists.
 
 ## §3 Reference / embed / backlinks integration
 
-_(pending.)_
+Realizes `UP-2` (link + backlinks), `UP-4` (embed), `UX-inflow`,
+`UX-direct.expand` — almost entirely by reusing Composer's markdown machinery.
+
+### Linked edge (`@`-mention) — a first-class `Ref`-span
+
+The in-flow `@`-picker (`useLinkQuery`) provides the `UX-inflow` gesture, but on
+select it inserts a **first-class inline `Ref`** into the node's content (a
+`RefSpan` — the node's text is a union of text-spans and ref-spans, per prior
+bramble's content model), **not** a markdown text link. This matches §1 (linked
+edge = `Ref`): the reference is a real ECHO `Ref` that renders as an inline chip
+(visual-spec accent `rgb(41 125 217)`), resolves to the target Node, and — being
+a `Ref` — **feeds the backlinks view natively** (`referencedBy`). Traces
+`UP-2.link`, `UX-inflow.link`.
+
+### Embed / expand inline — `@@` block-embed
+
+`@@` inserts a block embed (`![label](uri)`) that portals the target's `Section`
+Surface, edit-through (Composer's existing mechanism). Traces `UP-4.embed`,
+`UX-direct.expand`. Two transclusion routes coexist, matching the SIP: this
+linked-edge inline expansion (`IP-3.expand`), and structural multi-location (a
+Node under two structural `Edge`s is one edit-through vertex, `IP-2`).
+
+### Backlinks view — the "Related" panel
+
+Reuse Composer's "Related" companion: for a focused Node it enumerates inbound
+`Ref`s (`referencedBy`) + Relation endpoints. Because linked edges are first-class
+`Ref`s (above), user-authored `@`-mentions feed it — **closing** the gap-analysis
+caveat that text-embedded markdown links don't. Traces `UP-2.backlinks-view`. (The
+outline's *structural* `Edge`s are Relations too, so a Node's structural
+predecessors — "where does this Node live" — are reverse-traversable via
+`targetOf`.)
+
+### Reuse vs net-new
+
+- **Reuse:** `useLinkQuery` (`@` in-flow UX), block-embed (`@@`), the "Related"
+  panel, `referencedBy`.
+- **Net-new:** wiring the `@`-picker to emit a `Ref`-span (not a text link) in the
+  outline's per-row editor; rendering `Ref`-spans inline to visual-spec.
 
 ## §4 Hosting / build
 
-_(pending.)_
+### Floor build — in the DXOS monorepo
+
+The fresh plugin lives at `~/sandbox/dxos/packages/plugins/plugin-bramble`
+(rebuilt clean, spec-driven — the prior in-tree plugin was carved out to
+`~/sandbox/plugin-bramble`, a pre-spec iteration). It builds and loads via the
+standard `AppPlugin` module + Plugin Registry path every Composer plugin uses —
+the proven route that unblocks the floor build immediately. Skeleton from
+`plugin-markdown`; create-object / surface file shapes from `plugin-outliner`.
+
+### Deferred — out-of-monorepo hosting (feasibility spike)
+
+"A Bramble plugin *outside* the DXOS monorepo" (a separate repo; `workspace:*` /
+catalog vs published `@dxos/*` packages; moon/pnpm build) is the eventual
+aspiration but has **unverified** build-tooling feasibility. It is a **later
+feasibility spike**, not a floor blocker — the floor ships in-monorepo first.

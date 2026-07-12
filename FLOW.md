@@ -33,9 +33,13 @@ too: **hybrid rendering** (a bespoke outline shell + per-row content = inline te
 editor *or* the object's `Section` Surface), gesture→structural-`Edge` mapping,
 **local per-user** view-state, built to R's visual-spec — grounded in DXOS plugin
 patterns and *corroborated by* (not evolved from) the prior `plugin-bramble`, a
-pre-spec iteration deliberately restarted. **Next action:** sub-designs 3
-(reference/embed/backlinks — largely Composer markdown reuse) & 4 (hosting
-feasibility), then `writing-plans` for the build.
+pre-spec iteration deliberately restarted. Sub-designs 3 (reference/embed/
+backlinks — first-class `Ref`-spans feeding the "Related" backlinks view) & 4
+(floor hosting **in-monorepo** `packages/plugins/plugin-bramble`; out-of-monorepo
+a deferred spike) are settled — **S4 design is complete** (`design.md` current).
+**Next action:** **S5 · `writing-plans`** — turn the §1–§2 substrate+surface build
+into an implementation plan (open items to resolve in-plan: the undo mechanism;
+the `Ref`-span per-row editor).
 
 ## Pipeline & status
 
@@ -48,7 +52,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | R · Reference realization (Tana) | `implementations/tana/` | reference | current |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed) |
-| S4 · DXOS design | `implementations/dxos/design.md` | target | authoring (§1 substrate + §2 surface/gestures done) |
+| S4 · DXOS design | `implementations/dxos/design.md` | target | current (design complete §1–§4) |
 | S5 · Plan | `implementations/dxos/plans/` | target | not-started |
 | S6 · Plugin code | (hosting deferred) | target | not-started |
 
