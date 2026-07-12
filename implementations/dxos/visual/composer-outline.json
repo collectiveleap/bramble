@@ -1,0 +1,46 @@
+{
+  "view": "composer-outline",
+  "note": "DXOS/Composer bramble outline conformance to Tana. expect/source verbatim from implementations/tana/visual/tana-outline.json (Tana's live-harvested values); app selectors target the NodeOutline Storybook surface rendered in chromium. Plan 2a scope: node-title (header), node-name (row), bullet, chevron. reference-chip + expansion-panel deferred to Plan 3.",
+  "mockup": "(live Tana web app — see source selectors in tana-outline.json)",
+  "app": "plugin-bramble NodeOutline story (Storybook, chromium), Tree story",
+  "viewport": { "width": 1456, "height": 813 },
+  "tolerances": { "length": 1, "colorChannel": 6 },
+  "regions": [
+    {
+      "name": "node-title",
+      "source": ".editable.lockedName (Tana focused-node H1)",
+      "app": "[data-testid=bramble-header] .cm-content",
+      "expect": {
+        "font-family": "InterVariable",
+        "font-size": "29px",
+        "line-height": "33.3615px",
+        "font-weight": "550",
+        "color": "oklch(0.282985 0.00269329 240)"
+      }
+    },
+    {
+      "name": "node-name",
+      "source": ".editable (Tana outline node name)",
+      "app": "[data-testid=bramble-node-name] .cm-content",
+      "expect": {
+        "font-family": "InterVariable",
+        "font-size": "15px",
+        "line-height": "21px",
+        "font-weight": "400",
+        "color": "oklch(0.282985 0.00269329 240)"
+      }
+    },
+    {
+      "name": "bullet",
+      "source": ".OutlinerItem-module_bullet__5DK3H",
+      "app": "[data-testid=bramble-bullet]",
+      "expect": { "width": "15px", "height": "15px" }
+    },
+    {
+      "name": "chevron",
+      "source": ".BulletChevron-module_container__f3Np6",
+      "app": "[data-testid=bramble-chevron]",
+      "expect": { "padding": "3.75px 0px" }
+    }
+  ]
+}
