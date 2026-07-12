@@ -37,9 +37,12 @@ pre-spec iteration deliberately restarted. Sub-designs 3 (reference/embed/
 backlinks — first-class `Ref`-spans feeding the "Related" backlinks view) & 4
 (floor hosting **in-monorepo** `packages/plugins/plugin-bramble`; out-of-monorepo
 a deferred spike) are settled — **S4 design is complete** (`design.md` current).
-**Next action:** **S5 · `writing-plans`** — turn the §1–§2 substrate+surface build
-into an implementation plan (open items to resolve in-plan: the undo mechanism;
-the `Ref`-span per-row editor).
+**S5 · Plan 1 (substrate) is written** —
+`implementations/dxos/plans/2026-07-11-plan-1-substrate.md`: 5 TDD tasks building
+`@dxos/plugin-bramble`'s `Node`/`Edge` schema + edge algebra + scaffold in the
+DXOS monorepo (`~/sandbox/dxos`), plugin-facing APIs only, grounded in a DXOS-API
+research pass. **Next action:** execute Plan 1 (subagent-driven or inline), then
+Plan 2 (outline surface).
 
 ## Pipeline & status
 
@@ -53,7 +56,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (design complete §1–§4) |
-| S5 · Plan | `implementations/dxos/plans/` | target | not-started |
+| S5 · Plan | `implementations/dxos/plans/` | target | authoring (Plan 1 substrate written) |
 | S6 · Plugin code | (hosting deferred) | target | not-started |
 
 ## Artifact index
