@@ -37,12 +37,16 @@ pre-spec iteration deliberately restarted. Sub-designs 3 (reference/embed/
 backlinks — first-class `Ref`-spans feeding the "Related" backlinks view) & 4
 (floor hosting **in-monorepo** `packages/plugins/plugin-bramble`; out-of-monorepo
 a deferred spike) are settled — **S4 design is complete** (`design.md` current).
-**S5 · Plan 1 (substrate) is written** —
-`implementations/dxos/plans/2026-07-11-plan-1-substrate.md`: 5 TDD tasks building
-`@dxos/plugin-bramble`'s `Node`/`Edge` schema + edge algebra + scaffold in the
-DXOS monorepo (`~/sandbox/dxos`), plugin-facing APIs only, grounded in a DXOS-API
-research pass. **Next action:** execute Plan 1 (subagent-driven or inline), then
-Plan 2 (outline surface).
+**S6 · Plan 1 (the substrate) is BUILT** — `@dxos/plugin-bramble` in the DXOS
+monorepo (branch `claude/plugin-bramble-substrate`, 6 commits): `Node` object +
+reified multi-predecessor `Edge` relation + edge algebra (order / traverse /
+cycle-checked mutation / reparent) + plugin scaffold + Composer-app registration.
+Built subagent-driven (5 tasks, each per-task-reviewed; whole-branch review found
++ fixed one `reparentEdge` atomicity bug). **`moon run plugin-bramble:{test,lint}`
+green (9/9 tests, 0 lint); `composer-app:build` typecheck passes.** Merge-ready.
+**Next action:** decide the branch's fate (merge to DXOS `main` / PR / keep), then
+**Plan 2 (outline surface + gestures)** — where the R visual/UX validation gate
+against Tana activates.
 
 ## Pipeline & status
 
@@ -56,8 +60,8 @@ Status values: `not-started · authoring · needs-review · done`.
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (design complete §1–§4) |
-| S5 · Plan | `implementations/dxos/plans/` | target | authoring (Plan 1 substrate written) |
-| S6 · Plugin code | (hosting deferred) | target | not-started |
+| S5 · Plan | `implementations/dxos/plans/` | target | Plan 1 written (Plans 2–3 to follow) |
+| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 substrate built — branch, tests+lint+typecheck green, merge-ready |
 
 ## Artifact index
 
