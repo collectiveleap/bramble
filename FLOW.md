@@ -59,8 +59,18 @@ Variable'` is named in the theme but the font file is **not loaded** in the Comp
 sans fallback) — loading it is a shared `@dxos/ui-theme` change (out-of-plugin), deferred; the
 outline is correct in every measured dimension but glyph shape. **Decisions (2026-07-12):** undo
 deferred to its own later slice (2b/2c ride CodeMirror text history); branch kept & continued;
-R live-checks deferred. **Next action:** write & build **Plan 2b (editing + authoring)**, then
-**Plan 2c (structure + view-state + drag)**.
+R live-checks deferred. **S6 · Plan 2b (editable outline) is BUILT** — same branch (7 more
+commits, 20 total): editable rows/header (readOnly flip + automerge write-back) · pure
+split/merge math · `OutlineController` (per-row `EditorView` registry + deferred-focus +
+create/merge intents) · Enter→create/split · Backspace-at-start→merge (leaf) · arrows→adjacent
+row (all `Prec.highest` CodeMirror keymaps). Subagent-driven (6 tasks each reviewed; whole-branch
+opus review **READY**). `plugin-bramble:{build,test,test-storybook,lint}` + `composer-app:build`
+all green; the four editing gestures pass in real chromium via the `play` suite. Undo out of
+scope (deferred slice). **Carried to Plan 2c** (2c-latent, unreachable in 2b): `mergeBackward`
+must go substrate-authoritative (removal branch too) and remove only the occurrence edge (not the
+whole Node) so multi-predecessor nodes aren't globally deleted; the view-mediated-text Medium is
+fixed by the same 2c substrate rewrite. **Next action:** **Plan 2c (indent/outdent · reorder ·
+expand/collapse + zoom view-state · drag)**.
 
 ## Pipeline & status
 
@@ -74,8 +84,8 @@ Status values: `not-started · authoring · needs-review · done`.
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed; `UP-1.author` verdict added) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (§1–§4; §2 covers authoring + editable header + pointer affordances) |
-| S5 · Plan | `implementations/dxos/plans/` | target | Plan 1 + Plan 2a written; Plan 2b next |
-| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 substrate + Plan 2a read-only surface built — branch, build/test/test-storybook/lint green, whole-branch READY |
+| S5 · Plan | `implementations/dxos/plans/` | target | Plans 1, 2a, 2b written; Plan 2c next |
+| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a + **2b (editable outline)** built — branch, build/test/test-storybook/lint green, composer-app typecheck green, whole-branch READY |
 
 ## Artifact index
 
