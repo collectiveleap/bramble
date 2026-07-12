@@ -160,7 +160,7 @@ nodes with no registered surface.
 | Expand a reference inline | per-occurrence local view toggle → render the target's `Section` Surface in place, edit-through (§3) | `UX-direct.expand` |
 | Co-locate (multi-location) | **add a second** structural `Edge` to the Node — the gesture Tana lacks (Bramble's edge-native advantage) | `UX-direct` |
 | Expand / collapse, Zoom | **local per-user view-state**, keyed by edge/node id — *not* substrate; triggered by key **or** pointer (**click the chevron** = expand/collapse; **click the bullet** = zoom) | — |
-| Drag a bullet (reorder / re-parent) | pointer input for reorder (`orderBetween`) or **re-parent** (`reparentEdge`, cycle-checked) — the *same* substrate ops as the keyboard structural gestures, reached by drag; reuses Composer's **dnd-kit** (as the navtree does). The bullet does double duty: click = zoom, press-drag = move | `UX-direct` |
+| Drag a bullet (reorder / re-parent) | pointer input for reorder (`orderBetween`) or **re-parent** (`reparentEdge`, cycle-checked) — the *same* substrate ops as the keyboard structural gestures, reached by drag; reuses Composer's **Atlassian Pragmatic drag-and-drop** via `@dxos/react-ui-list`'s `useReorderList`/`useReorderItem` (`dragHandle`=bullet, `element`=row) + hitbox `attachInstruction` for reorder-vs-make-child (the navtree's stack; **not** dnd-kit — that dep is vestigial). The bullet does double duty: click = zoom, press-drag = move | `UX-direct` |
 | (all store mutations) | ECHO reactive subscription → immediate re-render | `UX-immediate` |
 | Undo | gesture-granular — see open item | `UX-reversible` |
 

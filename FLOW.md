@@ -52,11 +52,15 @@ Subagent-driven (5 tasks, each reviewed; whole-branch opus review = **READY**, r
 guarantee confirmed). **`plugin-bramble:{build,test,test-storybook,lint}` all green.**
 **Visual gate ran** (Storybook in chromium): 4/4 regions match Tana's target values
 exactly (header 29/33.36/550, row 15/21/400, bullet 15×15, chevron 3.75px); an inline-row
-layout bug caught **by screenshot** was fixed. **One open conformance gap (DECISION):** the
-theme names `'Inter Variable'` but the font file is **not loaded** in the Composer build, so
-text renders the system-sans fallback — closing it is a shared `@dxos/ui-theme` change
-(out-of-plugin). **Next action:** the Inter-font decision; the design §2 / gap-analysis-ux
-re-review for the `UP-1.author` move-up; then **Plan 2b (editing + gestures + view-state)**.
+layout bug caught **by screenshot** was fixed. **Verified live in real Composer** (:5174, worktree
+build): plugin enables under Labs; `Node` create-entry appears (HiddenAnnotation hides navtree, not
+create-menu); seeded outline renders correctly. **Conformance gap — accepted-with-reason:** `'Inter
+Variable'` is named in the theme but the font file is **not loaded** in the Composer build (system-
+sans fallback) — loading it is a shared `@dxos/ui-theme` change (out-of-plugin), deferred; the
+outline is correct in every measured dimension but glyph shape. **Decisions (2026-07-12):** undo
+deferred to its own later slice (2b/2c ride CodeMirror text history); branch kept & continued;
+R live-checks deferred. **Next action:** write & build **Plan 2b (editing + authoring)**, then
+**Plan 2c (structure + view-state + drag)**.
 
 ## Pipeline & status
 
@@ -141,7 +145,8 @@ gap): specs described the outline's *state* but under-enumerated the *verbs* on 
 move / re-nest, identity- & link-preserving, acyclic) + S2 modality-independence law
 (`R-Interaction-Laws` clause 4 + `UX-direct` line: key/click/drag interchangeable;
 continuous gestures first-class). R: drag promoted to a first-class behavior; the four
-reshape behaviors retraced `UP-1.outline`→`UP-1.reshape`; §2 has a drag row (dnd-kit).
+reshape behaviors retraced `UP-1.outline`→`UP-1.reshape`; §2 has a drag row (Pragmatic
+drag-and-drop via `@dxos/react-ui-list` — dnd-kit is vestigial in the repo, corrected).
 **Instructions (prevent recurrence):** neutral **Spec completeness sweeps** added to
 `spec/README` (full verb set × modality set per noun; continuous-gesture sweep); R
 "Capture method" extended; agent memory `spec-completeness-sweeps`. Design already
