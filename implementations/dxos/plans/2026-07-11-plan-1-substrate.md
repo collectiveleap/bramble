@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - **Monorepo root:** `~/sandbox/dxos`. All file paths below are relative to it. The plugin lives at `packages/plugins/plugin-bramble/`.
-- **Public plugin APIs only.** Import from package entry points — `@dxos/echo`, `@dxos/echo-client`, `@dxos/echo-client/testing`, `@dxos/app-framework`, `@dxos/app-toolkit`, `@dxos/schema`, `@dxos/plugin-space`, `@dxos/compute`, `@dxos/plugin-testing/harness`. **Never** import deep internal paths (`.../src/internal/...`). The one internal-namespaced export we use is the package subpath `@dxos/echo/internal` (for `SystemTypeAnnotation`), exactly as existing plugins do.
+- **Public plugin APIs only.** Import from package entry points — `@dxos/echo`, `@dxos/echo-client`, `@dxos/echo-client/testing`, `@dxos/app-framework`, `@dxos/app-toolkit`, `@dxos/schema`, `@dxos/plugin-space`, `@dxos/compute`, `@dxos/plugin-testing/harness`. **Never** import deep internal paths (`.../src/internal/...`). For hiding the row `Node` type from Composer's generic UI we use `HiddenAnnotation` from `@dxos/echo/Annotation` — the annotation DXOS's own built-in `Tag`/`Text` types use for that purpose (verified against source; the earlier `SystemTypeAnnotation` does not exist in this build).
 - **Type IDs (verbatim):** Node = `org.dxos.type.bramble.node` `0.1.0`; Edge = `org.dxos.type.bramble.edge` `0.1.0`; plugin key = `org.dxos.plugin.bramble`.
 - **Floor-first.** Only the table-stakes substrate. No `kind` taxonomy, Runs/Steps, supertags, or view-state on the Edge (collapse/expand is local per-user view-state, a later plan). The Edge carries **only** `order`.
 - **TDD, frequent commits.** Each task: failing test → confirm fail → minimal implementation → confirm pass → commit. Test runner: `vitest run <path>` from the monorepo root (or the package dir).
@@ -136,7 +136,7 @@ Expected: FAIL — `Cannot find module './index'` (types not written yet).
 import * as Schema from 'effect/Schema';
 
 import { Annotation, DXN, Obj, Ref, Type } from '@dxos/echo';
-import { SystemTypeAnnotation } from '@dxos/echo/internal';
+import { HiddenAnnotation } from '@dxos/echo/Annotation';
 import { Text } from '@dxos/schema';
 
 export class Node extends Type.makeObject<Node>(DXN.make('org.dxos.type.bramble.node', '0.1.0'))(
@@ -144,8 +144,8 @@ export class Node extends Type.makeObject<Node>(DXN.make('org.dxos.type.bramble.
     text: Schema.optional(Ref.Ref(Text.Text)),
   }).pipe(
     Annotation.IconAnnotation.set({ icon: 'ph--circle--regular', hue: 'indigo' }),
-    // P3: keep row Nodes out of Composer's generic per-typename navigator.
-    SystemTypeAnnotation.set(true),
+    // P3: hide the row Node type from Composer's generic UI (as DXOS's own Tag/Text types do).
+    HiddenAnnotation.set(true),
   ),
 ) {}
 
@@ -797,7 +797,7 @@ git commit -m "feat(plugin-bramble): plugin wiring (schema + create-object) and 
 
 ## Self-Review
 
-- **Spec coverage (design §1):** Node = any typed `Obj` (Task 1, `Node`) ✓; structural edge = reified `predecessor→successor` Relation with `order` (Task 1, `Edge`) ✓; multi-predecessor native (Task 3, `parentEdges`) ✓; fractional/numeric ordering (Task 2) ✓; app-enforced acyclicity (Task 4, `wouldCreateCycle`) ✓; indexed `sourceOf/targetOf` queries — P2 (Tasks 3–4) ✓; hide rows from navtree — P3 (`SystemTypeAnnotation`, Task 1) ✓; edges-only, no inline children — N1 (no `children` field) ✓; plugin scaffold in-monorepo — §4 (Task 5) ✓. **Deferred to later plans:** rendering/surface (Plan 2), linked edges / references (Plan 3), undo, the `Ref`-span editor. Not gaps — out of this plan's scope.
+- **Spec coverage (design §1):** Node = any typed `Obj` (Task 1, `Node`) ✓; structural edge = reified `predecessor→successor` Relation with `order` (Task 1, `Edge`) ✓; multi-predecessor native (Task 3, `parentEdges`) ✓; fractional/numeric ordering (Task 2) ✓; app-enforced acyclicity (Task 4, `wouldCreateCycle`) ✓; indexed `sourceOf/targetOf` queries — P2 (Tasks 3–4) ✓; hide rows from generic UI — P3 (`HiddenAnnotation`, Task 1) ✓; edges-only, no inline children — N1 (no `children` field) ✓; plugin scaffold in-monorepo — §4 (Task 5) ✓. **Deferred to later plans:** rendering/surface (Plan 2), linked edges / references (Plan 3), undo, the `Ref`-span editor. Not gaps — out of this plan's scope.
 - **Placeholder scan:** every code step contains complete code; the two "confirm against `plugin-outliner`" instructions (config-file copy, dependency version specifiers) are concrete copy-and-adapt actions, not placeholders. The one conditional (Step 6 harness plugins) names the exact remedy.
 - **Type consistency:** `Node`/`Edge`/`makeNode`/`makeEdge` names are identical across Tasks 1–5; `childEdges`/`parentEdges`/`createEdge`/`reparentEdge`/`orderBetween`/`nextOrder`/`wouldCreateCycle`/`removeEdge` signatures match between definition (Tasks 2–4) and tests; `Relation.Source`/`Relation.Target`/`Relation.getSource`/`getTarget` used consistently.
 
