@@ -1,134 +1,91 @@
 # Tana visual specification
 
-<!-- derives-from: [UP-1, IP-1]; role: reference; status: draft -->
+<!-- derives-from: [PX-mark, PX-disclosure, PX-nesting, PX-state, PX-rhythm, PX-theme, UP-1, IP-1]; role: reference; status: current -->
 
-Computed-style capture of Tana's rendered surface, to serve as the **reference
-("expected") side** of a `visual-verification` diff: S3/S4 point the skill's
-`diff-styles.mjs` at the DXOS/Composer plugin and compare its computed styles
-against the values recorded here. Companion to the behavioral realization in
+The **reference realization of the presentation primitives** (`PX-*`): Tana's
+concrete answer, per concern, to what a surface must present. It is the
+"expected" side of a `visual-verification` diff — a target reproduces these
+values within a pinned theme. Companion to the behavioral realization in
 `user-experience.md`.
 
-**Method.** Values are read live from the running Tana web app with
-`getComputedStyle` (the `visual-verification` skill's `harvest-styles.js`
-shape) — never eyeballed from screenshots. Source: the "Tana With Claude"
-workspace — daily note `Q5eOIZHXjKaV` (and the Demo-content template
-`M4sBLGdFNfSP` for the description line and tag colour) — harvested 2026-07-11,
-Brave/Chromium. Each element records its real source selector as an **evidence
-anchor** (not a reproduction instruction).
+**Organized by `PX` concern, not by ad-hoc element.** Every `PX-*` concern below
+is answered, including **states** and **both themes** — the completeness sweep the
+earlier "capture a few regions" pass skipped (it recorded the bullet's 15px
+*hit-area* as "the bullet" and missed the 5px painted dot, the indent step, the
+hover states, and the theme axis — the miss that made the plugin not look like
+Tana while a 4/4 gate passed).
 
-**Traceability** (see the design doc §"visual-spec traceability"): each element
-anchors to the neutral concept it *renders* (`UP-*`/`IP-*`); the style **values**
-carry no neutral trace, by the spec's divorce-from-rendering rule. Tana-exclusive
-chrome (supertag pills, task checkboxes, app navigation) anchors to nothing
-neutral and is marked **out-of-floor** — recorded as reference detail, not a
-reproduction requirement.
+**Method.** Values read live from Tana web with `getComputedStyle` — never
+eyeballed. Source: the "Tana With Claude" workspace (daily note + the "Welcome to
+Tana!" guide `LjQXrYsQTlVw` for nested/disclosure/indent). Each concern records
+its evidence selector.
+
+**Theme is pinned (`PX-theme`).** Tana's theme follows **macOS time-of-day**, so
+colour is theme-unstable; it is captured per theme (toggle: Tana → settings →
+"Enable dark mode"). **Geometry is theme-independent** (sizes/spacing are the same
+light and dark); only **colour** is per-theme. A target is compared **within one
+stated theme**.
 
 ## Design tokens (observed)
 
-The numbers resolve to a small, consistent system:
+- **Font family:** `InterVariable` (fallback: `-apple-system, system-ui, …, sans-serif`)
+- **Type scale:** `body` 15px / 21px / w400 · `title` 29px / 33.4px / w550 · `chrome` 14px (breadcrumb 14/30)
+- **Greyscale (oklch, hue 240, ~0 chroma):**
+  - `mark` — `oklch(0.606 0.0003 240)` — the bullet dot; **theme-stable** (same light + dark)
+  - `ink` — **light** `oklch(0.283 0.0027 240)` · **dark** `oklch(0.848 0.0000 240)` — body + title text (theme-dependent)
+  - `muted` — light `oklch(0.444 0.0009 240)` (breadcrumb, sidebar)
+  - `border` — light `oklch(0.896 0.0000065 240)` (faint hairline)
+- **Accent** — `rgb(41 125 217)` (reference-blue: inline refs + external links)
+- **Surface:** element backgrounds transparent; the themed page surface shows through.
 
-- **Font family:** `InterVariable` (fallback: `-apple-system, system-ui, "Segoe UI", …, sans-serif`)
-- **Type scale:**
-  - `tag` — 12px / line-height 15px / weight 400
-  - `chrome` — 14px (breadcrumb 14/30, sidebar 14/15.4) / weight 400
-  - `body` — 15px / line-height 21px / weight 400
-  - `title` — 29px / line-height 33.4px / weight 550
-- **Greyscale ramp** (oklch, hue 240, ~0 chroma):
-  - `ink` — `oklch(0.283 0.0027 240)` (body + title text)
-  - `muted` — `oklch(0.444 0.0009 240)` (breadcrumb, sidebar)
-  - `faint` — `oklch(0.606 0.0003 240)` (supertag pills)
-  - `subtext` — `oklch(0.639 0.0002 240)` (node description line)
-  - `border` — `oklch(0.896 0.0000065 240)` (faint hairline: expansion-panel border)
-- **Accent** — `rgb(41 125 217)` (reference-blue: inline references *and* external links share it)
-- **Surface:** element backgrounds are transparent; the page surface shows through.
+## `PX` concerns — Tana's realization
 
-## Elements — floor-anchored (Composer must reproduce)
+### `PX-mark` — the Node handle (bullet)
+- **Painted dot:** `5px × 5px`, `border-radius: 50%`, `background: oklch(0.606 0.0003 240)` (`mark`, theme-stable).
+- **Hit-area:** the dot sits centered in a **15px** transparent slot (`--bulletDiameterOuter`); the visible mark is the 5px dot, *not* the slot. This is the correction — the original spec recorded 15px.
+- **Evidence:** `span.bullet::after` (dot) inside `.OutlinerItem-module_bullet__…` (15px slot).
 
-### Outline node row — name text
-- **Renders:** a Node's name in the outline → traces `UP-1.outline` (address a single Node) · `IP-1` (Node)
-- **Typography:** `body` — InterVariable 15px / 21px / w400
-- **Color:** `ink` — oklch(0.283 0.0027 240)
-- **Box:** padding 0 · margin 0 · row height ~18px
-- **Evidence:** `.editable`
+### `PX-disclosure` — expand/collapse affordance (chevron)
+- **Slot:** `15px` wide, `font-size: 15px`, `padding: 3.75px 0`.
+- **Glyph:** a disclosure triangle, rendered only for a Node **with** successors, and **revealed on hover** (see `PX-state`); a childless Node keeps the slot for alignment but paints no glyph.
+- **Evidence:** `.BulletChevron-module_container__…`.
 
-### Bullet
-- **Renders:** the addressable Node handle → traces `UP-1.outline` (a Node is individually addressable) · `IP-1` (Node)
-- **Color:** `ink`
-- **Box:** 15×15
-- **Evidence:** `.OutlinerItem-module_bullet__…` (references render a distinct `bullet isReference …` variant — see Pending)
+### `PX-nesting` — depth shown by indentation
+- **Indent step:** **32px** per structural level; equal depth aligns to the same inset.
+- **Alignment:** the handle column aligns to the **top of the first text line** (`align-items: flex-start`), not the vertical centre — matters for multi-line Nodes.
+- **Evidence:** bullet `left` at depth *n* vs *n+1* (291.8px → 324px); `.NodeAsListElement-module_main` `align-items`.
 
-### Disclosure chevron
-- **Renders:** the expand/collapse affordance on a Node → traces `UP-1.outline` · `IX-direct.outline` (act on the Node in place)
-- **Box:** 15×29 · padding 3.75px 0
-- **Evidence:** `.BulletChevron-module_container__…`
+### `PX-state` — rest / hover / focus / active
+- **Handle reveal:** the `bulletSide` (chevron + drag affordance) is `opacity: 0` at rest, `opacity: 1` on **row hover** (`.hideBullet:hover .bulletSide`). The dot itself stays visible at rest.
+- **Mark active:** `.bullet:active { transform: scale(0.9) }`.
+- **Row / editable:** `background-color: var(--colorConfigEditorBackground)` on **hover** and on **focus-within** (`.SharedComponents-module_editableWrapper:hover` / `:focus-within`).
+- **Evidence:** the `:hover` / `:active` / `:focus-within` rules above (harvested from Tana's stylesheets).
 
-### Node title (H1 — the focused Node's name)
-- **Renders:** the focused Node's name at the panel top → traces `UP-1.outline` (address a single Node) · `IP-1` (Node)
-- **Typography:** `title` — InterVariable 29px / 33.4px / w550
-- **Color:** `ink`
-- **Box:** margin 0 10px 0 0 · padding 0
-- **Evidence:** `.editable.lockedName`
+### `PX-rhythm` — gutter + spacing
+- **Gutter:** the panel carries `padding-left: 24px` — content is **not** flush to the surface edge.
+- **Handle↔text gap:** **7.5px** (`.NodeAsListElement-module_main` `gap`).
+- **Evidence:** `.Scrollable-module_scrollable` `padding-left`; row `gap`.
 
-### Breadcrumb
-- **Renders:** the zoom/location context above the panel → traces `UP-1.outline` (zoom addresses a Node)
-- **Typography:** `chrome` — InterVariable 14px / 30px / w400
-- **Color:** `muted` — oklch(0.444 0.0009 240)
-- **Evidence:** `.NodeAsDrilldownElement-module_label__…`
+### `PX-theme` — theme-relativity
+- **Text (`ink`)** resolves per theme: light `oklch(0.283 0.0027 240)`, dark `oklch(0.848 0.0000 240)`.
+- **Mark (`mark`)** is theme-stable: `oklch(0.606 0.0003 240)` in both.
+- **Capture is pinned:** geometry is captured once (theme-independent); colour is captured per theme; a target is diffed within one stated theme (never across).
+- **Evidence:** `.editable` `color` under each theme (Tana theme = macOS time-of-day; toggle in Tana settings).
 
-### Inline reference chip (atomic token)
-- **Renders:** an inline reference to another Node → traces `UP-2.link` (link from within content) · `IX-inflow.link` (reference in the typing flow)
-- **Typography:** `body` — 15px / 21px / w400 · no underline
-- **Color:** `accent` — rgb(41 125 217) (reference-blue)
-- **Box:** padding 0 · transparent bg · no border/radius — an atomic inline token (see `user-experience.md`)
-- **Evidence:** `.inlineelement.inlinerefnode.inlineinteractive`
+## Out-of-floor (Tana-exclusive chrome; reference detail only)
 
-### Reference bullet (variant)
-- **Renders:** the bullet on a referenced Node → traces `UP-2.link`
-- **Box:** 15×15 (bullet geometry as normal) · **Evidence:** `.bullet.isReference…`
+Anchors to no neutral concept (supertags/tasks/app-nav are outside the SUP floor);
+recorded for completeness, not required for reproduction.
 
-### Node description (subtext line)
-- **Renders:** a Node's description line → traces `IP-1` (Node content) · `UP-1.outline`
-- **Typography:** InterVariable 12px / 16.8px / w400
-- **Color:** `subtext` — oklch(0.639 0.0002 240)
-- **Evidence:** description `.editable`
+- **Supertag pill:** `tag` 12px / 15px / w400; `#` glyph `mark` colour; name in the tag's own colour. `.TemplateTag-module_tagIconHash__…`
+- **Reference bullet:** `.bullet.isReference` — dashed 1px border in the tag colour.
+- **Task checkbox:** `.NodeDoneCheckbox-module_container__…` (24×21).
+- **Inline reference / external link:** `body` 15px, no underline, `accent` `rgb(41 125 217)`.
 
-### Reference expansion panel (Option-click)
-- **Renders:** the inline expansion of a reference — a panel below the referrer → traces `UP-4.embed` (render a reference inline) · `IX-direct.expand` (expand in place)
-- **Border:** 1px solid `oklch(0.896 0.0000065 240)` (`border` token) · **Radius:** 7.5px · **Shadow:** none · **Background:** transparent
-- **Box:** scrollable container (~636×433 in the captured specimen)
-- **Evidence:** `.Scrollable-module_scrollable__…`
+## Companion mapping
 
-## Elements — out-of-floor (Tana-exclusive chrome; reference detail only)
-
-Anchor to no neutral concept (supertags/tasks/app-nav are outside the SUP floor);
-captured for completeness, not required for the reproduction.
-
-### Supertag pill (name + `#` glyph)
-- **Typography:** `tag` — InterVariable 12px / 15px / w400 · **Color:** `faint` on the `#` glyph; the *name* renders in the tag's own colour (per-tag rgb, e.g. `#Person` = `rgb(132 81 223)` purple)
-- **Box:** `#` glyph padding 0 1.8px · **Evidence:** `.TemplateTag-module_tagIconHash__…`
-
-### External link
-- **Typography:** `body` — 15px w400 · no underline · **Color:** `accent` — rgb(41 125 217) (**same** reference-blue as internal references) · **Evidence:** `.inlineelement.inlinerefnode.inlinerefurl…`
-
-### Task done-checkbox
-- **Box:** 24×21 · **Evidence:** `.NodeDoneCheckbox-module_container__…`
-
-### Sidebar item
-- **Typography:** `chrome` 14px w400 · **Color:** `muted` · **Evidence:** sidebar row
-
-## Specimens — all captured
-
-Every element above is harvested from a live rendered instance. The
-reference-dependent specimens (reference chip, reference bullet, expansion panel,
-external link) were captured by inserting a real reference — an `@`-mention of an
-existing Node — in the sandbox daily note, then `Option`-clicking it for the
-panel; the scratch was removed after capture (Demo content was read-only).
-
-## Method note
-
-Computed-style *harvest* is reliable through the browser. **Synthetic keyboard
-input is not** — injected `Tab`/`Backspace` do not drive Tana's editor (measured:
-`Tab` left a node un-indented at the same x). Structural edits during capture are
-therefore done via the **Command-K palette** (reliable command dispatch), and
-keystroke facts rest on the operator's hardware confirmations recorded in
-`user-experience.md`, not on synthetic re-validation.
+The `visual-verification` mapping `visual/tana-outline.json` carries these values
+as the diff's expected side; the target mapping is
+`implementations/dxos/visual/composer-outline.json`. Both are pinned to a stated
+theme and must cover **every `PX-*` concern** above (not a region subset) — that
+coverage requirement is the FLOW delivery-gate upgrade (U4).

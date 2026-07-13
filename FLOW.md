@@ -97,7 +97,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | `spec/interaction-primitives.mdl` | UP-*, IP-* | `IX-*` — interaction (a *surface* facet); IDs `IX-<n>.<concern>` |
 | `spec/presentation-primitives.mdl` | UP-1, IP-1, IP-2 | `PX-*` — presentation (the other *surface* facet). `IX`+`PX` = the **surface** over the surface-independent `UP` capabilities; a new surface (mobile) is a new *realization* of `IX`+`PX`, not a change to `UP` |
 | `implementations/tana/user-experience.md` | IX-*, UP-* | Tana behavioral realization |
-| `implementations/tana/visual-spec.md` | UP-1, IP-1 | Tana computed-style visual reference (+ `visual/tana-outline.json` mapping) |
+| `implementations/tana/visual-spec.md` | PX-*, UP-1, IP-1 | Tana visual reference, organized per `PX` concern + both themes (+ `visual/tana-outline.json` mapping) |
 | `implementations/dxos/gap-analysis.md` | IP-*, UP-* | substrate gap analysis (done) |
 | `implementations/dxos/gap-analysis-ux.md` | IX-*, Tana R | UX gap analysis |
 
@@ -149,10 +149,13 @@ experience umbrella, not one facet) and fixed naming: neutral specs are named by
 req-family (`IP`/`UP`/`IX`/`PX`); `S<n>` is a FLOW phase only; `IX`+`PX` are the two
 *surface* facets over `UP`. **Gate upgraded** (delivery-gate clause 3): coverage of
 every `PX-*` concern, not just trace-up. Pattern metadata: `pattern/reproduction-flow.md`.
-**To propagate (move-down):** re-ground `implementations/tana/visual-spec.md` on
-`PX-*` and re-capture Tana completely; `grep -r "PX-" spec/ implementations/`; mark
-`visual-spec.md` / `gap-analysis-ux.md` / `design.md` `needs-review`; then re-derive
-the plugin's chrome + re-run the upgraded gate.
+**Propagating (move-down):** ✓ `visual-spec.md` **re-grounded on `PX-*`** (all six
+concerns · states · both themes · 2026-07-13) — fixing the recorded 15px-slot→5px-dot
+error and adding the missing indent step (32px), hover states, and theme axis.
+**Remaining:** expand `visual/tana-outline.json` + `implementations/dxos/visual/composer-outline.json`
+to cover every `PX` concern; re-derive the plugin chrome (5px dot · 24px gutter · 15px
+chevron · 7.5px gap · 32px indent · hover states) in the DXOS worktree; re-run the
+upgraded (coverage) gate. `gap-analysis-ux.md` / `design.md` remain `needs-review` for `PX`.
 
 **Resolved — 2026-07-12 · node-authoring capability (move-up, U1):** an R-capture gap
 (the editable Tana header) traced to a deeper omission — the SUP addressed/nested/
