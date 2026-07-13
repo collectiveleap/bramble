@@ -30,13 +30,19 @@ stated theme**.
 
 - **Font family:** `InterVariable` (fallback: `-apple-system, system-ui, …, sans-serif`)
 - **Type scale:** `body` 15px / 21px / w400 · `title` 29px / 33.4px / w550 · `chrome` 14px (breadcrumb 14/30)
-- **Greyscale (oklch, hue 240, ~0 chroma):**
-  - `mark` — `oklch(0.606 0.0003 240)` — the bullet dot; **theme-stable** (same light + dark)
-  - `ink` — **light** `oklch(0.283 0.0027 240)` · **dark** `oklch(0.848 0.0000 240)` — body + title text (theme-dependent)
-  - `muted` — light `oklch(0.444 0.0009 240)` (breadcrumb, sidebar)
-  - `border` — light `oklch(0.896 0.0000065 240)` (faint hairline)
+- **Greyscale (oklch, hue 240, ~0 chroma) — captured in BOTH themes:**
+
+  | token | light | dark | renders |
+  |---|---|---|---|
+  | `mark` | `oklch(0.606 0.0003 240)` | `oklch(0.606 0.0003 240)` | bullet dot — **theme-stable** |
+  | `ink` | `oklch(0.283 0.0027 240)` | `oklch(0.848 0.0000 240)` | body + title text |
+  | `muted` | `oklch(0.444 0.0009 240)` | ~white (`rgb(255 255 255)`) | breadcrumb, sidebar |
+  | `border` | `oklch(0.896 0.0000 240)` | `oklch(0.306 0.0023 240)` | faint hairline (`--colorUITupleStroke`) |
+  | `surface` | transparent (page) | `oklch(0.227 0.0043 240)` | panel (`--colorPanelBackground`) |
+  | `hover-surface` | (subtle) | `oklch(0.243 0.0037 240)` | row/editable hover+focus (`--colorConfigEditorBackground`) |
+
 - **Accent** — `rgb(41 125 217)` (reference-blue: inline refs + external links)
-- **Surface:** element backgrounds transparent; the themed page surface shows through.
+- **Only `mark` and geometry are theme-stable; every other colour is per-theme.** Backgrounds are transparent so the themed page surface shows through.
 
 ## `PX` concerns — Tana's realization
 
@@ -58,7 +64,7 @@ stated theme**.
 ### `PX-state` — rest / hover / focus / active
 - **Handle reveal:** the `bulletSide` (chevron + drag affordance) is `opacity: 0` at rest, `opacity: 1` on **row hover** (`.hideBullet:hover .bulletSide`). The dot itself stays visible at rest.
 - **Mark active:** `.bullet:active { transform: scale(0.9) }`.
-- **Row / editable:** `background-color: var(--colorConfigEditorBackground)` on **hover** and on **focus-within** (`.SharedComponents-module_editableWrapper:hover` / `:focus-within`).
+- **Row / editable:** a subtle background on **hover** and **focus-within** (`--colorConfigEditorBackground`: dark `oklch(0.243 0.0037 240)`; a subtle surface in light) — theme-relative, so a target should use its theme's subtle-hover token, not a fixed colour.
 - **Evidence:** the `:hover` / `:active` / `:focus-within` rules above (harvested from Tana's stylesheets).
 
 ### `PX-rhythm` — gutter + spacing
@@ -67,10 +73,10 @@ stated theme**.
 - **Evidence:** `.Scrollable-module_scrollable` `padding-left`; row `gap`.
 
 ### `PX-theme` — theme-relativity
-- **Text (`ink`)** resolves per theme: light `oklch(0.283 0.0027 240)`, dark `oklch(0.848 0.0000 240)`.
-- **Mark (`mark`)** is theme-stable: `oklch(0.606 0.0003 240)` in both.
-- **Capture is pinned:** geometry is captured once (theme-independent); colour is captured per theme; a target is diffed within one stated theme (never across).
-- **Evidence:** `.editable` `color` under each theme (Tana theme = macOS time-of-day; toggle in Tana settings).
+- **Both themes captured live** (see the greyscale table above): `ink` light `oklch(0.283)` / dark `oklch(0.848)`; `muted` dark→white; `border`/`surface`/`hover-surface` per theme.
+- **Mark and geometry are theme-stable**; only colour varies. So a target is diffed **within one stated theme, never across**.
+- **Capture protocol:** geometry once; colour per theme by toggling Tana's theme (settings, top-right → "Enable dark mode") — because Tana's theme otherwise follows macOS time-of-day.
+- **Evidence:** `.editable` `color`, `--colorPanelBackground`, `--colorConfigEditorBackground`, `--colorUITupleStroke` harvested under each theme.
 
 ## Out-of-floor (Tana-exclusive chrome; reference detail only)
 
