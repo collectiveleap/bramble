@@ -156,6 +156,17 @@ expanded 4→**8 regions, one per `PX` concern**. ✓ plugin chrome re-derived (
 theme-adaptive text) — DXOS commit `af22bdadb0`; caught a real dot-colour bug the narrow
 gate couldn't. ✓ **upgraded coverage gate re-run clean** (8/8 regions within tolerance);
 `plugin-bramble:{build,test,test-storybook,lint}` green, both themes legible.
+**Follow-up (2026-07-13, from a real-browser check):** viewing the Storybook surface in
+a real browser exposed an illegible light theme — the outline's text is theme-adaptive
+but the shared `withLayout({ fullscreen })` decorator wraps stories in a hardcoded
+`bg-black`, so light-mode dark text landed on black. Component + Composer were fine (both
+get a themed surface); the *story harness* wasn't, and the coverage gate had missed it
+because **it checked text colour, not text-vs-background contrast**. Fixed: story renders
+on the theme's `--surface-bg` (DXOS `b825b37547`); and a `LegibleInBothThemes` play test now
+asserts real contrast in both themes (DXOS `11533f4708`) — the gate enforces `PX-theme`
+legibility, not just colour values. Lesson: the same "verify a value, not the outcome"
+miss recurs one level down; a coverage gate must check the *legible result*, not the token.
+
 **Residual (minor):** ✓ `gap-analysis-ux.md` / `design.md` now cite `PX` (trace propagated,
 2026-07-13). Left as-is by choice: the DXOS branch `claude/plugin-bramble-substrate` is
 **never merged** — it lives on to be spun out as a separate plugin — and its
