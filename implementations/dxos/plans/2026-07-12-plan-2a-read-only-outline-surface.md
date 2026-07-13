@@ -1,4 +1,4 @@
-<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, UP-1, UX-immediate]; role: target; status: draft -->
+<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, UP-1, IX-immediate]; role: target; status: draft -->
 
 # Plan 2a — Read-only outline surface Implementation Plan
 
@@ -21,7 +21,7 @@
 - **Visual conformance is a delivery gate.** Before 2a is marked done, run the `visual-verification` loop (`diff-styles.mjs`) against `implementations/dxos/visual/composer-outline.json` to a clean or consciously-triaged result. Expected token values are Tana's, already harvested in `implementations/tana/visual/tana-outline.json`.
 - **Test layering:** pure logic → headless Vitest units; plugin/module wiring → `createComposerTestApp` (`@dxos/plugin-testing/harness`); render behavior → Storybook `.stories.tsx` + `play` (Vitest+Playwright storybook project).
 - **Branch:** continue on `claude/plugin-bramble-substrate` in the DXOS monorepo (Plan 2a builds on Plan 1's unmerged substrate). Test/lint/typecheck runners: `moon run plugin-bramble:test`, `moon run plugin-bramble:lint`, `moon run composer-app:build` (the typecheck). Never raw `vitest`.
-- **Traceability (delivery gate):** every rendered element / behavior traces to `IP-*` / `UP-*` / `UX-*` (or `visual-spec.md` for pixels); nothing imported from Composer without a neutral counterpart. Grep `derives-from` both directions before delivery.
+- **Traceability (delivery gate):** every rendered element / behavior traces to `IP-*` / `UP-*` / `IX-*` (or `visual-spec.md` for pixels); nothing imported from Composer without a neutral counterpart. Grep `derives-from` both directions before delivery.
 
 ---
 
@@ -403,7 +403,7 @@ git commit -m "feat(plugin-bramble): register outline surface + story harness (h
 
 ### Task 3: Render the tree body (nested rows)
 
-The shell reads all Bramble edges reactively and renders the view-model as nested rows (bullet + text, indented by depth). Realizes `UX-immediate` (reactive re-render on substrate change).
+The shell reads all Bramble edges reactively and renders the view-model as nested rows (bullet + text, indented by depth). Realizes `IX-immediate` (reactive re-render on substrate change).
 
 **Files:**
 - Modify: `packages/plugins/plugin-bramble/src/components/NodeOutline/NodeOutline.tsx`
@@ -691,7 +691,7 @@ git commit -m "docs(dxos): composer outline visual-conformance mapping (derived 
 
 1. `moon run plugin-bramble:test` green (units + wiring + stories); `moon run plugin-bramble:lint` clean; `moon run composer-app:build` typecheck passes.
 2. `diff-styles.mjs` clean, or every residual delta recorded as accept-with-reason / flag-for-human (Step 5.3).
-3. Traceability: each rendered element traces to `IP-*`/`UP-*`/`UX-*` or `visual-spec.md`; nothing imported from Composer without a neutral counterpart. Update `FLOW.md` (S6 Plan-2a built) and the pipeline row.
+3. Traceability: each rendered element traces to `IP-*`/`UP-*`/`IX-*` or `visual-spec.md`; nothing imported from Composer without a neutral counterpart. Update `FLOW.md` (S6 Plan-2a built) and the pipeline row.
 
 ## Deferred to Plan 2b (explicitly out of 2a scope)
 

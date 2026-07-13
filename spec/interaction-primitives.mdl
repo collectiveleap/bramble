@@ -16,7 +16,7 @@ realization (`implementations/tana/`) documents one concrete isomorphic
 instance; a target gap analysis evaluates a system against this spec plus that
 realization.
 
-IDs are `UX-<law>.<application>` (per R-Spec-Entry-Conventions).
+IDs are `IX-<law>.<application>` (per R-Spec-Entry-Conventions).
 
 ## Rules
 
@@ -30,10 +30,10 @@ rule R-Interaction-Laws:
     (implementations/tana/user-experience.md) instantiates each law
     concretely. Layered on R-Conformance-Format from the SIP/SUP:
 
-    1. Each law is a `feat` (UX-<law>); it is CROSS-CUTTING, so its
+    1. Each law is a `feat` (IX-<law>); it is CROSS-CUTTING, so its
        `traces:` names the several SUP capabilities it governs —
        many-to-many is the honest signature of a cross-cutting concern.
-    2. Each `req` (UX-<law>.<application>) carries a conformance-test
+    2. Each `req` (IX-<law>.<application>) carries a conformance-test
        clause (given/when/then) SUFFICIENT to decide conformance, plus
        `probes:` that size the work when a system X fails it. Written at
        INTERACTION altitude (mode / flow / step / gesture), never at
@@ -52,7 +52,7 @@ rule R-Interaction-Laws:
 ## Primitives
 
 ```mdl
-feat UX-direct: Directness
+feat IX-direct: Directness
   traces:
     - UP-1 Atomic unit and outline
     - UP-4 Transclusion
@@ -72,7 +72,7 @@ feat UX-direct: Directness
     MODALITY-INDEPENDENT: the user reshapes by whatever the system offers —
     a keypress, a click, or a direct-manipulation drag of the Node (e.g. its
     bullet) — the law is the same across modalities.
-  req UX-direct.outline:
+  req IX-direct.outline:
     given: a Node shown in the outline
     when: the user nests, outdents, or reorders it
     then:
@@ -81,7 +81,7 @@ feat UX-direct: Directness
     probes:
       - In X, does the user restructure the outline directly on it, or by editing a separate panel / properties view / source representation?
       - Is the thing manipulated the same as the thing displayed?
-  req UX-direct.expand:
+  req IX-direct.expand:
     given: a Node containing a reference to another Node
     when: the user expands that reference inline
     then: the expansion is a toggle on the reference in place — not a navigation to a separate viewer or a switch of context
@@ -90,7 +90,7 @@ feat UX-direct: Directness
 ```
 
 ```mdl
-feat UX-inflow: In-flow reference
+feat IX-inflow: In-flow reference
   traces:
     - UP-2 Links and backlinks
     - UP-3 Granular addressing
@@ -102,7 +102,7 @@ feat UX-inflow: In-flow reference
     backlinks (link) and UP-3 Granular addressing: the SUP says the user
     CAN link to any Node; this feat says the gesture to do so does not
     interrupt the editing context.
-  req UX-inflow.link:
+  req IX-inflow.link:
     given: a Node being edited, the cursor within its content
     when: the user initiates a reference to another Node
     then:
@@ -111,7 +111,7 @@ feat UX-inflow: In-flow reference
     probes:
       - In X, is inserting a reference done within the text being typed, or via a separate insert-reference dialog opened and closed?
       - After insertion, does the user stay in the same editing position, or return to it from a mode switch?
-  req UX-inflow.address:
+  req IX-inflow.address:
     given: the in-flow reference gesture underway
     when: the user narrows toward a specific target
     then: any Node is reachable as the target from within the gesture, including a Node nested beneath others — the choice is not restricted to top-level Nodes
@@ -121,7 +121,7 @@ feat UX-inflow: In-flow reference
 ```
 
 ```mdl
-feat UX-immediate: Immediacy
+feat IX-immediate: Immediacy
   traces:
     - UP-1 Atomic unit and outline
     - UP-2 Links and backlinks
@@ -134,7 +134,7 @@ feat UX-immediate: Immediacy
     link and its backlink), and UP-4 Transclusion (an edit through a
     shared Node): the SUP says these effects HOLD; this feat says the
     user sees them with no intervening step.
-  req UX-immediate.gesture:
+  req IX-immediate.gesture:
     given: an interaction gesture that changes the store — a structural change, a new reference, or an edit to a Node shown in several places
     when: the user completes the gesture
     then:
@@ -146,7 +146,7 @@ feat UX-immediate: Immediacy
 ```
 
 ```mdl
-feat UX-reversible: Reversibility
+feat IX-reversible: Reversibility
   traces:
     - UP-1 Atomic unit and outline
     - UP-2 Links and backlinks
@@ -157,7 +157,7 @@ feat UX-reversible: Reversibility
     across every capability: whatever the user just did (nest, reorder,
     link, expand, edit) can be taken back as a discrete step, so the
     interface is safe to explore.
-  req UX-reversible.undo:
+  req IX-reversible.undo:
     given: a completed interaction gesture that changed the store
     when: the user issues undo
     then:

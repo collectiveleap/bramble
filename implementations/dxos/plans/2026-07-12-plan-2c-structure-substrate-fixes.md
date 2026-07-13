@@ -1,4 +1,4 @@
-<!-- derives-from: [IP-2, UP-1.reshape, UP-1.author, UX-direct]; role: target; status: draft -->
+<!-- derives-from: [IP-2, UP-1.reshape, UP-1.author, IX-direct]; role: target; status: draft -->
 
 # Plan 2c — Structural gestures + substrate-authoritative fixes Implementation Plan
 
@@ -370,7 +370,7 @@ export const reorderPlan = (rows: OutlineRow[], root: Node, nodeId: string, dir:
 
 1. `moon run plugin-bramble:{build,test,test-storybook,lint}` green; `moon run composer-app:build` typecheck green.
 2. **Re-run the R gate in Composer** (:5174): create a Bramble node, type/Enter to build a small tree, then Tab/Shift-Tab/Cmd-Shift-↑↓ — check indent/outdent/reorder against `user-experience.md`. The view-mediated Medium is gone, so behavior matches headless.
-3. Traceability: gestures trace `UP-1.reshape` (indent/outdent/reorder) · `UP-1.author` (the merge fix) · `UX-direct`.
+3. Traceability: gestures trace `UP-1.reshape` (indent/outdent/reorder) · `UP-1.author` (the merge fix) · `IX-direct`.
 4. Update `FLOW.md` (S6 Plan-2c built) + pipeline.
 
 ## Deferred (out of 2c)

@@ -1,11 +1,11 @@
 # Tana UX realization
 
-<!-- derives-from: [UX-*, UP-*]; role: reference; status: draft -->
+<!-- derives-from: [IX-*, UP-*]; role: reference; status: draft -->
 
 Concrete, isomorphic realization of the neutral interaction spec
 (`spec/interaction-primitives.mdl`) by Tana: for each behavior, the observed
 trigger, response, visual/layout, and edge cases — each tracing to the SUP
-capability (`UP-*`) it realizes and the S2 law (`UX-*`) it exhibits.
+capability (`UP-*`) it realizes and the S2 law (`IX-*`) it exhibits.
 
 ## Concreteness bar
 
@@ -54,7 +54,7 @@ Each behavior is a `###` section with these fields, in order:
 - **Visual/layout** — placement, affordance, popover / animation / indicator
 - **Edge cases** — the boundary behavior for this gesture
 - **traces (capability)** — the `UP-*` ids realized, glossed
-- **traces (manner)** — the `UX-*` ids exhibited, glossed
+- **traces (manner)** — the `IX-*` ids exhibited, glossed
 
 The split trace line (capability vs. manner) lets the downstream DXOS UX gap
 analysis return two separate verdicts for Composer — "capability present?" and
@@ -69,7 +69,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** a standard text caret sits in the Node's line; there is no separate edit mode or field.
 - **Edge cases:** the focused / zoom-root Node — rendered as the header / title — is editable in place exactly like a body Node. `[live-check pending: header caret + in-place edit]`
 - **traces (capability):** `UP-1.author` — edit a Node's content · `UP-1.outline` — the edited unit is individually addressable
-- **traces (manner):** `UX-direct.outline` — act on the Node in place · `UX-immediate.gesture` — shown as typed
+- **traces (manner):** `IX-direct.outline` — act on the Node in place · `IX-immediate.gesture` — shown as typed
 
 ### Create a Node
 
@@ -78,7 +78,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** a new bullet appears beneath the current line; the caret is in the new (possibly empty) Node.
 - **Edge cases:** on the focused / zoom-root Node, `Enter` creates its first child (the body of the zoom); on an expanded Node that already has children, `Enter` creates a first child rather than a sibling. `[live-check pending: sibling-vs-child rule for expanded / zoom-root Nodes]`
 - **traces (capability):** `UP-1.author` — create a Node · `UP-1.outline` — the new Node is a first-class outline unit
-- **traces (manner):** `UX-direct.outline` — build the outline in place · `UX-immediate.gesture` — shown at once · `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-direct.outline` — build the outline in place · `IX-immediate.gesture` — shown at once · `IX-reversible.undo` — gesture-granular undo
 
 ### Delete / merge a Node
 
@@ -87,7 +87,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the Node's bullet disappears; the caret sits at the merge point in the preceding Node.
 - **Edge cases:** a removed Node's children re-attach to the preceding Node rather than being deleted with it. `[live-check pending: merge target (preceding sibling vs parent) + child re-parenting]`
 - **traces (capability):** `UP-1.author` — remove a Node
-- **traces (manner):** `UX-direct.outline` — act on the Node in place · `UX-immediate.gesture` — shown at once · `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-direct.outline` — act on the Node in place · `IX-immediate.gesture` — shown at once · `IX-reversible.undo` — gesture-granular undo
 
 ### Indent / nest
 
@@ -96,7 +96,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the node's bullet moves right one indent step, now beneath the preceding sibling.
 - **Edge cases:** with no preceding sibling at its level, indent is a no-op (nothing happens).
 - **traces (capability):** `UP-1.reshape` — reorder & re-nest a Node (identity-preserving)
-- **traces (manner):** `UX-direct.outline` — reshape the outline in place · `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-direct.outline` — reshape the outline in place · `IX-immediate.gesture` — effect shown at once · `IX-reversible.undo` — gesture-granular undo
 
 ### Outdent
 
@@ -105,7 +105,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the node's bullet shifts left one indent step.
 - **Edge cases:** outdenting a top-level node is a no-op (nothing happens).
 - **traces (capability):** `UP-1.reshape` — reorder & re-nest a Node (identity-preserving)
-- **traces (manner):** `UX-direct.outline` — reshape the outline in place · `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-direct.outline` — reshape the outline in place · `IX-immediate.gesture` — effect shown at once · `IX-reversible.undo` — gesture-granular undo
 
 ### Reorder (move up / down)
 
@@ -114,7 +114,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the bullet (and its subtree) moves past the adjacent sibling.
 - **Edge cases:** move-up/down act among siblings at the same level, ignoring whether a sibling has children — the node swaps past the whole adjacent sibling (its subtree included), and the moved node carries its own subtree with it. (Drag reorders too, and additionally re-parents — see *Drag to reorder / re-parent*.)
 - **traces (capability):** `UP-1.reshape` — reorder & re-nest a Node (identity-preserving)
-- **traces (manner):** `UX-direct.outline` — reshape the outline in place · `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-direct.outline` — reshape the outline in place · `IX-immediate.gesture` — effect shown at once · `IX-reversible.undo` — gesture-granular undo
 
 ### Drag to reorder / re-parent
 
@@ -123,7 +123,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the dragged node follows the pointer; a **drop indicator** marks the target — a between-line for a sibling drop vs a nested position for a re-parent drop. `[live-check pending: exact drop-indicator affordance + the between-vs-into threshold]`
 - **Edge cases:** re-parenting is **cycle-safe** — a node cannot be dropped into its own subtree (rejected). The whole subtree travels with the dragged node. Same underlying effect as the keyboard Reorder / Indent gestures, reached by direct pointer manipulation. `[live-check pending: cycle-rejection feedback; Safari HTML-DnD rendering quirks]`
 - **traces (capability):** `UP-1.reshape` — reorder & re-nest a Node (identity-preserving)
-- **traces (manner):** `UX-direct.outline` — reshape the outline in place by direct manipulation · `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-direct.outline` — reshape the outline in place by direct manipulation · `IX-immediate.gesture` — effect shown at once · `IX-reversible.undo` — gesture-granular undo
 
 ### Zoom into a Node
 
@@ -132,7 +132,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** breadcrumbs at the top of the panel show where the node lives; leave the zoom via the zoom-out key or by **clicking a breadcrumb segment**, which zooms out to that ancestor Node. `[live-check pending: breadcrumb click zooms to ancestor]`
 - **Edge cases:** — (any node, including a nested one, can be zoomed).
 - **traces (capability):** `UP-1.outline` — address a single Node
-- **traces (manner):** `UX-direct.outline` — act on the Node in place
+- **traces (manner):** `IX-direct.outline` — act on the Node in place
 
 ### Expand / collapse
 
@@ -141,7 +141,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the bullet's disclosure indicator reflects expanded vs. collapsed state.
 - **Edge cases:** expanding a node with no children reveals a **pending node** — a placeholder where no node yet exists, shown by a grey bullet (vs. the black bullet of a real node); typing into the pending node brings it into existence.
 - **traces (capability):** `UP-1.outline` — address a single Node
-- **traces (manner):** `UX-direct.outline` — act on the Node in place · `UX-immediate.gesture` — effect shown at once
+- **traces (manner):** `IX-direct.outline` — act on the Node in place · `IX-immediate.gesture` — effect shown at once
 
 ### Create a mirror / instance (multi-location)
 
@@ -150,7 +150,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the second appearance is a reference (optionally expanded in place to show the subtree).
 - **Edge cases:** this is the **owner + reference** model, not a structural multi-predecessor edge — Tana satisfies the multi-location *capability* via references while diverging from a true multi-parent substrate (a reference-vs-target divergence the DXOS design can close more directly, since the SIP substrate is natively multi-predecessor). Edit-through confirmed 2026-07-10 via tana-local MCP: editing the referenced Node updated its reference (shared id, one underlying Node).
 - **traces (capability):** `UP-1.multi-location` — one Node shown in two places · `UP-4.edit-through` — an edit flows to the one shared Node · `UP-1.stable-under-edit` — the reference survives edits to its target
-- **traces (manner):** `UX-immediate.gesture` — effect shown at once · `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-immediate.gesture` — effect shown at once · `IX-reversible.undo` — gesture-granular undo
 
 ### Insert inline reference (@-mention)
 
@@ -159,7 +159,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** The reference renders inline as an **atomic** linked token showing the target's title — cursoring into it from the surrounding text selects the whole reference (a rounded-rectangle highlight); it is **not** editable in the text flow. Being a *"carbon copy"* of the target's id, the token always displays the target's current title, and edits made to the target (at its source or in an expansion panel) update every reference of it.
 - **Edge cases:** Any node is reachable as the target by keyword search, including one nested beneath others — the reference stores the target's **stable id**, so it resolves to exactly that node, not an enclosing container. Selecting text before `@` aliases the reference to that text; `Cmd`+`Enter` creates-and-references a brand-new Library node. A **plain click** on the token (no modifier) navigates to / opens the target Node — `Option`-click and `Shift`-click instead expand it (see *Embed / expand a reference inline*). `[live-check pending: plain-click navigates to target]`
 - **traces (capability):** `UP-2.link` — link from within a Node's content · `UP-3.any-node-target` — target any Node, incl. nested
-- **traces (manner):** `UX-inflow.link` — reference within the typing flow · `UX-inflow.address` — reach any target within the gesture · `UX-immediate.gesture` — effect shown at once
+- **traces (manner):** `IX-inflow.link` — reference within the typing flow · `IX-inflow.address` — reach any target within the gesture · `IX-immediate.gesture` — effect shown at once
 
 ### Copy link to a Node
 
@@ -168,7 +168,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** command-line palette / inline toolbar.
 - **Edge cases:** works for any node, including one nested beneath others — the link carries the node's own id, so it resolves to that node, not a container.
 - **traces (capability):** `UP-3.any-node-target` — address any Node, incl. nested
-- **traces (manner):** `UX-immediate.gesture` — effect shown at once
+- **traces (manner):** `IX-immediate.gesture` — effect shown at once
 
 ### Backlinks view
 
@@ -177,7 +177,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** the References section at the node's footer.
 - **Edge cases:** the References set is populated by reverse traversal with no author-created return link; unlinked mentions remain separate until the user presses **Link**.
 - **traces (capability):** `UP-2.backlinks-view` — what-links-here on a Node
-- **traces (manner):** `UX-immediate.gesture` — populated at once, no return link authored
+- **traces (manner):** `IX-immediate.gesture` — populated at once, no return link authored
 
 ### Embed / expand a reference inline
 
@@ -186,7 +186,7 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** `Option`+click → a bordered panel inserted between the referrer's line and its children, with a close ✕ (its child renders inside, pending-node grey bullet included); `Shift`+click → the node opens zoomed in an adjacent side panel.
 - **Edge cases:** `Cmd`+`↓` does **not** expand a reference — it expands/collapses the focused node's own children (see *Expand / collapse*). Tana has **no truly in-text-flow transclusion**; reference expansion is panel-based, and the collapsed inline reference is an atomic token — not editable in the flow (cursoring in selects the whole reference). Editing the target happens at its source or in an expansion panel, never through the inline token. Expansion is on demand, so a linked-edge cycle through the target does not expand unboundedly. Edit-through confirmed 2026-07-10 via tana-local MCP (an edit to the source Node propagated to its reference; shared id).
 - **traces (capability):** `UP-4.embed` — render a reference inline · `UP-4.edit-through` — an edit flows to the one shared Node
-- **traces (manner):** `UX-direct.expand` — expand the reference in place · `UX-immediate.gesture` — effect shown at once
+- **traces (manner):** `IX-direct.expand` — expand the reference in place · `IX-immediate.gesture` — effect shown at once
 
 ### Undo
 
@@ -195,11 +195,11 @@ analysis return two separate verdicts for Composer — "capability present?" and
 - **Visual/layout:** — (no distinct surface).
 - **Edge cases:** gesture-granular — one gesture, one undo step — over a complete history (undo is not coarsened to whole-session or whole-document).
 - **traces (capability):** (rides on the gesture undone)
-- **traces (manner):** `UX-reversible.undo` — gesture-granular undo
+- **traces (manner):** `IX-reversible.undo` — gesture-granular undo
 
 ## Dispositions
 
-No orphans: every behavior above cites ≥1 `UP-*`/`UX-*` id. Tana's above-floor
+No orphans: every behavior above cites ≥1 `UP-*`/`IX-*` id. Tana's above-floor
 features (supertags as typed objects, typed fields, calendar/search nodes) are
 out of scope by the SUP appendix and are not documented here. The multi-location
 behavior records one reference-vs-target divergence (owner+reference, not a
@@ -220,9 +220,9 @@ at Tana's standard-outliner semantics but not yet confirmed in a live session �
 grep `live-check pending` to list them.
 
 Transclusion nuance (for S3, and a possible S2 refinement): Tana realizes
-`UP-4.embed` / `UX-direct.expand` by **panel** expansion — `Option`-click opens
+`UP-4.embed` / `IX-direct.expand` by **panel** expansion — `Option`-click opens
 a panel below the referrer; `Shift`-click opens a separate zoomed panel — not
-rendering inside the text flow. The neutral `UX-direct.expand` ideal ("in place,
+rendering inside the text flow. The neutral `IX-direct.expand` ideal ("in place,
 not a separate viewer") is met by the `Option`-click panel but not by
 `Shift`-click. Further, the collapsed inline reference is an **atomic token** —
 not editable in the text flow (cursoring in selects it whole); edit-through

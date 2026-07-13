@@ -1,6 +1,6 @@
 # Tana — reference realization
 
-<!-- derives-from: [UX-*, UP-*]; role: reference; status: not-started -->
+<!-- derives-from: [IX-*, UP-*]; role: reference; status: not-started -->
 
 Role: **reference** — an existing system documented as a concrete, complete
 realization of the neutral specs, to serve as the exemplar the target
@@ -10,7 +10,7 @@ reproduces. Authored by observation, not built.
 
 - `user-experience.md` — how Tana realizes the neutral interaction spec (S2)
   concretely: triggers, response, keystrokes, edge cases — each mapped to its
-  `UX-<law>.<application>` req and the `UP-*` capability it realizes.
+  `IX-<law>.<application>` req and the `UP-*` capability it realizes.
 - `visual-spec.md` — computed-style capture of Tana's rendered surface (the
   reference "expected" side of a `visual-verification` diff), with design tokens
   and per-element entries anchored to the neutral concept each renders.

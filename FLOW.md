@@ -93,11 +93,11 @@ Status values: `not-started · authoring · needs-review · done`.
 |---|---|---|
 | `spec/internal-primitives.mdl` | — | SIP (neutral, upstream root) |
 | `spec/user-primitives.mdl` | IP-* | SUP |
-| `spec/interaction-primitives.mdl` | UP-*, IP-* | S2 neutral UX — IDs `UX-<n>.<concern>` |
-| `implementations/tana/user-experience.md` | UX-*, UP-* | Tana behavioral realization |
+| `spec/interaction-primitives.mdl` | UP-*, IP-* | S2 neutral UX — IDs `IX-<n>.<concern>` |
+| `implementations/tana/user-experience.md` | IX-*, UP-* | Tana behavioral realization |
 | `implementations/tana/visual-spec.md` | UP-1, IP-1 | Tana computed-style visual reference (+ `visual/tana-outline.json` mapping) |
 | `implementations/dxos/gap-analysis.md` | IP-*, UP-* | substrate gap analysis (done) |
-| `implementations/dxos/gap-analysis-ux.md` | UX-*, Tana R | UX gap analysis |
+| `implementations/dxos/gap-analysis-ux.md` | IX-*, Tana R | UX gap analysis |
 
 ## Adaptation protocol (move up / down)
 
@@ -118,7 +118,7 @@ Before a downstream artifact is **delivered** (marked `current`/`done` or
 committed as complete), validate it against traceability:
 
 1. **Every element traces up.** Each behavior / gesture / element / finding cites
-   the upstream req(s) it realizes (`UP-*` / `IP-*` / `UX-*`). Nothing is
+   the upstream req(s) it realizes (`UP-*` / `IP-*` / `IX-*`). Nothing is
    *un-grounded* — no mechanism imported from the target system (a UI convention,
    an API) that lacks a neutral counterpart. (This gate is what would have caught
    the Composer `@@` block-embed in the DXOS design — a convention with no UP/IP.)
@@ -144,7 +144,7 @@ carries the create/edit/delete gestures. Plan 1 (substrate) + Plan 2a (read-only
 **Resolved — 2026-07-12 · view-position invariance (move-up, U2):** the header was
 mis-captured as chrome because no spec stated a Node keeps its full identity/
 capabilities in any view position. Added the invariant to SUP `UP-1` desc (+
-`UP-1.author` focus-position clause) and an `UX-direct` S2 note (directness invariant
+`UP-1.author` focus-position clause) and an `IX-direct` S2 note (directness invariant
 under view position). R: the zoom-root renders as an **editable header**. Propagated to
 `design.md` §2 (the header is the *same* editable per-row editor as body rows).
 
@@ -153,7 +153,7 @@ drag-and-drop had no first-class home. Root cause (deeper than the earlier R-cap
 gap): specs described the outline's *state* but under-enumerated the *verbs* on it
 (reshape) and the *modalities* per verb (drag). Added SUP `UP-1.reshape` (reorder /
 move / re-nest, identity- & link-preserving, acyclic) + S2 modality-independence law
-(`R-Interaction-Laws` clause 4 + `UX-direct` line: key/click/drag interchangeable;
+(`R-Interaction-Laws` clause 4 + `IX-direct` line: key/click/drag interchangeable;
 continuous gestures first-class). R: drag promoted to a first-class behavior; the four
 reshape behaviors retraced `UP-1.outline`→`UP-1.reshape`; §2 has a drag row (Pragmatic
 drag-and-drop via `@dxos/react-ui-list` — dnd-kit is vestigial in the repo, corrected).

@@ -1,10 +1,10 @@
-<!-- derives-from: [IP-1, IP-2, UP-1.author, UX-direct, UX-immediate]; role: target; status: draft -->
+<!-- derives-from: [IP-1, IP-2, UP-1.author, IX-direct, IX-immediate]; role: target; status: draft -->
 
 # Plan 2b — Editing + authoring Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax.
 
-**Goal:** Turn Plan 2a's read-only outline into a genuinely **editable** one — type to edit a row, **Enter** to create/split a row, **Backspace-at-start** to delete/merge, an **editable header**, and caret flow across rows — all wired to the Plan-1 edge algebra. Realizes `UP-1.author` (create/edit/remove) + `UX-direct`/`UX-immediate`.
+**Goal:** Turn Plan 2a's read-only outline into a genuinely **editable** one — type to edit a row, **Enter** to create/split a row, **Backspace-at-start** to delete/merge, an **editable header**, and caret flow across rows — all wired to the Plan-1 edge algebra. Realizes `UP-1.author` (create/edit/remove) + `IX-direct`/`IX-immediate`.
 
 **Architecture:** Rows stay one `EditorView` each (Plan 2a), now **editable** (`readOnly` off; edits write back through the existing automerge binding). Structural authoring is coordinated by a shell-owned **`OutlineController`** (React context): a `Map<nodeId, EditorView>` registry each row populates on mount, plus intent methods (`createAfter`, `mergeBackward`, `focusAdjacent`, `focusRow`) the per-row CodeMirror keymaps call. Because a substrate mutation is async and only re-renders the rows afterward, focus is **deferred**: an intent sets `pendingFocus`, and the target row fulfills it when its view *registers*. The substrate math (what a split/merge does to nodes+edges) lives in **pure, headless-tested** functions; the controller + keymaps are the thin imperative layer.
 
@@ -717,7 +717,7 @@ export const ArrowMovesBetweenRows: Story = {
 
 1. `moon run plugin-bramble:{test,test-storybook,lint}` green; `moon run composer-app:build` typecheck passes.
 2. **Re-run the R visual/UX gate in real Composer** (:5174): enable the plugin, create a Bramble Node, and drive editing by hand — type, Enter, Backspace, arrows — checking against `user-experience.md` (Edit content / Create / Delete-merge behaviors). Editing now works in-UI, so no console seeding needed.
-3. Traceability: each gesture traces `UP-1.author` / `UX-direct` / `UX-immediate`; nothing imported without a neutral counterpart.
+3. Traceability: each gesture traces `UP-1.author` / `IX-direct` / `IX-immediate`; nothing imported without a neutral counterpart.
 4. Update `FLOW.md` (S6 Plan-2b built) + the pipeline row.
 
 ## Deferred (explicitly out of 2b)

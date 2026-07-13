@@ -1,6 +1,6 @@
 # Gap analysis (UX) — X = DXOS / Composer
 
-<!-- derives-from: [UX-direct, UX-inflow, UX-immediate, UX-reversible, UP-1.author, implementations/tana/user-experience.md, implementations/tana/visual-spec.md]; role: target; status: current -->
+<!-- derives-from: [IX-direct, IX-inflow, IX-immediate, IX-reversible, UP-1.author, implementations/tana/user-experience.md, implementations/tana/visual-spec.md]; role: target; status: current -->
 
 Evaluates DXOS / Composer against the neutral interaction spec (S2,
 `spec/interaction-primitives.mdl`) and the Tana reference realization (R,

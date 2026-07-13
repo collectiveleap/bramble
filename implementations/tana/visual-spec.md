@@ -58,7 +58,7 @@ The numbers resolve to a small, consistent system:
 - **Evidence:** `.OutlinerItem-module_bullet__…` (references render a distinct `bullet isReference …` variant — see Pending)
 
 ### Disclosure chevron
-- **Renders:** the expand/collapse affordance on a Node → traces `UP-1.outline` · `UX-direct.outline` (act on the Node in place)
+- **Renders:** the expand/collapse affordance on a Node → traces `UP-1.outline` · `IX-direct.outline` (act on the Node in place)
 - **Box:** 15×29 · padding 3.75px 0
 - **Evidence:** `.BulletChevron-module_container__…`
 
@@ -76,7 +76,7 @@ The numbers resolve to a small, consistent system:
 - **Evidence:** `.NodeAsDrilldownElement-module_label__…`
 
 ### Inline reference chip (atomic token)
-- **Renders:** an inline reference to another Node → traces `UP-2.link` (link from within content) · `UX-inflow.link` (reference in the typing flow)
+- **Renders:** an inline reference to another Node → traces `UP-2.link` (link from within content) · `IX-inflow.link` (reference in the typing flow)
 - **Typography:** `body` — 15px / 21px / w400 · no underline
 - **Color:** `accent` — rgb(41 125 217) (reference-blue)
 - **Box:** padding 0 · transparent bg · no border/radius — an atomic inline token (see `user-experience.md`)
@@ -93,7 +93,7 @@ The numbers resolve to a small, consistent system:
 - **Evidence:** description `.editable`
 
 ### Reference expansion panel (Option-click)
-- **Renders:** the inline expansion of a reference — a panel below the referrer → traces `UP-4.embed` (render a reference inline) · `UX-direct.expand` (expand in place)
+- **Renders:** the inline expansion of a reference — a panel below the referrer → traces `UP-4.embed` (render a reference inline) · `IX-direct.expand` (expand in place)
 - **Border:** 1px solid `oklch(0.896 0.0000065 240)` (`border` token) · **Radius:** 7.5px · **Shadow:** none · **Background:** transparent
 - **Box:** scrollable container (~636×433 in the captured specimen)
 - **Evidence:** `.Scrollable-module_scrollable__…`
