@@ -1,6 +1,6 @@
 # Gap analysis (UX) — X = DXOS / Composer
 
-<!-- derives-from: [IX-direct, IX-inflow, IX-immediate, IX-reversible, UP-1.author, implementations/tana/user-experience.md, implementations/tana/visual-spec.md]; role: target; status: current -->
+<!-- derives-from: [IX-direct, IX-inflow, IX-immediate, IX-reversible, UP-1.author, PX-mark, PX-disclosure, PX-nesting, PX-state, PX-rhythm, PX-theme, implementations/tana/user-experience.md, implementations/tana/visual-spec.md]; role: target; status: current -->
 
 Evaluates DXOS / Composer against the neutral interaction spec (S2,
 `spec/interaction-primitives.mdl`) and the Tana reference realization (R,
@@ -101,6 +101,14 @@ against it would be the wasted work this analysis avoids: the new plugin is buil
 **to** R's `visual-spec.md`, and the differ (`diff-styles.mjs`) runs against the
 **new plugin's** surface once it exists. The mapping's Composer `app` selectors
 stay `TODO(S3-post-plugin)`.
+
+**Presentation is now a neutral facet (`PX-*`, 2026-07-13 · U4).** The visual side
+is no longer merely "styled to Tana": it is grounded on
+`spec/presentation-primitives.mdl` — the concern-set (mark · disclosure · nesting ·
+state · rhythm · theme) that *no* existing Composer surface presents, which is part
+of the same "new plugin needed" verdict. That plugin's chrome is now built and the
+**coverage gate has run against it** (8 regions, one per `PX` concern, clean, both
+themes) — the post-plugin diff this section deferred, now closed.
 
 ## 5. Conclusion
 

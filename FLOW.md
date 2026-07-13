@@ -156,9 +156,10 @@ expanded 4→**8 regions, one per `PX` concern**. ✓ plugin chrome re-derived (
 theme-adaptive text) — DXOS commit `af22bdadb0`; caught a real dot-colour bug the narrow
 gate couldn't. ✓ **upgraded coverage gate re-run clean** (8/8 regions within tolerance);
 `plugin-bramble:{build,test,test-storybook,lint}` green, both themes legible.
-**Residual (minor):** `gap-analysis-ux.md` / `design.md` still `needs-review` to cite `PX`
-(documentation trace, no behaviour change). DXOS `.claude/launch.json` gained a storybook
-preset, left uncommitted (local).
+**Residual (minor):** ✓ `gap-analysis-ux.md` / `design.md` now cite `PX` (trace propagated,
+2026-07-13). Left as-is by choice: the DXOS branch `claude/plugin-bramble-substrate` is
+**never merged** — it lives on to be spun out as a separate plugin — and its
+`.claude/launch.json` storybook preset stays uncommitted (local).
 
 **Resolved — 2026-07-12 · node-authoring capability (move-up, U1):** an R-capture gap
 (the editable Tana header) traced to a deeper omission — the SUP addressed/nested/

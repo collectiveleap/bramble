@@ -1,6 +1,6 @@
 # DXOS design — the Bramble outliner plugin
 
-<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, UP-1, UP-1.author, UP-1.reshape, UP-2, UP-3, UP-4, IX-direct, IX-inflow, IX-immediate, IX-reversible]; role: target; status: current -->
+<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, UP-1, UP-1.author, UP-1.reshape, UP-2, UP-3, UP-4, IX-direct, IX-inflow, IX-immediate, IX-reversible, PX-mark, PX-disclosure, PX-nesting, PX-state, PX-rhythm, PX-theme]; role: target; status: current -->
 
 Design of the Bramble plugin for DXOS/Composer — the S4 stage. Its purpose (from
 the S3 UX gap analysis conclusion): **a new plugin is needed** — a node-per-row
@@ -174,11 +174,15 @@ realization (a created/focused Node is a first-class, editable Node like any oth
 
 ### Visual conformance
 
-The shell + chrome are **built to `implementations/tana/visual-spec.md`** (tokens:
-InterVariable; oklch ink/muted/faint ramp; bullet 15×15; chevron; reference chip
-`rgb(41 125 217)`; expansion-panel border `oklch(0.896)`). Verification: fill the
-Composer `app` selectors in `visual/tana-outline.json` and run `diff-styles.mjs`
-once the surface exists.
+The shell + chrome are **built to `implementations/tana/visual-spec.md`**, which is
+grounded on the neutral presentation facet **`PX-*`** — realized per concern:
+`PX-mark` (a **5px** dot in a 15px hit-area — *not* a 15px disc), `PX-disclosure`
+(15px chevron, hover-revealed), `PX-nesting` (32px indent, `flex-start`), `PX-state`
+(hover-reveal + hover/focus surface), `PX-rhythm` (24px gutter, 7.5px gap),
+`PX-theme` (theme-adaptive text; theme-stable dot). **Verification is done**: the
+`composer-outline.json` mapping covers every `PX` concern (8 regions) and the
+upgraded coverage gate ran clean against the built surface in both themes
+(2026-07-13, U4) — no longer deferred.
 
 ### Reuse vs net-new
 
