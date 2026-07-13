@@ -78,8 +78,9 @@ Status values: `not-started · authoring · needs-review · done`.
 
 | Stage | Artifact | Role | Status |
 |---|---|---|---|
-| S1 · Neutral substrate spec | `spec/internal-primitives.mdl`, `spec/user-primitives.mdl` | neutral | done |
-| S2 · Neutral interaction spec | `spec/interaction-primitives.mdl` | neutral | draft |
+| S1 · Neutral substrate + capabilities | `spec/internal-primitives.mdl` (`IP-*`, internal substrate), `spec/user-primitives.mdl` (`UP-*`, capabilities) | neutral | done |
+| S2 · Neutral surface — interaction | `spec/interaction-primitives.mdl` (`IX-*`) | neutral | draft |
+| S2 · Neutral surface — presentation | `spec/presentation-primitives.mdl` (`PX-*`) | neutral | authoring |
 | R · Reference realization (Tana) | `implementations/tana/` | reference | current · open live-checks (lifecycle + pointer, 2026-07-12) |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed; `UP-1.author` verdict added) |
@@ -91,9 +92,10 @@ Status values: `not-started · authoring · needs-review · done`.
 
 | Artifact | derives-from | Notes |
 |---|---|---|
-| `spec/internal-primitives.mdl` | — | SIP (neutral, upstream root) |
-| `spec/user-primitives.mdl` | IP-* | SUP |
-| `spec/interaction-primitives.mdl` | UP-*, IP-* | S2 neutral UX — IDs `IX-<n>.<concern>` |
+| `spec/internal-primitives.mdl` | — | `IP-*` — internal substrate (entities · identity · relationships · types); upstream root |
+| `spec/user-primitives.mdl` | IP-* | `UP-*` — user capabilities |
+| `spec/interaction-primitives.mdl` | UP-*, IP-* | `IX-*` — interaction (a *surface* facet); IDs `IX-<n>.<concern>` |
+| `spec/presentation-primitives.mdl` | UP-1, IP-1, IP-2 | `PX-*` — presentation (the other *surface* facet). `IX`+`PX` = the **surface** over the surface-independent `UP` capabilities; a new surface (mobile) is a new *realization* of `IX`+`PX`, not a change to `UP` |
 | `implementations/tana/user-experience.md` | IX-*, UP-* | Tana behavioral realization |
 | `implementations/tana/visual-spec.md` | UP-1, IP-1 | Tana computed-style visual reference (+ `visual/tana-outline.json` mapping) |
 | `implementations/dxos/gap-analysis.md` | IP-*, UP-* | substrate gap analysis (done) |
@@ -118,16 +120,39 @@ Before a downstream artifact is **delivered** (marked `current`/`done` or
 committed as complete), validate it against traceability:
 
 1. **Every element traces up.** Each behavior / gesture / element / finding cites
-   the upstream req(s) it realizes (`UP-*` / `IP-*` / `IX-*`). Nothing is
+   the upstream req(s) it realizes (`UP-*` / `IP-*` / `IX-*` / `PX-*`). Nothing is
    *un-grounded* — no mechanism imported from the target system (a UI convention,
    an API) that lacks a neutral counterpart. (This gate is what would have caught
    the Composer `@@` block-embed in the DXOS design — a convention with no UP/IP.)
 2. **Grep both directions.** The `derives-from` header lists the upstream reqs;
    `grep` each confirms coverage. An element with no trace is either fixed, or
    explicitly dispositioned (out-of-floor / move-up) — never left silent.
-3. A failed trace **blocks delivery** until resolved.
+3. **Cover every concern, not just the ones drawn.** Trace-up alone is not
+   enough: a delivery must also show it *covers every neutral concern* its facet
+   enumerates — e.g. a visual realization/gate covers every `PX-*` concern
+   (element × state × layout × theme), not a hand-picked few. A green that checks
+   only what was captured is a false green (the 2026-07-13 visual miss: `R.vis`
+   captured 4 regions, matched 4, yet did not look like Tana).
+4. A failed trace **or an uncovered concern blocks delivery** until resolved.
 
 ### Pending propagations
+
+**Open — 2026-07-13 · presentation facet + naming cleanup (move-up, U4):** the visual
+miss (Bramble outline not matching Tana despite a "4/4" gate) root-caused to a
+**missing neutral facet** — the specs described substrate, capabilities, and
+interaction *manner*, but never **presentation** — so Tana's visual capture was
+authored ungrounded and a trace-only gate green-lit it. Added
+**`spec/presentation-primitives.mdl` (`PX-*`)**: the neutral presentation concern-set
+(mark · disclosure · nesting · states · rhythm · theme), with a completeness sweep +
+surface-relativity in its rule. Also **renamed `UX-* → IX-*`** ("UX" is the broad
+experience umbrella, not one facet) and fixed naming: neutral specs are named by
+req-family (`IP`/`UP`/`IX`/`PX`); `S<n>` is a FLOW phase only; `IX`+`PX` are the two
+*surface* facets over `UP`. **Gate upgraded** (delivery-gate clause 3): coverage of
+every `PX-*` concern, not just trace-up. Pattern metadata: `pattern/reproduction-flow.md`.
+**To propagate (move-down):** re-ground `implementations/tana/visual-spec.md` on
+`PX-*` and re-capture Tana completely; `grep -r "PX-" spec/ implementations/`; mark
+`visual-spec.md` / `gap-analysis-ux.md` / `design.md` `needs-review`; then re-derive
+the plugin's chrome + re-run the upgraded gate.
 
 **Resolved — 2026-07-12 · node-authoring capability (move-up, U1):** an R-capture gap
 (the editable Tana header) traced to a deeper omission — the SUP addressed/nested/

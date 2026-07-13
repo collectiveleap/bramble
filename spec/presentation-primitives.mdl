@@ -1,0 +1,186 @@
+---
+id: spec.presentation-primitives
+name: Specification of Presentation Primitives
+version: 0.1.0
+status: draft
+---
+
+<!-- derives-from: [UP-1, IP-1, IP-2]; role: neutral; status: draft -->
+
+The system-agnostic **presentation** primitives — how a surface PRESENTS the SUP
+capabilities to the user: the visible marks, affordances, structure, states,
+spacing, and theme a conforming surface must present, and fidelity-match to a
+reference. Written assuming the SIP, the SUP, and the interaction primitives
+(`interaction-primitives.mdl`, `IX-*`). Presentation is described abstractly (a
+Node presents a handle mark; depth is shown by indentation) and names no
+particular system and **no pixel value**. A reference realization
+(`implementations/tana/visual-spec.md`) records one concrete instance — the
+measured sizes, colours, fonts — and a target reproduces it within a pinned theme.
+
+Together, **`IX` (interaction) and `PX` (presentation) are the two _surface_
+facets** over the surface-independent `UP` capabilities: `IX` is how the user
+acts, `PX` is how the surface is shown. A new surface (e.g. mobile) is a new
+*realization* of `IX`+`PX`, not a change to `UP`.
+
+IDs are `PX-<concern>.<application>` (per R-Spec-Entry-Conventions).
+
+## Rules
+
+```mdl
+rule R-Presentation-Concerns:
+  desc: |
+    PX specifies the PRESENTATION of the SUP capabilities on a surface — the
+    visible marks, affordances, structure, states, and rhythm the surface must
+    present and fidelity-match to a reference — NOT their pixel values. It names
+    no system and no measurement; a reference realization
+    (implementations/tana/visual-spec.md) instantiates each concern concretely
+    (sizes, colours, fonts), and a target reproduces those. Layered on
+    R-Conformance-Format from the SIP/SUP:
+
+    1. Each concern is a `feat` (PX-<concern>); it may be CROSS-CUTTING, so its
+       `traces:` names the SUP/SIP capabilities it presents.
+    2. Each `req` (PX-<concern>.<application>) carries a conformance-test clause
+       (given/when/then) SUFFICIENT to decide conformance, plus `probes:` that
+       size the work when a system X fails it. Written at CONCERN altitude (WHAT
+       must be present and fidelity-matched), NEVER at pixel altitude — the clause
+       reads the same for any surface; concrete sizes/colours live in the
+       reference realization, not here.
+    3. COMPLETENESS SWEEP. The concern set is enumerated EXHAUSTIVELY: every
+       presented ELEMENT × every STATE (rest / hover / focus / active) × the
+       LAYOUT relations between elements (gutter, indent, rhythm) × THEME. A
+       presented element with no concern, or a state left unspecified, is a gap.
+       This sweep is what a narrow "capture a few regions" visual pass misses.
+    4. SURFACE-RELATIVE. Presentation is realized per surface (desktop, mobile,
+       …); the concerns here are surface-INDEPENDENT — a mark, a disclosure,
+       nesting, states, rhythm, and theme apply to any surface — while their
+       realization differs per surface. Never assume one surface.
+```
+
+## Primitives
+
+```mdl
+feat PX-mark: Node handle mark
+  traces:
+    - UP-1 Atomic unit and outline
+  desc: |
+    Every Node shown in the outline presents a persistent visual MARK that
+    stands for the Node itself — the thing the user points at to act on it
+    directly (select, drag, zoom). The mark is the visual anchor of the Node's
+    identity in the view, present for every Node at every depth, uniformly. Its
+    size, shape, and colour are a realization concern recorded in the reference
+    visual-spec, not here.
+  req PX-mark.per-node:
+    given: a Node shown in the outline
+    then:
+      - the Node presents a visual handle mark that denotes the Node and is the target for acting on it directly
+      - the mark is present for every Node, at every depth, uniformly
+    probes:
+      - In X, does every outline item show a persistent per-item handle the user can act on, or only some items / only containers / none?
+      - Is the handle the addressable Node itself, or merely decoration?
+```
+
+```mdl
+feat PX-disclosure: Disclosure affordance
+  traces:
+    - UP-1 Atomic unit and outline
+  desc: |
+    A Node with structural successors presents a DISCLOSURE affordance — a
+    control that shows or hides its successors in place. It is distinct from the
+    handle mark, and its presence signals "this Node has children." A Node with
+    no successors presents no disclosure; its slot may be reserved so siblings
+    stay aligned.
+  req PX-disclosure.expandable:
+    given: a Node with structural successors
+    then:
+      - the Node presents an affordance to show or hide its successors in place
+      - a Node with no successors does not present the affordance (its slot may be reserved for alignment)
+    probes:
+      - In X, can the user tell which items have hidden children and expand/collapse them in place?
+      - Is the disclosure distinct from the item's handle and its selection?
+```
+
+```mdl
+feat PX-nesting: Nesting shown structurally
+  traces:
+    - UP-1 Atomic unit and outline
+    - IP-2 Structural edge
+  desc: |
+    Structural depth is shown by a consistent, monotonic INDENTATION (or
+    equivalent containment) relation: a successor is visibly set in from its
+    predecessor, and Nodes at equal depth align. The relation makes the tree
+    structure legible at a glance, so the user reads containment from position.
+  req PX-nesting.indent:
+    given: a Node shown beneath its structural predecessor
+    then:
+      - the successor is visibly inset from the predecessor by a consistent step
+      - Nodes at equal depth align to the same inset
+    probes:
+      - In X, is nesting depth shown by a consistent indentation (or containment) step?
+      - Do siblings at equal depth align, so the user can read structure from position?
+```
+
+```mdl
+feat PX-state: Affordance states
+  traces:
+    - UP-1 Atomic unit and outline
+    - IX-direct Directness
+  desc: |
+    Each interactive element the surface presents — the handle mark, the
+    disclosure, an editable Node, an inline reference — shows distinct visual
+    STATES across its lifecycle: at rest, on hover/point, on focus, and while
+    active/pressed. States tell the user what is actionable and what state it is
+    in; where an affordance is revealed on demand (e.g. a drag handle on hover),
+    that reveal is itself a state. State is a first-class presentation concern,
+    not an afterthought — this is the concern a static capture omits.
+  req PX-state.per-element:
+    given: an interactive element in the outline — a handle, a disclosure, an editable Node, or a reference
+    when: the user points at, focuses, or activates it
+    then:
+      - the element presents a distinct visual state for rest, hover/point, focus, and active
+      - the states are consistent across elements of the same kind
+    probes:
+      - In X, does an interactive element visibly change on hover / focus / active, or is it static?
+      - Are on-demand affordances (drag handle, disclosure) revealed or emphasized on hover where appropriate?
+```
+
+```mdl
+feat PX-rhythm: Spatial rhythm
+  traces:
+    - UP-1 Atomic unit and outline
+  desc: |
+    The outline presents a consistent SPATIAL RHYTHM: a stable gutter precedes
+    the content (items are not flush to the surface edge), and the spacing
+    between an item's parts (handle · disclosure · content) and between rows is
+    uniform and stable across the outline. The rhythm makes the structure
+    scannable; ad-hoc spacing breaks scannability.
+  req PX-rhythm.consistent:
+    given: the outline shown to the user
+    then:
+      - a consistent gutter precedes the content — items are not flush against the surface edge
+      - spacing between an item's parts, and between rows, is uniform and stable across the outline
+    probes:
+      - In X, is there a consistent gutter and inter-row spacing, or ad-hoc / variable spacing?
+      - Do an item's parts (handle, disclosure, content) sit in a stable, repeated rhythm?
+```
+
+```mdl
+feat PX-theme: Theme-relativity
+  traces:
+    - UP-1 Atomic unit and outline
+  desc: |
+    Presentation is defined RELATIVE TO A THEME — the surface's colour and type
+    system, e.g. light or dark. Every presentation concern above resolves against
+    the active theme: a Node's mark, its text, and its affordances take colour and
+    emphasis from the theme, not from fixed values. A consequence for conformance:
+    fidelity to a reference is only meaningful WITHIN a pinned theme — a reference
+    is captured in a stated theme, and a target is compared within that same theme.
+  req PX-theme.relative:
+    given: the outline shown under the surface's active theme
+    when: the theme changes (e.g. light ↔ dark)
+    then:
+      - the presentation resolves against the active theme — marks, text, and affordances stay legible and correctly emphasized in each theme
+      - fidelity to a reference is evaluated within a single, stated theme, not across themes
+    probes:
+      - In X, does the outline adapt to the active theme (light / dark), or use fixed colours that fail in one theme?
+      - Is visual conformance to the reference defined against a specific, stated theme?
+```

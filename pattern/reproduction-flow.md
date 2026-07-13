@@ -7,7 +7,7 @@ be repurposed for other products.
 
 **Two kinds of thing, two kinds of relation.**
 
-- **Processes** are nodes — *verbs* ("describe the data model", "capture the
+- **Processes** are nodes — *verbs* ("describe the internal substrate", "capture the
   reference"). **Assets** are what flows on the edges — the *artifacts* a
   process reads or writes.
 - **produce / consume** relates a **process ↔ asset** (a process consumes input
@@ -28,7 +28,7 @@ among them — only `derives-from` consistency between their assets.
 reference/target boundary:
 
 - **Top half — ABSTRACT.** Turn a *domain of existing solutions* (PKM tools) into
-  a *neutral form* (the facet assets S1–S3, S-pr). System-agnostic distillation:
+  a *neutral form* (the facet assets IP · UP · IX · PX). System-agnostic distillation:
   many solutions → one neutral description.
 - **Bottom half — SYNTHESIZE.** Build a *new solution* from the neutral form **+**
   a *target architecture* (DXOS/Composer, observed as `T0`) **+** *specific
@@ -100,21 +100,21 @@ folded at the reference hinge. Zones read by asset color + legend, not an axis l
   question: "How is the product's content structured?"
   answer: "a DAG of addressable Nodes joined by structural and linked edges"
   consumes: [domain]
-  produces: [S1]
+  produces: [IP]
 
 - id: P2
   facet: true
   question: "What can a user do with it?"
   answer: "nest/outline, link & backlink, address any Node, transclude"
   consumes: [domain]
-  produces: [S2]
+  produces: [UP]
 
 - id: P3
   facet: true
   question: "How does the user interact with it?"
   answer: "directly, in-flow, immediately, reversibly (gesture laws)"
   consumes: [domain]
-  produces: [S3]
+  produces: [IX]
 
 - id: P-present
   facet: true
@@ -122,20 +122,20 @@ folded at the reference hinge. Zones read by asset color + legend, not an axis l
   question: "How does the product present itself (visually)?"
   answer: null
   consumes: [domain]
-  produces: [S-pr]
+  produces: [PX]
 
 # --- reference capture ---
 - id: P4
   question: "Which existing product exemplifies this, to copy concretely?"
   answer: "Tana"
-  consumes: [S1, S2, S3, S-pr, Tana.obs]   # neutral form frames WHAT to capture; Tana.obs is the observed exemplar
+  consumes: [IP, UP, IX, PX, Tana.obs]   # neutral form frames WHAT to capture; Tana.obs is the observed exemplar
   produces: [R.beh, R.vis]                 # Tana-SPECIFIC answers to the neutral facets
 
 # --- target side (DXOS/Composer) — what we have actually done ---
 - id: P5
   question: "What does the target already provide vs must be built?"
   answer: "ECHO substrate is strong & reusable; but no surface gives every bullet Node identity → a new Bramble plugin is needed"
-  consumes: [S1, S2, S3, R.beh, R.vis, T0]   # compares should-be (neutral+reference) vs is (T0)
+  consumes: [IP, UP, IX, R.beh, R.vis, T0]   # compares should-be (neutral+reference) vs is (T0)
   produces: [GA]
 
 - id: P6
@@ -173,33 +173,33 @@ domain:
   produced_by: P0
   derives_from: []
 
-S1:
-  name: "neutral data model"
+IP:
+  name: "neutral internal substrate"
   role: neutral
   produced_by: P1
   derives_from: []
   artifact: "spec/internal-primitives.mdl (SIP)"
 
-S2:
+UP:
   name: "neutral user capabilities"
   role: neutral
   produced_by: P2
-  derives_from: [S1]          # written in S1's vocabulary
+  derives_from: [IP]          # written in IP's vocabulary
   artifact: "spec/user-primitives.mdl (SUP)"
 
-S3:
+IX:
   name: "neutral interaction manner"
   role: neutral
   produced_by: P3
-  derives_from: [S2]          # laws scope over the capabilities
+  derives_from: [UP]          # laws scope over the capabilities
   artifact: "spec/interaction-primitives.mdl"
 
-S-pr:
+PX:
   name: "neutral presentation"
   role: neutral
   produced_by: null           # MISSING — no producing process
-  derives_from: [S1, S2]
-  artifact: null              # to author (UX-present.* in S2, or VX-* new file)
+  derives_from: [IP, UP]
+  artifact: null              # gap since RESOLVED — authored as PX-* in spec/presentation-primitives.mdl (2026-07-13)
 
 T0:
   name: "target baseline — DXOS/Composer as-is (observed)"
@@ -219,21 +219,21 @@ R.beh:
   name: "Tana-specific behavior realization (R·beh)"
   role: reference
   produced_by: P4
-  derives_from: [S2, S3]      # grounded — Tana's answer to capabilities + interaction
+  derives_from: [UP, IX]      # grounded — Tana's answer to capabilities + interaction
   artifact: "implementations/tana/user-experience.md"
 
 R.vis:
   name: "Tana-specific visual realization (R·vis)"
   role: reference
   produced_by: P4
-  derives_from: [S-pr]        # UNGROUNDED — S-pr does not exist
+  derives_from: [PX]        # UNGROUNDED — PX does not exist
   artifact: "implementations/tana/visual-spec.md (+ visual/tana-outline.json)"
 
 GA:
   name: "Gap analysis (substrate + UX)"
   role: target
   produced_by: P5
-  derives_from: [S1, S2, S3, R.beh, R.vis]
+  derives_from: [IP, UP, IX, R.beh, R.vis]
   artifact: "implementations/dxos/gap-analysis.md, gap-analysis-ux.md"
 
 DZ:
@@ -267,7 +267,7 @@ verdict:
 
 ## Root cause (in the pattern's own terms)
 
-**A produced asset (`R.vis`) whose upstream dependency (`S-pr`) has no producer.**
+**A produced asset (`R.vis`) whose upstream dependency (`PX`) has no producer.**
 The neutral facets describe structure, capabilities, and interaction *manner* —
 never **presentation** — so `P4` captures Tana's visuals ad-hoc, with no neutral
 asset to frame or completeness-check them.
@@ -288,15 +288,16 @@ blind gate certifies an incomplete reference as done.
 
 ## Proposed change (address the root cause)
 
-1. **Author the missing facet process** `P-present` → `S-pr` (neutral presentation
-   concern-set: mark · disclosure · nesting · states · gutter · theme; no pixels).
-   Open naming call: `UX-present.*` inside S2, or `VX-*` in a new
-   `presentation-primitives.mdl`.
-2. **Re-ground `R.vis`**: `derives_from: [S-pr]` becomes real; re-capture Tana
-   *completely* against `S-pr` (the 5px dot, 24px gutter, states, theme — already
+1. **Author the missing facet process** `P-present` → `PX` (neutral presentation
+   concern-set: mark · disclosure · nesting · states · rhythm · theme; no pixels).
+   **✓ Done 2026-07-13:** authored as `PX-*` in `spec/presentation-primitives.mdl`
+   (naming resolved — `PX`, not `UX`, since "UX" is the broad experience umbrella,
+   not one facet; `IX`+`PX` are the two *surface* facets).
+2. **Re-ground `R.vis`**: `derives_from: [PX]` becomes real; re-capture Tana
+   *completely* against `PX` (the 5px dot, 24px gutter, states, theme — already
    largely measured).
 3. **Upgrade the Gate**: from "trace-up / match captured" to "trace-up **and**
-   cover every `S-pr` concern" — so a narrow green can't recur.
+   cover every `PX` concern" — so a narrow green can't recur.
 4. **Propagate down** (move-down): `grep` the changed assets; mark `DZ`/`CODE`
    `needs-review`; re-derive the visual design + chrome against the re-grounded
    `R.vis`; re-run the upgraded Gate.
@@ -313,15 +314,15 @@ edge must be a data relationship. Audit result:
 **Fixed in the current-state diagram** (were in the data, were not drawn):
 - `R·beh → P6` (P6 consumes `R·beh`) — this makes `R·beh` a two-consumer asset
   (`P5`, `P6`).
-- `R·vis ⇢ S-pr` — the ungrounded link; drawn as a **broken dashed arrow to the
-  MISSING `S-pr`** (the rule's way of showing "ungrounded").
-- `R·beh ⇢ S2, S3` — the grounded contrast against `R·vis`.
+- `R·vis ⇢ PX` — the ungrounded link; drawn as a **broken dashed arrow to the
+  MISSING `PX`** (the rule's way of showing "ungrounded").
+- `R·beh ⇢ UP, IX` — the grounded contrast against `R·vis`.
 
 **Intentional omissions** (derives-from that merely restates the producing
 process's `consumes`, permitted by the render rule): `GA ⇢ …`, `DZ ⇢ …`,
 `CODE ⇢ …`, `verdict ⇢ …`.
 
-**Optional / low value:** `S-pr ⇢ S1, S2` — `S-pr` does not exist yet.
+**Optional / low value:** `PX ⇢ IP, UP` — `PX` does not exist yet.
 
-**Note:** the neutral-form standing lane carries `S1–S3` to both `P4` and `P5`;
-`S-pr → P4` is a separate MISSING edge, not part of the lane.
+**Note:** the neutral-form standing lane carries `IP · UP · IX` to both `P4` and `P5`;
+`PX → P4` is a separate MISSING edge, not part of the lane.
