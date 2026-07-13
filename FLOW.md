@@ -137,7 +137,7 @@ committed as complete), validate it against traceability:
 
 ### Pending propagations
 
-**Open — 2026-07-13 · presentation facet + naming cleanup (move-up, U4):** the visual
+**Resolved — 2026-07-13 · presentation facet + naming cleanup (move-up, U4):** the visual
 miss (Bramble outline not matching Tana despite a "4/4" gate) root-caused to a
 **missing neutral facet** — the specs described substrate, capabilities, and
 interaction *manner*, but never **presentation** — so Tana's visual capture was
@@ -149,13 +149,16 @@ experience umbrella, not one facet) and fixed naming: neutral specs are named by
 req-family (`IP`/`UP`/`IX`/`PX`); `S<n>` is a FLOW phase only; `IX`+`PX` are the two
 *surface* facets over `UP`. **Gate upgraded** (delivery-gate clause 3): coverage of
 every `PX-*` concern, not just trace-up. Pattern metadata: `pattern/reproduction-flow.md`.
-**Propagating (move-down):** ✓ `visual-spec.md` **re-grounded on `PX-*`** (all six
-concerns · states · both themes · 2026-07-13) — fixing the recorded 15px-slot→5px-dot
-error and adding the missing indent step (32px), hover states, and theme axis.
-**Remaining:** expand `visual/tana-outline.json` + `implementations/dxos/visual/composer-outline.json`
-to cover every `PX` concern; re-derive the plugin chrome (5px dot · 24px gutter · 15px
-chevron · 7.5px gap · 32px indent · hover states) in the DXOS worktree; re-run the
-upgraded (coverage) gate. `gap-analysis-ux.md` / `design.md` remain `needs-review` for `PX`.
+**Move-down complete (2026-07-13):** ✓ `visual-spec.md` re-grounded on `PX-*` (all six
+concerns · states · both themes captured live). ✓ `composer-outline.json` mapping
+expanded 4→**8 regions, one per `PX` concern**. ✓ plugin chrome re-derived (5px dot ·
+24px gutter · 15px chevron · 7.5px gap · **32px indent** · `flex-start` · hover states ·
+theme-adaptive text) — DXOS commit `af22bdadb0`; caught a real dot-colour bug the narrow
+gate couldn't. ✓ **upgraded coverage gate re-run clean** (8/8 regions within tolerance);
+`plugin-bramble:{build,test,test-storybook,lint}` green, both themes legible.
+**Residual (minor):** `gap-analysis-ux.md` / `design.md` still `needs-review` to cite `PX`
+(documentation trace, no behaviour change). DXOS `.claude/launch.json` gained a storybook
+preset, left uncommitted (local).
 
 **Resolved — 2026-07-12 · node-authoring capability (move-up, U1):** an R-capture gap
 (the editable Tana header) traced to a deeper omission — the SUP addressed/nested/
