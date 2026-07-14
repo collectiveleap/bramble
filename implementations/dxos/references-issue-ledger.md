@@ -14,10 +14,36 @@ needs recording) · `ASSESS` (needs an empirical live-Tana check) · `BLOCKED` (
 **Dependency order:** settle the model + stance (N1–N4, T1, B1) → record the deviation (D1) → fix the
 method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
-**Current focus: → I3 (mention slice)** via `writing-plans`. Spec (N1–P1) + design (D1/D2) done; **I1
-(kind-typed `Edge` model) BUILT**; I2 (co-location substrate) built. Next: plan + build I3 (@-picker →
-linked `Edge` + positional marker · atomic chip · secondary-view renderer at both placements ·
-cycle-safe expansion; start by filtering `NodeOutline`'s edge use to structural — I1 Minor) → I4 (backlinks panel).
+## ▶ RESUME POINT (2026-07-14 — survives compaction)
+
+**Now executing: Plan I3a, INLINE (not subagent-driven), starting at Task 1.**
+Plan: `implementations/dxos/plans/2026-07-14-plan-i3a-mention-insertion.md` (4 tasks: 1 prereqs · 2 chip
+decoration [de-risk] · 3 @-picker · 4 deletion sync).
+
+**⚠ CRITICAL corrected-model constraint (do NOT re-drift):** the inline-mention marker is an
+**edge-referencing token `{{ref:<edgeId>}}`** in the node's plain text — it references the linked
+`Edge` id, NOT a target URL, NOT a markdown link. The chip is a **custom CodeMirror decoration**
+(resolve marker → `Edge` → target → live label). **Do NOT use `xmlTags` or add the markdown language** —
+that was the pre-unify leftover we caught + scrubbed via the move-down gate (commit `6ee7e7a`; see
+`FLOW.md` gate clause 4). Authoritative model: `design.md §1/§3` + `design-references.md`.
+
+**Build state (branch `claude/plugin-bramble-substrate`, DXOS worktree, NEVER merged):**
+- **I1 (kind-typed `Edge` model) BUILT** — 5 commits `6f783f2a2b..6697742093`; whole-branch READY; gate
+  green (test 61/61, build, lint). `Edge.kind` (structural|linked, `order` optional, v0.2.0);
+  `makeLinkedEdge`/`createLinkedEdge` (may-cycle); `backlinks` grouped union (`targetOf`); structural
+  ops + `outlineRows` filter `kind='structural'`.
+- **I2 (co-location substrate) BUILT** earlier. **I3a executing.** **I3b + I4 pending.**
+- I1 whole-branch Minors → folded into I3a Task 1: expose `controller.db` (private today) + filter
+  `NodeOutline`'s edge use to structural.
+
+**Durable env:** runners `moon run plugin-bramble:{test,test-storybook -- <Story>,build,lint}` from
+`/Users/san/sandbox/dxos/.claude/worktrees/plugin-bramble-substrate`; NEVER raw vitest; NEVER stage
+`.changeset/config.json` / `.claude/launch.json`; branch never merged to main. Verified Composer APIs
+for I3 are in `design-references.md` (reuse the `@`-picker UI + node-query + `PreviewComponent`/Surface +
+`dx-anchor` chip visual — NOT `xmlTags`).
+
+After I3a: I3b (secondary view — `PreviewComponent`/Surface at inline-expand + open-beside, cycle-safe) →
+I4 (backlinks panel).
 
 ---
 
