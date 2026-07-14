@@ -306,6 +306,30 @@ This is the same shape as the earlier drag/reshape move-up (U3): a concern with 
 neutral producer, given one, then propagated — now generalized as a reusable step
 of this pattern.
 
+## Method additions (2026-07-14 · references move-up)
+
+The references move-up surfaced two more completeness gaps — the same shape as the
+`PX` gap (a blind spot that propagates, a gate that can't catch it) — on new axes:
+
+- **Output-side blind spot.** The completeness sweeps swept *inputs* (verbs on a
+  noun, modalities per verb) but never the *output* — the render-modes a
+  capability's result takes and each mode's editability/liveness. References'
+  atomic-collapsed mode and the secondary-view unification slipped through.
+  → **`spec/README` sweep 4** (output-side: render-modes × editability × liveness).
+- **Un-factored family.** Primitives sharing a structural shape (structural edge,
+  linked edge — both directed node→node relations) were written as parallel
+  one-offs; the edge *family* and its axes stayed implicit until the extensibility
+  question forced them out. → **`spec/README` sweep 5** (factor shared-shape
+  families: abstraction + distinguishing axes + capabilities-per-axis; a new member
+  declares its axes).
+- **Gate extended.** `FLOW.md` clause 3 now checks coverage on three dimensions —
+  facet **concerns**, capability **render-modes**, and edge **axes** — so either new
+  omission fails the gate rather than slipping.
+
+Generalized lesson (U3/U4/this): a completeness sweep must cover a primitive's
+inputs, its output modes, AND the shape it shares with its peers; the gate must
+check every dimension the sweeps enumerate, not a hand-picked subset.
+
 ## Validation (data ↔ diagram)
 
 Every relationship in the data must appear as an edge in the diagram, and every
