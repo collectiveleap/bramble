@@ -126,14 +126,17 @@ feat UP-1: Atomic unit and outline
 ```mdl
 feat UP-2: Links and backlinks
   traces:
+    - IP-2
     - IP-3
   desc: |
     The user links from inside one Node's content to another Node — a
     linked edge — without disturbing the outline. The target Node
-    surfaces a backlinks view: the set of Nodes that link to it,
-    populated automatically by reverse traversal of incoming linked
-    edges (IP-3.backlinks). The view is the floor; a query language
-    over links sits above it.
+    surfaces a backlinks view: the Nodes with an inbound edge to it,
+    recovered automatically by reverse traversal and grouped by edge
+    kind — its structural predecessors (where the Node is co-located,
+    IP-2) and its linked references (what mentions it, IP-3.backlinks),
+    with any future edge kind forming its own group. The view is the
+    floor; a query language over it sits above.
   req UP-2.link:
     given: a Node A being edited
     when: the user inserts a link to Node T
@@ -144,11 +147,14 @@ feat UP-2: Links and backlinks
       - Can the user link to another unit from within a unit's content in X?
       - Does linking leave the referrer's outline structure untouched (no nesting of the target)?
   req UP-2.backlinks-view:
-    given: a Node T that is the target of links from Nodes A and C
-    then: T presents a backlinks view that includes A and C
+    given: a Node T with an inbound structural edge from P (T is co-located under P) and an inbound linked edge from A (A mentions T)
+    then:
+      - T presents a backlinks view, populated automatically by reverse traversal, with no author-created return edge
+      - it includes both P and A, grouped by edge kind — structural predecessors (where T is co-located) distinguished from linked references (what mentions T)
     probes:
-      - Does X show, on a unit, the set of other units that link to it?
-      - Is that view populated automatically, without the author creating a return link?
+      - Does X show, on a unit, the other units with an inbound edge to it — both where it is placed (structural) and what references it (linked)?
+      - Are the two kinds distinguished in the view, or collapsed together?
+      - Is the view populated automatically, without an author-created return edge?
 ```
 
 ```mdl

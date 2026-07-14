@@ -14,8 +14,8 @@ needs recording) · `ASSESS` (needs an empirical live-Tana check) · `BLOCKED` (
 **Dependency order:** settle the model + stance (N1–N4, T1, B1) → record the deviation (D1) → fix the
 method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
-**Current focus: → N3** (backlinks = union). N1, N2 done; N4/B1 near-closed in IP. Next: N3, T1, D1
-→ then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
+**Current focus: → T1** (floor vs ceiling tier). N1, N2, N3 done; N4/B1 near-closed in IP. Next: T1,
+D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
 
 ---
 
@@ -50,8 +50,13 @@ method (P1, now informed by the model) → build (I1–I4). I2 is already done.
     call, 2026-07-14) — the gap-analysis probes carry the per-system check.
   - Follow-up (minor): `IX-direct.expand`'s "not a navigation to a separate viewer" now reads as the
     *inline* placement's property; fine as-is, revisit if it confuses against `UP-5.open-beside`.
-- **N3** — "Mentioned in" = **union** of subtree-child occurrences (`targetOf`) + inline-mention
-  occurrences (`referencedBy`). `UP-2.backlinks-view` under-specifies this. **State: OPEN.**
+- **N3** — "Mentioned in" = **union** of subtree-child occurrences + inline-mention occurrences.
+  **Fix:** broadened `UP-2.backlinks-view` to the reverse-traversal of inbound edges of **all kinds**,
+  **grouped by edge kind** (structural predecessors = where co-located · linked = what mentions it ·
+  future kinds each their own group); `UP-2` traces gain `IP-2`. **State: DONE (committed).**
+  - Deferred (same class as N1's full-factor): the backlinks view is really a *reverse-traversal-axis*
+    capability spanning all edge kinds — not owned by `UP-2` (links). Relocating it to its own concern
+    waits until the edge family grows (YAGNI).
 - **N4** — "Real node, not shadow" invariant: every appearance of X is the real, editable X (one
   identity, live) — never a Tana read-only shadow. **Finding (2026-07-14):** already stated in IP —
   `IP-2.shared-identity` ("one vertex") + `IP-3.expand` ("the same target vertex, not a copy"). Home =
