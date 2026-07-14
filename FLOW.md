@@ -73,14 +73,13 @@ fixed by the same 2c substrate rewrite. **Plans 2c (indent/outdent · reorder), 
 + zoom view-state, pointer + keyboard), and 2e (drag-to-reshape via the Pragmatic-dnd tree-item
 hitbox) are BUILT** — all subagent-driven, per-task + whole-branch reviewed, delivery gate green,
 branch unmerged for spin-out (see the ledger `.superpowers/sdd/progress.md` in the DXOS worktree for
-per-task detail). **Next action:** the reference/backlink/transclusion slice — the last major R
-behavior not yet realized. Its sub-design is **drafted and awaiting review**
-(`implementations/dxos/design-references.md`, `needs-review`): `design.md §3` settled the *stances*
-(first-class `Ref` mention · native `referencedBy` backlinks · edit-through Surface · drop `@@`) but
-left the **`RefSpan` storage mechanism** open — a real fork (string+marker+parallel-`Ref.Array`
-[recommended] vs. structured span content). **Blocked on Steve's decision** (Open questions in that
-doc); the four sub-plans (P-ref-1 picker/chip, P-ref-2 expand/embed, P-ref-3 backlinks panel,
-P-colocate) become buildable on approval.
+per-task detail). **Next action:** continue the reference/backlink/transclusion slice — the last major R behavior. Its
+design is **settled** (`implementations/dxos/design-references.md`, `current`): one unified kind-typed
+`Edge` (structural | linked); the inline mention is an **edge-referencing marker token** in the node's
+text, rendered by a **custom atomic chip decoration** (resolve marker → `Edge` → target → live label) —
+not a URL, not markdown. Build underway on the DXOS worktree: **I1** (edge model) + **I3a** (mention
+insertion + atomic chip) built + review-clean; remaining **I3c** (live labels) · **I3b** (secondary
+view) · **I4** (backlinks panel). Live tracker: `implementations/dxos/references-issue-ledger.md`.
 
 ## Pipeline & status
 
@@ -95,9 +94,9 @@ Status values: `not-started · authoring · needs-review · done`.
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed; `UP-1.author` verdict added) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (§1–§4; §2 covers authoring + editable header + pointer affordances) |
-| S4 · References sub-design | `implementations/dxos/design-references.md` | target | needs-review (proposal — resolves the `RefSpan` storage fork §3 left open; awaiting Steve's decision) |
+| S4 · References sub-design | `implementations/dxos/design-references.md` | target | current (settled — unified kind-typed `Edge`; inline mention = an edge-referencing marker token rendered by a custom atomic chip decoration; the earlier `RefSpan` storage fork is resolved) |
 | S5 · Plan | `implementations/dxos/plans/` | target | Plans 1, 2a, 2b, 2c, 2d (view-state), **2e (drag)** built |
-| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a–2e + **references model I1 (kind-typed `Edge`: structural\|linked · `createLinkedEdge` may-cycle · `backlinks` grouped union · structural-only traversal)** built — `build/test(61)/lint` green, whole-branch READY. References slice next: I3 (mention slice) · I4 (backlinks panel). **Never merged** — spun out later as a separate plugin |
+| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a–2e + references model **I1 (kind-typed `Edge`: structural\|linked · `createLinkedEdge` may-cycle · `backlinks` grouped union · structural-only traversal)** + **I3a (@-mention insertion + atomic chip: `{{ref:id}}` marker · custom chip decoration · @-picker · delete-sync)** built — gate green (test 65, storybook 15, build, lint), both whole-branch reviewed + review-clean. References slice remaining: **I3c (live labels)** · I3b (secondary view) · I4 (backlinks panel). **Never merged** — spun out later as a separate plugin |
 
 ## Artifact index
 
