@@ -16,10 +16,15 @@ method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
 ## ▶ RESUME POINT (2026-07-14 — survives compaction)
 
-**I3a (@-mention insertion + atomic chip) COMPLETE + review-clean.** All 4 tasks built inline, the
-whole-branch review run, its 3 findings verified against source + resolved. **NEXT = `I3c` (live labels)
-or `I3b` (secondary view)** — Steve to sequence (both pending; they share target-observation machinery).
-Plan: `implementations/dxos/plans/2026-07-14-plan-i3a-mention-insertion.md`.
+**I3a (@-mention insertion + atomic chip) COMPLETE + review-clean; I3c (live labels) DONE — false
+positive, closed with a regression test.** **NEXT = `I3b` (secondary view) or `I4` (backlinks panel)** —
+Steve to sequence (both READY to plan). Plans: `plans/2026-07-14-plan-i3a-mention-insertion.md`,
+`plans/2026-07-14-plan-i3c-live-labels.md`.
+
+**I3c outcome:** the review's C2 ("chip label not live") did not reproduce — a substrate-level `Obj.update`
+of a non-rendered mentioned target already updates the chip (ECHO query reactivity re-renders the row +
+recomputes the label). Closed with the `MentionLive` regression test (dxos commit `d64dfae3d7`); no
+production change (Steve chose A / YAGNI).
 
 **I3a commits (branch `claude/plugin-bramble-substrate`, DXOS worktree, NEVER merged):**
 - T1 `7ef2795da0` (controller.db + NodeOutline structural filter) · T2 `34f2769cdf` (`mention-extension.ts`
@@ -162,13 +167,15 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
   `createLinkedEdge` + insert marker · delete-sync). **BUILT + review-clean (2026-07-14, inline, 4 tasks,
   commits `7ef2795da0..46540e2bae`; review fixes `2fe6e9ddcd`).** Gate green (test 65/65, storybook 15/15,
   build, lint). **State: BUILT.**
-- **I3c** — Live mention labels (the "edit X → Y's chip updates immediately" behavior from the neutral
-  spec's live-update requirement). **Carved from I3a whole-branch review C2 (2026-07-14).** Diagnosis:
-  `RowEditor`'s `labelMap` is memoized on `[linkedEdges]` (the row's own outgoing Edges); `useQuery` is
-  membership-based, so editing a *target* node's title (two hops away through its yText) never changes that
-  set → `refreshChips` never fires → the chip keeps its initial label. Fix direction: subscribe to each
-  linked target's yText (a React `useQuery` won't react to an in-place yjs mutation) and fire `refreshChips`
-  on change. Shares target-observation machinery with I3b. **State: DESIGN (needs the subscription design).**
+- **I3c** — Live mention labels (`IX-immediate`: "edit X → Y's chip updates immediately"). Carved from
+  I3a review C2, then **RESOLVED as a false positive (2026-07-14).** The C2 diagnosis (that `useQuery` is
+  membership-based and won't re-render the mentioning row on a target's in-place edit) did **not hold
+  empirically**: the `MentionLive` regression test mutates a mentioned target purely at the substrate level
+  (`Obj.update`, target NOT rendered — a faithful remote-edit proxy) and the chip updates live against the
+  unmodified code. ECHO query reactivity already re-renders the row + recomputes the label. **Steve chose to
+  close with the regression test only** (no production change; YAGNI — the test guards against a future
+  reactivity change breaking liveness). Test commit `d64dfae3d7`; plan `plans/2026-07-14-plan-i3c-live-labels.md`
+  retains the `Obj.subscribe` fix as a documented fallback. **State: DONE (regression-guarded, no code change).**
 - **I3b** — Secondary view (one `PreviewComponent`/Surface renderer, two mounts: inline-expand + open-beside;
   cycle-safe expansion). Gated on N/T/B (settled). **State: READY to plan.**
 - **I4** — Backlinks panel build (the union view). Gated on N3 (settled). **State: READY to plan.**
@@ -177,6 +184,14 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
 
 ## Decisions log
 _(appended as each issue resolves)_
+- 2026-07-14d — **I3c closed as a false positive (Steve chose A).** Wrote the I3c plan (`Obj.subscribe`
+  per target → `refreshChips`), grounded via an Explore pass on ECHO's live-field API. But the TDD red step
+  didn't go red: a `MentionLive` test that mutates a mentioned target purely at the substrate level
+  (`Obj.update`, target not rendered) already updated the chip against unmodified code. So C2's premise
+  (`useQuery` won't re-render the row on a target's in-place edit) was wrong here — ECHO query reactivity
+  covers it. Closed with the regression test only (no production change); the `Obj.subscribe` fix stays in
+  the plan as a documented fallback if `MentionLive` ever regresses. Lesson: run the review finding's own
+  failing test before building its fix — a plausible mechanism-level diagnosis can still be empirically false.
 - 2026-07-14c — **I3a review outcome (Steve chose A).** Whole-branch review found 3 real issues (all
   verified against source). Fixed now: **C1** picker-keymap precedence (register the @-picker before the
   row gestures; both are `Prec.highest` so array order decides) and **I3** the delete-sync user-event guard

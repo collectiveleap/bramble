@@ -1,6 +1,15 @@
-<!-- derives-from: [IX-immediate, UP-4, UP-5]; role: target; status: draft -->
+<!-- derives-from: [IX-immediate, UP-4, UP-5]; role: target; status: current -->
 
 # I3c — Live mention labels Implementation Plan
+
+> **OUTCOME (2026-07-14):** The TDD red step did not go red. The `MentionLive` test (Step 1) —
+> which mutates a mentioned target purely at the substrate level (`Obj.update`, target not rendered)
+> and asserts the chip updates — **passed against the unmodified code**. The whole-branch review's C2
+> was a **false positive**: ECHO query reactivity already re-renders the mentioning row and recomputes
+> the label on a target change. Resolution: **Steve chose to close I3c with the regression test only** —
+> Steps 3–5 (the `Obj.subscribe` production change) were **NOT applied** (YAGNI; the test guards against
+> a future reactivity change breaking liveness). Committed test: `d64dfae3d7`. Steps 3–5 remain here as
+> the defensive fallback if `MentionLive` ever regresses.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking. This is a single-file change (`RowEditor.tsx`) plus one storybook test — execute inline.
 
