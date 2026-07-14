@@ -330,6 +330,26 @@ Generalized lesson (U3/U4/this): a completeness sweep must cover a primitive's
 inputs, its output modes, AND the shape it shares with its peers; the gate must
 check every dimension the sweeps enumerate, not a hand-picked subset.
 
+## Move-down leftover (2026-07-14b · references design → build)
+
+A second failure, on the **move-down** side. Propagating the unify decision to the design layer, the
+headline model of `design-references.md` was rewritten but its **"reuse anchors" were carried over
+verbatim from the pre-unify research** — still naming Composer's `xmlTags` / markdown-URL marker. The
+chip anchor then contradicted the model two lines above it (marker-references-the-edge), and grounding
+the build plan in the target system's code followed the stale anchor. The delivery gate — whose clause 1
+exists for exactly this ("no imported target-system mechanism without a counterpart") — was **never run
+on the propagated design**, only on code.
+
+Root causes: (1) a move-down that scrubbed the headline model but not the **secondary sections** (reuse
+lists); (2) a reuse list treated as durable rather than re-derived against the new canon; (3) the
+design→build seam, where immersion in the target system's code lets its conventions **pick the
+mechanism** instead of the principle.
+
+Fixes (`FLOW.md` gate clause 4 + `spec/README`): the move-down **ends by running the gate on the design
+artifacts**; reuse anchors are re-derived at use, never carried across a canon change, and the secondary
+sections are scrubbed too; and the **direction rule** — principle → mechanism → reuse, never
+target-convention → mechanism.
+
 ## Validation (data ↔ diagram)
 
 Every relationship in the data must appear as an edge in the diagram, and every

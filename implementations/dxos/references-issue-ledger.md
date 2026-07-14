@@ -118,6 +118,14 @@ cycle-safe expansion; start by filtering `NodeOutline`'s edge use to structural 
 
 ## Decisions log
 _(appended as each issue resolves)_
+- 2026-07-14b — **Marker mechanism corrected + move-down gate fix.** While grounding Plan I3 I adopted
+  Composer's markdown-URL/`xmlTags` marker — inconsistent with unify (it puts the target in the text *and*
+  the edge). Root cause: the D2 move-down carried `design-references.md`'s pre-unify **reuse anchors**
+  over verbatim; the delivery gate was never run on the propagated design. Corrected: marker = an
+  **edge-referencing token**, chip = a **custom decoration** (no `xmlTags`, no markdown language needed).
+  Gated the whole references design; fixed `design.md §3` + `design-references.md`. Process fixes:
+  `FLOW.md` gate clause 4 (gate the propagated design · re-derive reuse anchors · scrub secondary sections
+  · direction rule), `spec/README` note, `pattern/reproduction-flow.md` record.
 - 2026-07-14 — D1 direction set: multi-location of a *node* = co-location (real multi-parent), a
   deliberate deviation from Tana's owner+reference. (Recording pending.)
 - 2026-07-14 — Correction (feeds N1): subtree-child and inline-mention are **distinct relationships**,

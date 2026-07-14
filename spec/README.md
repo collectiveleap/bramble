@@ -75,6 +75,8 @@ The three sweeps above are **input-side** — what acts on a noun. Two more cove
 
 (The reference-realization instance of these sweeps lives in `implementations/tana/user-experience.md`'s "Capture method" note.)
 
+**These run downstream too.** A **reuse anchor** or imported target-system mechanism in a design/plan is not exempt: re-derive it against current canon *at the moment of use* — a carried-over reuse list is the same class of miss as an un-swept concern. Derive the mechanism from the **principle first**, then pick reusable pieces for it (never let the target system's convention pick the mechanism). The delivery gate (`FLOW.md`, clause 4) enforces this on the propagated design.
+
 ## How to regenerate from scratch
 
 1. Research the data model and core interactions of Roam, Tana, Obsidian from primary sources; verify shared vs unique (the `/deep-research` harness produced the original corpus).

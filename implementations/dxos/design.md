@@ -213,15 +213,17 @@ kind-typed `Edge` of §1.
 
 ### Linked mention (`@`) — a linked-kind `Edge` + a positional marker
 
-The in-flow `@`-picker (`useLinkQuery`) provides the `IX-inflow` gesture; on select
-it creates a **linked-kind `Edge`** (§1) from the current Node to the target and
-inserts a **positional marker** in the current Node's text at the cursor, kept in
-sync (delete the marker → remove the edge). The text stays plain text + markers —
-**no structured-span content model**. Rendered as an inline chip (visual-spec accent
-`rgb(41 125 217)`), **collapsed by default** and **atomic** — a selectable unit, not
-editable in place; the target is edited by opening its secondary view, not by typing
-into the chip. Traces `UP-2.link` · `IX-inflow.link` · `IX-direct.reference-atomic` ·
-`IP-3.cross-reference`.
+The in-flow `@`-picker (reuse Composer's picker UI + object-query, à la `useLinkQuery`
+— but **not** its markdown-URL insert) provides the `IX-inflow` gesture; on select it
+creates a **linked-kind `Edge`** (§1) from the current Node to the target and inserts
+a **positional marker that references that `Edge` (by id), not a URL** at the cursor,
+kept in sync (delete the marker → remove the edge). The text stays plain text + a
+marker token — **no structured-span content model, no markdown-URL**. A **custom
+CodeMirror decoration** (resolve marker → `Edge` → its target) renders it as an inline
+chip (visual-spec accent `rgb(41 125 217)`), **collapsed by default** and **atomic** —
+a selectable unit, not editable in place; the target is edited by opening its secondary
+view, not by typing into the chip. Traces `UP-2.link` · `IX-inflow.link` ·
+`IX-direct.reference-atomic` · `IP-3.cross-reference`.
 
 ### Embed = the target's secondary view (one renderer, two placements)
 
@@ -254,12 +256,14 @@ mention-backlinks queryable at all. Surfaced in a companion panel (reuse Compose
 
 ### Reuse vs net-new
 
-- **Reuse:** `useLinkQuery` (`@` picker); the **secondary-view renderer**
-  (`PreviewComponent`/Surface — one renderer at both placements); `targetOf` for the
-  backlinks union; the companion panel.
-- **Net-new:** emitting a **linked `Edge` + positional text marker** on `@`-select
-  (and the marker↔edge sync); the **atomic** chip; mounting the secondary view at the
-  two placements with the cycle-safe expansion guard.
+- **Reuse:** the `@`-picker UI + object-query (à la `useLinkQuery`, **not** its
+  markdown-URL insert); the **secondary-view renderer** (`PreviewComponent`/Surface —
+  one renderer at both placements, resolving the edge's target); `targetOf` for the
+  backlinks union; the companion panel; the `dx-anchor` chip **visual**.
+- **Net-new:** emitting a **linked `Edge` + an edge-referencing marker token** on
+  `@`-select (and the marker↔edge sync); the **custom chip decoration** (marker →
+  edge → target, atomic); mounting the secondary view at the two placements with the
+  cycle-safe expansion guard.
 
 ## §4 Hosting / build
 

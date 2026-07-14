@@ -149,7 +149,18 @@ committed as complete), validate it against traceability:
    (containment · cyclicity · shared-identity · expansion). A green that checks
    only what was captured is a false green (the 2026-07-13 visual miss: `R.vis`
    captured 4 regions, matched 4, yet did not look like Tana).
-4. A failed trace **or an uncovered concern blocks delivery** until resolved.
+4. **Gate the propagated design, not only code.** A **move-down** (propagating a settled
+   model to `design.md`/sub-designs) *ends* by running clauses 1–3 over the design artifacts
+   themselves. **Reuse anchors and imported target-system mechanisms are not exempt** — each
+   must trace to the settled model or it is a carried-over leftover. Re-derive every reuse anchor
+   against current canon *at the moment of use*; never carry a reuse list across a canon change;
+   scrub the **secondary** sections (reuse lists · examples · API notes), not just the headline
+   model. **Direction rule:** derive the mechanism from the principle first, then select reusable
+   pieces for it — never let the target system's convention pick the mechanism. (2026-07-14: the
+   references move-down carried Composer's markdown-URL / `xmlTags` marker into
+   `design-references.md`'s reuse anchors, contradicting the just-settled edge-based model; the
+   gate, un-run on the design, missed it.)
+5. A failed trace **or an uncovered concern blocks delivery** until resolved.
 
 ### Pending propagations
 

@@ -14,9 +14,11 @@ decomposition (the S4 → S5 bridge).
   `targetOf`). A **mention inside another node's text** = a `kind: linked` `Edge` + a
   **positional marker** in the text (kept in sync). Distinct relationships (N1), both reified
   edges.
-- **No structured-span content model** — plain text + positional markers; the marker pairs
-  with the linked `Edge`. The earlier A-vs-B "RefSpan" question is moot: the linked edge is a
-  reified `Edge`, not a bare in-text `Ref`.
+- **No structured-span content model** — plain text + a positional **marker token that
+  references the linked `Edge` (by its id)**, never a target URL. The `Edge` is the one source
+  of truth for the target; the marker only fixes *where* the chip renders. The A-vs-B "RefSpan"
+  question is moot, and so is any markdown-URL (`[label](echo:/id)`) marker — that would put the
+  target in the text *and* the edge, re-introducing the text-URL the unify decision removed.
 - **Collapsed mention is atomic** (`IX-direct.reference-atomic`); the target is edited via its
   secondary view. Editable-collapsed is an above-floor option, not built (T1).
 - **Secondary view = one renderer, two placements** (`UP-5`): inline-expand (below the mention)
@@ -30,11 +32,15 @@ decomposition (the S4 → S5 bridge).
   (`@dxos/react-ui-editor`), driven by an `onLinkQuery` like
   `plugin-markdown/src/hooks/useLinkQuery.ts` — queries candidate objects, inserts on select.
   **The exemplar to copy** — adapt it to emit a linked `Edge` + marker, not a markdown URL.
-- **Chip:** `xmlTags` + `AnchorWidget` (`@dxos/ui-editor`) — the inline collapsed chip.
+- **Chip:** a **custom CodeMirror decoration** keyed to the marker token — resolve marker →
+  linked `Edge` → its target Node → render an atomic chip. Reuse the `dx-anchor` chip **visual**
+  (as `AnchorWidget` builds it), but **NOT `xmlTags`** — `xmlTags` renders markdown links by their
+  URL scheme, which requires the rejected markdown-URL marker.
 - **Secondary-view renderer:** `plugin-markdown/src/components/PreviewComponent` —
-  `<Surface.Surface type={AppSurface.Section} data={{ subject, … }} limit={1} />`, target
-  resolved via `space.db.makeRef(uri)` + `useResolveRef` (`@dxos/react-client/echo`). **One
-  instance mounted at both placements** (inline-expand + open-beside).
+  `<Surface.Surface type={AppSurface.Section} data={{ subject, … }} limit={1} />`. The `subject`
+  is the linked `Edge`'s **target Node** (resolve via `space.db.makeRef` + `useResolveRef`, or
+  directly from the edge's target endpoint) — not a URL from the text. **One instance mounted at
+  both placements** (inline-expand + open-beside).
 - **Edge:** the existing Bramble `Edge` relation, extended with `kind`; backlinks via `targetOf`
   (the `parentEdges`-style reverse traversal already in the plugin).
 - **Do NOT reuse:** `ui-editor/extensions/mention.ts` (unused) or
