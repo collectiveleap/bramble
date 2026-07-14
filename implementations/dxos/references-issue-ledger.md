@@ -16,10 +16,14 @@ method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
 ## ▶ RESUME POINT (2026-07-14 — survives compaction)
 
-**I3a (@-mention insertion + atomic chip) COMPLETE + review-clean; I3c (live labels) DONE — false
-positive, closed with a regression test.** **NEXT = `I3b` (secondary view) or `I4` (backlinks panel)** —
-Steve to sequence (both READY to plan). Plans: `plans/2026-07-14-plan-i3a-mention-insertion.md`,
-`plans/2026-07-14-plan-i3c-live-labels.md`.
+**I3a (mention insertion) + I3c (live labels, false positive) + I3b-1 (inline-expand secondary view)
+COMPLETE.** **NEXT = `I3b-2` (open-beside) then `I4` (backlinks panel).** Consider a whole-branch review
+once I3b-2 lands (both UP-5 placements together). Plans under `plans/` (`…-plan-i3a-…`, `…-plan-i3c-…`,
+`…-plan-i3b1-inline-expand`).
+
+**I3b-1 outcome:** Option-click a chip expands the target's outline inline (bounded, live, edit-through,
+cycle-safe). Built inline (commits `39cbdfa70e..0bd2e27783`); gate green (test 66/66, storybook 18/18).
+Direct-mounts `<NodeOutline subject={target}/>` (Steve-approved deviation from `<Surface>` — testability).
 
 **I3c outcome:** the review's C2 ("chip label not live") did not reproduce — a substrate-level `Obj.update`
 of a non-rendered mentioned target already updates the chip (ECHO query reactivity re-renders the row +
@@ -176,14 +180,35 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
   close with the regression test only** (no production change; YAGNI — the test guards against a future
   reactivity change breaking liveness). Test commit `d64dfae3d7`; plan `plans/2026-07-14-plan-i3c-live-labels.md`
   retains the `Obj.subscribe` fix as a documented fallback. **State: DONE (regression-guarded, no code change).**
-- **I3b** — Secondary view (one `PreviewComponent`/Surface renderer, two mounts: inline-expand + open-beside;
-  cycle-safe expansion). Gated on N/T/B (settled). **State: READY to plan.**
+- **I3b** — Secondary view (`UP-5`: one renderer, two placements). **Split** (2026-07-14, Steve chose):
+  - **I3b-1 — inline-expand.** Option-click a chip → `expandedMentions` view-state → render the target's
+    outline below the row, bounded + cycle-safe. **BUILT (inline, 3 tasks, commits `39cbdfa70e..0bd2e27783`;
+    plan `plans/2026-07-14-plan-i3b1-inline-expand.md`).** Gate green (test 66/66, storybook 18/18 incl.
+    `MentionExpand` + `MentionExpandCycle`, build, lint). **Deviation (Steve-approved):** direct-mounts
+    `<NodeOutline subject={target}/>` not `<Surface type={Section}>` — behaviorally identical (bramble's
+    Section surface for a Node *is* NodeOutline), but testable under `withClientProvider` and simplest for
+    Node-only targets; swap to `<Surface>` in one line if a cross-type target ever arrives. **State: BUILT.**
+  - **I3b-2 — open-beside.** Shift-click a chip → `LayoutOperation.Open` (from `@dxos/app-toolkit`) via
+    `useOperationInvoker` (`@dxos/app-framework/ui`), payload `{ subject: [Paths.getObjectPathFromObject(target)],
+    pivotId: <current pane>, navigation: 'immediate' }`. New framework wiring for bramble (no operation-invoker
+    today); not storybook-gated (no layout context there) — test by asserting the dispatch payload. **State:
+    READY to plan.**
 - **I4** — Backlinks panel build (the union view). Gated on N3 (settled). **State: READY to plan.**
 
 ---
 
 ## Decisions log
 _(appended as each issue resolves)_
+- 2026-07-14e — **I3b split + inline-expand deviation (Steve chose recommended on both).** I3b (secondary
+  view) split into **I3b-1 inline-expand** (built now, storybook-gated) and **I3b-2 open-beside** (separate
+  plan — `LayoutOperation.Open`, framework wiring, tested by dispatch payload not storybook). Deviation: the
+  inline secondary view **direct-mounts `<NodeOutline subject={target}/>`** rather than the design's
+  `<Surface type={Section}>` anchor — behaviorally identical (bramble's Section surface for a Node resolves to
+  NodeOutline) but `<Surface>` renders nothing under the plugin's `withClientProvider` story harness, so
+  direct-mount is what lets the inline-expand be gate-tested. One-line swap to `<Surface>` if a cross-type
+  mention target ever arrives. Cycle-safety via an `ExpansionPathContext` (nesting-subject ids) — a mention of
+  an ancestor renders a stub. Root cause the split surfaced: open-beside vs inline-expand have different
+  integration + test surfaces, so bundling them would force two test strategies into one plan.
 - 2026-07-14d — **I3c closed as a false positive (Steve chose A).** Wrote the I3c plan (`Obj.subscribe`
   per target → `refreshChips`), grounded via an Explore pass on ECHO's live-field API. But the TDD red step
   didn't go red: a `MentionLive` test that mutates a mentioned target purely at the substrate level
