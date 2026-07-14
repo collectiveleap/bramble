@@ -16,9 +16,18 @@ method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
 ## ▶ RESUME POINT (2026-07-14 — survives compaction)
 
-**Now executing: Plan I3a, INLINE (not subagent-driven), starting at Task 1.**
-Plan: `implementations/dxos/plans/2026-07-14-plan-i3a-mention-insertion.md` (4 tasks: 1 prereqs · 2 chip
-decoration [de-risk] · 3 @-picker · 4 deletion sync).
+**Now executing: Plan I3a, INLINE. Tasks 1 + 2 DONE; NEXT = Task 3 (@-picker).**
+Plan: `implementations/dxos/plans/2026-07-14-plan-i3a-mention-insertion.md` (4 tasks: 1 prereqs ✓ · 2 chip
+decoration [de-risk] ✓ · 3 @-picker · 4 deletion sync). Commits: T1 `7ef2795da0` (controller.db +
+NodeOutline structural filter), T2 `34f2769cdf` (`mention-extension.ts` — `{{ref:id}}` marker + custom
+chip decoration; **de-risk PROVEN** by the `Mention` storybook, chip renders the live label). All green
+(test 64/64, storybook 14/14, build, lint). Files: `mention-extension.ts` (helpers `makeMarker`/
+`markerEdgeIds`/`MARKER_RE`, `mentionChips` decoration, `refreshChips` effect); `RowEditor.tsx` (wires
+`mentionChips` + a linked-edges `resolveLabel` + refresh); `NodeOutline.stories.tsx` (`Mention` story).
+**T3 next:** `useMentionPicker` (popover/`EditorMenuProvider` + node-query; on select `createLinkedEdge`
++ insert `makeMarker(edge.id)`), wrap `RowEditor` in `EditorMenuProvider`. **T4:** `staleEdgeIds` +
+deletion sync. **Story seeding gotcha:** set Text content via `Obj.update(t, (t) => { t.content = … })`,
+never direct assignment.
 
 **⚠ CRITICAL corrected-model constraint (do NOT re-drift):** the inline-mention marker is an
 **edge-referencing token `{{ref:<edgeId>}}`** in the node's plain text — it references the linked
