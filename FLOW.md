@@ -97,7 +97,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (§1–§4; §2 covers authoring + editable header + pointer affordances) |
 | S4 · References sub-design | `implementations/dxos/design-references.md` | target | needs-review (proposal — resolves the `RefSpan` storage fork §3 left open; awaiting Steve's decision) |
 | S5 · Plan | `implementations/dxos/plans/` | target | Plans 1, 2a, 2b, 2c, 2d (view-state), **2e (drag)** built |
-| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a + 2b + 2c + 2d + **2e (drag-to-reshape: reorder/reparent/make-child via Pragmatic-dnd tree-item hitbox, bullet handle)** built — `build/test(53)/test-storybook(13)/lint` + `composer-app:build` green, whole-branch READY. **Never merged** — spun out later as a separate plugin |
+| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a–2e + **references model I1 (kind-typed `Edge`: structural\|linked · `createLinkedEdge` may-cycle · `backlinks` grouped union · structural-only traversal)** built — `build/test(61)/lint` green, whole-branch READY. References slice next: I3 (mention slice) · I4 (backlinks panel). **Never merged** — spun out later as a separate plugin |
 
 ## Artifact index
 

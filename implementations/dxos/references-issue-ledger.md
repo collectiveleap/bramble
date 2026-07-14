@@ -14,9 +14,10 @@ needs recording) · `ASSESS` (needs an empirical live-Tana check) · `BLOCKED` (
 **Dependency order:** settle the model + stance (N1–N4, T1, B1) → record the deviation (D1) → fix the
 method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
-**Current focus: → build (I1/I3/I4)** via `writing-plans`. Neutral-spec model (N1–N4), tier (T1),
-deviation (D1), method (P1), design propagation (D2) all done. I2 (co-location substrate) already built.
-Next: plan + build I1 (kind-typed `Edge` + marker/backlinks helpers) → I3 (mention slice) → I4 (backlinks panel).
+**Current focus: → I3 (mention slice)** via `writing-plans`. Spec (N1–P1) + design (D1/D2) done; **I1
+(kind-typed `Edge` model) BUILT**; I2 (co-location substrate) built. Next: plan + build I3 (@-picker →
+linked `Edge` + positional marker · atomic chip · secondary-view renderer at both placements ·
+cycle-safe expansion; start by filtering `NodeOutline`'s edge use to structural — I1 Minor) → I4 (backlinks panel).
 
 ---
 
@@ -98,8 +99,15 @@ Next: plan + build I1 (kind-typed `Edge` + marker/backlinks helpers) → I3 (men
   **State: ASSESS (confirm-only).**
 
 ## Implementation (DXOS build)
-- **I1** — Content model = **Option A** (plain text + positional marker + real `Ref` + chip/panel) for
-  mentions; structural edges for co-location; **no Option B**. — leaning A; gated on N1–N3. **State: BLOCKED.**
+- **I1** — Kind-typed `Edge` model layer. **BUILT (2026-07-14, subagent-driven, 5 tasks, commits
+  6f783f2a2b..6697742093):** `Edge.kind` (structural|linked, `order` optional, v0.2.0) + `makeLinkedEdge`;
+  structural ops (`childEdges`/`parentEdges`/`outlineRows`) filter `kind=structural`; `createLinkedEdge`
+  (may-cycle); `backlinks` grouped union via `targetOf`. Whole-branch review **READY**; gate green
+  (test 61/61, build, lint). **State: BUILT.**
+  - Carried to **I3** (whole-branch Minors): (1) `NodeOutline.tsx` zoom-root fallback + edge `useQuery`
+    read unfiltered `edges` — filter to `kind=structural` before I3 creates live linked edges (dormant
+    now; avoids outline re-render churn on linked-edge changes). (2) plan's `linkedReferrers` was never
+    needed (`backlinks` covers it) — doc-only.
 - **I2** — Co-location substrate: multi-parent + cycle guard + multi-location render tests. Co-location
   *UX* (add-parent picker, render occurrence) pending. **State: BUILT (substrate); UX pending.**
 - **I3** — Reference/mention slice build (@-picker · chip · expand-panel Surface · backlinks-`Ref` ·
