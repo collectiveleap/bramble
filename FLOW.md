@@ -141,7 +141,12 @@ committed as complete), validate it against traceability:
 3. **Cover every concern, not just the ones drawn.** Trace-up alone is not
    enough: a delivery must also show it *covers every neutral concern* its facet
    enumerates — e.g. a visual realization/gate covers every `PX-*` concern
-   (element × state × layout × theme), not a hand-picked few. A green that checks
+   (element × state × layout × theme), not a hand-picked few. Coverage runs on
+   three dimensions, matching the completeness sweeps (`spec/README`): every
+   **concern** a facet lists; every **render-mode** of a capability whose result
+   is rendered (mode × editability × liveness — a reference's collapsed / expanded
+   / beside, not just the default); and every **axis** an edge kind declares
+   (containment · cyclicity · shared-identity · expansion). A green that checks
    only what was captured is a false green (the 2026-07-13 visual miss: `R.vis`
    captured 4 regions, matched 4, yet did not look like Tana).
 4. A failed trace **or an uncovered concern blocks delivery** until resolved.

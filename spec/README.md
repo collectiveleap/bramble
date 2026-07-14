@@ -68,6 +68,11 @@ The failure these prevent: **specs describe a noun's *state* but under-enumerate
 2. **Modality-independence.** A capability is invariant across input modality. For each capability/law, enumerate every modality it can have — keyboard, pointer-click, **direct-manipulation drag** — and treat them as interchangeable realizations. Never spec keyboard-only.
 3. **Continuous gestures.** A discrete "trigger → response" format silently misses continuous / direct-manipulation gestures (drag, resize, marquee) that have a **press → track → commit** lifecycle. Sweep for them explicitly and give each a first-class entry, not a one-liner riding on a keyboard gesture.
 
+The three sweeps above are **input-side** — what acts on a noun. Two more cover the **output** of a capability and the **shape** of the primitives themselves:
+
+4. **Output-side: render-modes of a result.** For each capability whose result is *rendered* (a reference, an embed, a backlink, a query result), enumerate its full set of **render-modes** — e.g. a reference: collapsed chip / expanded embed / opened beside — and for each mode its **editability** (atomic/read-only vs edit-through) and **liveness** (reflects the source in realtime vs static). Never spec a single render/edit behaviour for a result that has multiple modes. (The miss this prevents: the atomic collapsed mention and the secondary-view unification were under-specified because only the *inputs* to references were swept, never the *modes* their result renders in.)
+5. **Factor shared-shape families.** When ≥2 primitives share a structural shape — e.g. both are directed relations over the same noun (structural edge, linked edge) — do not leave them as parallel one-offs. Name the general abstraction (edge), enumerate the **axes** members differ on (containment · cyclicity · shared-identity · expansion), and define capabilities **over the axes, not the specific members**, so the set stays open; a new member must declare its axes. (The miss this prevents: the edge family stayed implicit — capabilities were written per-kind — until the extensibility question forced it out.)
+
 (The reference-realization instance of these sweeps lives in `implementations/tana/user-experience.md`'s "Capture method" note.)
 
 ## How to regenerate from scratch

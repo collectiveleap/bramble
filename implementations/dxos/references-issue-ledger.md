@@ -14,8 +14,9 @@ needs recording) · `ASSESS` (needs an empirical live-Tana check) · `BLOCKED` (
 **Dependency order:** settle the model + stance (N1–N4, T1, B1) → record the deviation (D1) → fix the
 method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
-**Current focus: → D1** (record the co-location deviation). N1, N2, N3, T1 done; N4/B1 near-closed in IP.
-Next: D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
+**Current focus: → D2** (propagate to design layer). Neutral-spec model (N1–N4), tier (T1), deviation
+(D1), method (P1) all done. Next: D2 (rewrite `design.md §3` + `design-references.md` to the settled
+model) → build (I1–I4).
 
 ---
 
@@ -29,7 +30,11 @@ Next: D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1�
     (e.g. "when ≥2 primitives share a shape — both directed node→node relations — factor the family:
     name the general abstraction + the distinguishing axes + define capabilities per-axis, so the set
     stays open")? Deliver as a reusable method step, not a one-off.
-  - *State: PROPOSED (P1a) · OPEN (P1b). Worked after the model layer.*
+  - **DONE (2026-07-14):** both drafted into `spec/README` "Spec completeness sweeps" — sweep **4**
+    (output-side: render-modes × editability × liveness) and sweep **5** (factor shared-shape families:
+    abstraction + axes + capabilities-per-axis; new members declare axes). Delivery gate (`FLOW.md`
+    clause 3) extended to check coverage on all three dimensions (concerns · render-modes · edge-axes).
+  - *State: DONE.*
 
 ## Neutral-spec model (what the primitives ARE)
 - **N1** — Two relationships, kept distinct: **subtree-child** (co-location · structural · **acyclic**)
@@ -75,7 +80,15 @@ Next: D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1�
 
 ## Design deviation (Bramble-specific)
 - **D1** — "All X-*as-a-node* elsewhere = co-location" (deviation from Tana's owner+reference; real
-  multi-parent). Record explicitly in `design.md` + gap-analysis. **State: DECIDED; needs recording.**
+  multi-parent). **Finding (2026-07-14):** already recorded at both layers — `design.md §1` ("closes the
+  owner+reference divergence") + §2:161 (co-locate gesture, "the gesture Tana lacks") + `gap-analysis.md`
+  (`IP-2` divergent; `UP-1.multi-location` partial). No new recording needed. **State: DONE (already recorded).**
+- **D2** — Propagate N1–N3/T1 **down** to the design layer. `design.md §3` + `design-references.md`
+  predate this session's neutral changes (they still frame mentions as a "first-class `Ref`-span"/RefSpan
+  content model). Rewrite to the settled model: atomic collapsed mention (Option A) · secondary-view
+  unification (one artifact, two placements) · backlinks = grouped union · edges-as-open-family ·
+  co-location-vs-inline-mention distinct. This is what the build (I1–I4) derives from. **State: OPEN
+  (after P1, before build).**
 
 ## Behavior to assess (empirical)
 - **B1** — Cycle/recursion in mention-expansion: mentions may-cycle (self/ancestor); expansion needs a
