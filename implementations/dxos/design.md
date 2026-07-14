@@ -28,10 +28,10 @@ section here (grown one at a time), then planned and built:
 
 ### The model
 
-> **Node** = any typed ECHO `Obj` · **structural edge** = a reified
-> `predecessor→successor` Relation (multi-predecessor native, fractional-ordered,
-> app-kept-acyclic) · **linked edge** = an ECHO `Ref` · **outline** = the *view*
-> rendering a Node's structural-successor subtree.
+> **Node** = any typed ECHO `Obj` · **edge** = one reified `Edge` Relation, kind-typed:
+> **structural** (predecessor→successor, multi-predecessor native, fractional-ordered,
+> app-kept-acyclic) and **linked** (cross-reference, may-cycle; target = the reference) ·
+> **outline** = the *view* rendering a Node's structural-successor subtree.
 
 Concretely:
 
@@ -41,17 +41,23 @@ Concretely:
   parallel node type beside ECHO's objects. This is the realization the
   `IP-1.typed-node` accommodation was added for: every ECHO type is nestable
   outline content, addressable / linkable / multi-locatable.
-- **Structural edge = a reified `predecessor→successor` Relation** (decision (C)) —
-  a first-class ECHO `Relation` entity per parent→child link, `Source` =
-  predecessor, `Target` = successor, of a distinguished Bramble structural-edge
-  type (kept apart from linked edges and from arbitrary domain Relations).
-  Multiplicity is **native**: two structural Relations targeting one Node give it
-  two predecessors — **true multi-predecessor**, edit-through free (one `Obj`).
-  This *closes* the ECHO "owner+reference" divergence the substrate gap analysis
-  recorded (`gap-analysis.md`, `IP-2.shared-identity` divergent).
-- **Linked edge = an ECHO `Ref`** — the lightweight `[[X]]` mention / backlink
-  form, type-distinct from the structural edge (SIP `IP-3`); backlinks via
-  `referencedBy` / `ReverseRefIndex` (already `pass`).
+- **Edge = one reified `Edge` Relation, kind-typed** (realizing the neutral
+  edge-family) — a first-class ECHO `Relation` with `kind ∈ {structural, linked}`,
+  each kind declaring its axes. A new edge kind is a new `kind`, not a new mechanism.
+  - **`kind: structural`** (decision (C)) — `Source` = predecessor, `Target` =
+    successor, fractional `order`, app-kept-acyclic. Multiplicity **native**: two
+    structural edges into one Node give it two predecessors — **true
+    multi-predecessor**, edit-through free (one `Obj`). *Closes* the ECHO
+    "owner+reference" divergence the gap analysis recorded (`IP-2.shared-identity`).
+  - **`kind: linked`** — `Source` = the referring Node, `Target` = the referenced
+    Node (**the reference *is* the Edge's target**); may-cycle; non-containment. The
+    `@`/`[[X]]` mention. A **positional marker** in the referring Node's text records
+    *where* the chip renders; the `Edge` carries the queryable link. A reified linked
+    `Edge` (not a bare in-text `Ref`) is what makes mention-backlinks work —
+    `referencedBy` indexes schema `Ref` fields, not text-positioned URIs.
+- **Backlinks = a Node's incoming edges by `targetOf`, grouped by kind** — structural
+  ("appears under") and linked ("mentioned in"); one traversal, realizing
+  `UP-2.backlinks-view`'s grouped union.
 - **Sibling ordering = a fractional index** (LexoRank-style) property on the
   structural Relation — CRDT/merge-friendly, no reindexing on insert.
 - **Acyclicity = app-enforced** (SIP `IP-2.acyclic`; ECHO enforces none). Before
@@ -75,16 +81,19 @@ Concretely:
 | `IP-2.direction` | reified Relation with distinct `Source`/`Target` (already `pass`) |
 | `IP-2.multi-predecessor` / `.shared-identity` | **native** — many structural Relations → one Node; **closes** ECHO's owner+reference divergence |
 | `IP-2.acyclic` | app-enforced cycle check at gesture time (closes the ECHO `fail`) |
-| `IP-3` linked edge | ECHO `Ref` (cross-reference, may-cycle, backlinks — already `pass`) |
+| `IP-3` linked edge | the `Edge` relation `kind: linked` (target = the reference; may-cycle; backlinks via `targetOf`, uniform with structural) |
 
 ### Reuse vs net-new
 
 - **Reuse:** ECHO `Obj` identity + open content-type; `Relation` as the reified
-  edge entity; `Ref` + `referencedBy` for linked edges/backlinks; the typed-object
-  system.
-- **Net-new:** the Bramble structural-edge Relation type + its fractional-order
-  property; app-level acyclicity enforcement; the traversal (children = structural
-  Relations by `sourceOf`, ordered) and the outline-as-view rendering (§2).
+  edge entity (**both** edge kinds); `targetOf` for backlinks; Composer's
+  mention/embed rendering (`@`-picker, chip, `PreviewComponent` secondary view — §3);
+  the typed-object system.
+- **Net-new:** the Bramble `Edge` relation type (**kind-typed** structural/linked) +
+  the structural kind's fractional-order property; app-level acyclicity enforcement
+  (structural only); the traversal (children = structural edges by `sourceOf`,
+  ordered) and the outline-as-view rendering (§2); the linked kind's positional
+  text-marker and marker↔edge sync (§3).
 
 ### Alternatives considered
 
@@ -156,8 +165,8 @@ nodes with no registered surface.
 | Edit the zoom-root **header** | the header renders the **same** editable per-row editor as body rows — a Node keeps its capabilities in any view position (view-position invariance); `Enter` in it creates the first child | `IX-direct` · `UP-1.author` |
 | Indent / outdent | rewire the focused Node's structural `Edge` (predecessor → preceding-sibling / grandparent); cycle-checked; `order` set | `IX-direct` |
 | Reorder up/down | change the `Edge`'s `order` (`orderBetween` neighbours) | `IX-direct` |
-| Insert `@`-reference | insert a **linked** `Ref`-span (collapsed chip) via the `@`-picker | `IX-inflow` |
-| Expand a reference inline | per-occurrence local view toggle → render the target's `Section` Surface in place, edit-through (§3) | `IX-direct.expand` |
+| Insert `@`-mention | create a **linked-kind `Edge`** + a positional text marker (collapsed **atomic** chip) via the `@`-picker | `IX-inflow` · `IX-direct.reference-atomic` |
+| Expand a mention / open beside | per-occurrence toggle → the target's **secondary view** inline; or open it alongside (§3) | `IX-direct.expand` · `UP-5` |
 | Co-locate (multi-location) | **add a second** structural `Edge` to the Node — the gesture Tana lacks (Bramble's edge-native advantage) | `IX-direct` |
 | Expand / collapse, Zoom | **local per-user view-state**, keyed by edge/node id — *not* substrate; triggered by key **or** pointer (**click the chevron** = expand/collapse; **click the bullet** = zoom) | — |
 | Drag a bullet (reorder / re-parent) | pointer input for reorder (`orderBetween`) or **re-parent** (`reparentEdge`, cycle-checked) — the *same* substrate ops as the keyboard structural gestures, reached by drag; reuses Composer's **Atlassian Pragmatic drag-and-drop** via `@dxos/react-ui-list`'s `useReorderList`/`useReorderItem` (`dragHandle`=bullet, `element`=row) + hitbox `attachInstruction` for reorder-vs-make-child (the navtree's stack; **not** dnd-kit — that dep is vestigial). The bullet does double duty: click = zoom, press-drag = move | `IX-direct` |
@@ -198,51 +207,59 @@ upgraded coverage gate ran clean against the built surface in both themes
 
 ## §3 Reference / embed / backlinks integration
 
-Realizes `UP-2` (link + backlinks), `UP-4` (embed), `IX-inflow`,
-`IX-direct.expand` — almost entirely by reusing Composer's markdown machinery.
+Realizes `UP-2` (link + backlinks), `UP-4`/`UP-5` (embed / secondary view),
+`IX-inflow`, `IX-direct` — reusing Composer's mention/embed machinery over the
+kind-typed `Edge` of §1.
 
-### Linked edge (`@`-mention) — a first-class `Ref`-span
+### Linked mention (`@`) — a linked-kind `Edge` + a positional marker
 
-The in-flow `@`-picker (`useLinkQuery`) provides the `IX-inflow` gesture; on
-select it inserts a **first-class inline `Ref`** into the node's content (a
-`RefSpan` — the node's text is a union of text-spans and ref-spans), **not** a
-markdown text link. It matches §1 (linked edge = `Ref`): rendered as an inline
-chip (visual-spec accent `rgb(41 125 217)`), **collapsed by default** (a mention),
-resolving to the target Node and feeding the backlinks view natively via
-`referencedBy`. Traces `UP-2.link` · `IX-inflow.link` · `IP-3.cross-reference`.
+The in-flow `@`-picker (`useLinkQuery`) provides the `IX-inflow` gesture; on select
+it creates a **linked-kind `Edge`** (§1) from the current Node to the target and
+inserts a **positional marker** in the current Node's text at the cursor, kept in
+sync (delete the marker → remove the edge). The text stays plain text + markers —
+**no structured-span content model**. Rendered as an inline chip (visual-spec accent
+`rgb(41 125 217)`), **collapsed by default** and **atomic** — a selectable unit, not
+editable in place; the target is edited by opening its secondary view, not by typing
+into the chip. Traces `UP-2.link` · `IX-inflow.link` · `IX-direct.reference-atomic` ·
+`IP-3.cross-reference`.
 
-### Embed — expand the linked edge inline, on demand
+### Embed = the target's secondary view (one renderer, two placements)
 
-Per the neutral spec, embed is **not a separate insertion** — it is the *same*
-linked edge **expanded inline on demand** (`UP-4.embed` / `IP-3.expand`; and R:
-Tana's `Option`-click expands the *same* reference). So a `Ref`-span carries a
-per-occurrence **local view toggle** (like outline collapse, §2): collapsed → the
-inline chip; expanded → the target Node's `Section` Surface rendered **in place**,
-**edit-through** (edits flow to the one target). The reusable piece is the
-**Surface-rendering of the target** (edit-through), *not* Composer's `@@`
-block-embed — a Composer-only authoring convention with **no UP/IP counterpart**,
-so it is dropped. Two transclusion routes coexist, both spec-grounded: this
-linked-edge expansion (`IP-3.expand`), and structural multi-location (a Node under
-two structural `Edge`s is one edit-through vertex, `IP-2`). Traces `UP-4.embed` ·
-`IX-direct.expand` · `IP-3.expand`.
+Embed is **not a separate insertion** — it is the mention's target shown as a
+**secondary view** (`UP-5`): a live, on-demand, bounded view of the target Node and
+its subtree, resolving to the one vertex, **edit-through**. Two placements, the same
+renderer:
+- **inline** — expand the chip in place → the secondary view opens below the mention,
+  above the Node's own subtree (`UP-4.embed` · `IX-direct.expand`; Tana `Option`-click);
+- **beside** — open the target alongside the current view (`UP-5.open-beside`; Tana
+  `Shift`-click on the chip or a Node handle).
+Expansion is **per-occurrence, on-demand, cycle-safe** (`IP-3.expand`/`may-cycle`):
+the renderer stops re-expanding a Node already on the current expansion path, so a
+self/ancestor mention never expands unboundedly. Reuses Composer's `PreviewComponent`
+(target `Section` Surface). Composer's `@@` block-embed is dropped (no UP/IP
+counterpart). Traces `UP-4.embed` · `UP-5` · `IX-direct.expand` · `IP-3.expand`.
 
-### Backlinks view — the "Related" panel
+A second transclusion route stays fully structural: a Node under two **structural**
+edges is one edit-through vertex in each location (`IP-2`, §1/§2) — **co-location**,
+distinct from the linked mention here.
 
-Reuse Composer's "Related" companion: for a focused Node it enumerates inbound
-`Ref`s (`referencedBy`) + Relation endpoints. Because linked edges are first-class
-`Ref`s (above), user-authored `@`-mentions feed it — **closing** the gap-analysis
-caveat that text-embedded markdown links don't. Traces `UP-2.backlinks-view`. (The
-outline's *structural* `Edge`s are Relations too, so a Node's structural
-predecessors — "where does this Node live" — are reverse-traversable via
-`targetOf`.)
+### Backlinks — the "Mentioned in" grouped union
+
+Both edge kinds are reified `Edge` relations (§1), so a Node's backlinks are its
+**incoming edges by `targetOf`, grouped by kind**: **structural** predecessors
+("appears under" — where co-located) and **linked** referrers ("mentioned in"). One
+traversal, no separate `referencedBy` path; the reified linked `Edge` is what makes
+mention-backlinks queryable at all. Surfaced in a companion panel (reuse Composer's
+"Related"). Traces `UP-2.backlinks-view`.
 
 ### Reuse vs net-new
 
-- **Reuse:** `useLinkQuery` (`@` in-flow UX), the **Surface-rendering** of an
-  expanded reference (edit-through), the "Related" panel, `referencedBy`.
-- **Net-new:** wiring the `@`-picker to emit a `Ref`-span (not a text link); the
-  per-occurrence collapse/expand toggle on a `Ref`-span rendering the target's
-  Surface in place; rendering `Ref`-spans inline to visual-spec.
+- **Reuse:** `useLinkQuery` (`@` picker); the **secondary-view renderer**
+  (`PreviewComponent`/Surface — one renderer at both placements); `targetOf` for the
+  backlinks union; the companion panel.
+- **Net-new:** emitting a **linked `Edge` + positional text marker** on `@`-select
+  (and the marker↔edge sync); the **atomic** chip; mounting the secondary view at the
+  two placements with the cycle-safe expansion guard.
 
 ## §4 Hosting / build
 

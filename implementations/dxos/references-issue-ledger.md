@@ -14,9 +14,9 @@ needs recording) · `ASSESS` (needs an empirical live-Tana check) · `BLOCKED` (
 **Dependency order:** settle the model + stance (N1–N4, T1, B1) → record the deviation (D1) → fix the
 method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
-**Current focus: → D2** (propagate to design layer). Neutral-spec model (N1–N4), tier (T1), deviation
-(D1), method (P1) all done. Next: D2 (rewrite `design.md §3` + `design-references.md` to the settled
-model) → build (I1–I4).
+**Current focus: → build (I1/I3/I4)** via `writing-plans`. Neutral-spec model (N1–N4), tier (T1),
+deviation (D1), method (P1), design propagation (D2) all done. I2 (co-location substrate) already built.
+Next: plan + build I1 (kind-typed `Edge` + marker/backlinks helpers) → I3 (mention slice) → I4 (backlinks panel).
 
 ---
 
@@ -83,12 +83,12 @@ model) → build (I1–I4).
   multi-parent). **Finding (2026-07-14):** already recorded at both layers — `design.md §1` ("closes the
   owner+reference divergence") + §2:161 (co-locate gesture, "the gesture Tana lacks") + `gap-analysis.md`
   (`IP-2` divergent; `UP-1.multi-location` partial). No new recording needed. **State: DONE (already recorded).**
-- **D2** — Propagate N1–N3/T1 **down** to the design layer. `design.md §3` + `design-references.md`
-  predate this session's neutral changes (they still frame mentions as a "first-class `Ref`-span"/RefSpan
-  content model). Rewrite to the settled model: atomic collapsed mention (Option A) · secondary-view
-  unification (one artifact, two placements) · backlinks = grouped union · edges-as-open-family ·
-  co-location-vs-inline-mention distinct. This is what the build (I1–I4) derives from. **State: OPEN
-  (after P1, before build).**
+- **D2** — Propagate N1–N3/T1 **down** to the design layer. **Done (2026-07-14):** rewrote
+  `design.md §1` (edges = one kind-typed `Edge`; linked edge = `kind: linked` reified `Edge`, not a
+  bare `Ref`; backlinks uniform via `targetOf`), §2 gesture rows (mention = linked `Edge` + marker;
+  expand/open-beside), §3 (settled references narrative: atomic mention · secondary-view unification ·
+  grouped-union backlinks · cycle-safe expansion), and `design-references.md` (proposal → settled
+  sub-design, status → `current`). **State: DONE.**
 
 ## Behavior to assess (empirical)
 - **B1** — Cycle/recursion in mention-expansion: mentions may-cycle (self/ancestor); expansion needs a
@@ -129,3 +129,8 @@ _(appended as each issue resolves)_
   alongside panel (`UP-5.open-beside`) are ONE artifact — a live, on-demand, bounded view of a Node +
   subtree — in two placements (inline / alongside). Defined once in `UP-5`; reused by `UP-4.embed` and
   `IX-direct.reference-atomic`. Cascades to I3: one renderer, two mount points.
+- 2026-07-14 — **Unify the edge realization (design):** both edge kinds are ONE reified kind-typed
+  `Edge` relation (`kind ∈ {structural, linked}`), realizing the N1 neutral edge-family in the design.
+  The **linked mention is a reified linked-`Edge`** whose target is the reference (not a bare in-text
+  `Ref`) — this closes the backlinks-queryability hole (`referencedBy` indexes schema `Ref` fields, not
+  text-positioned URIs) and unifies backlinks under `targetOf`. Reshaped `design.md §1` + I1.
