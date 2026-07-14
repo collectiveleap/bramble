@@ -73,8 +73,14 @@ fixed by the same 2c substrate rewrite. **Plans 2c (indent/outdent · reorder), 
 + zoom view-state, pointer + keyboard), and 2e (drag-to-reshape via the Pragmatic-dnd tree-item
 hitbox) are BUILT** — all subagent-driven, per-task + whole-branch reviewed, delivery gate green,
 branch unmerged for spin-out (see the ledger `.superpowers/sdd/progress.md` in the DXOS worktree for
-per-task detail). **Next action:** the reference/backlink/transclusion slice (the `@`-picker,
-inline reference expansion, edit-through) — the last major R behavior not yet realized.
+per-task detail). **Next action:** the reference/backlink/transclusion slice — the last major R
+behavior not yet realized. Its sub-design is **drafted and awaiting review**
+(`implementations/dxos/design-references.md`, `needs-review`): `design.md §3` settled the *stances*
+(first-class `Ref` mention · native `referencedBy` backlinks · edit-through Surface · drop `@@`) but
+left the **`RefSpan` storage mechanism** open — a real fork (string+marker+parallel-`Ref.Array`
+[recommended] vs. structured span content). **Blocked on Steve's decision** (Open questions in that
+doc); the four sub-plans (P-ref-1 picker/chip, P-ref-2 expand/embed, P-ref-3 backlinks panel,
+P-colocate) become buildable on approval.
 
 ## Pipeline & status
 
@@ -89,6 +95,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed; `UP-1.author` verdict added) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (§1–§4; §2 covers authoring + editable header + pointer affordances) |
+| S4 · References sub-design | `implementations/dxos/design-references.md` | target | needs-review (proposal — resolves the `RefSpan` storage fork §3 left open; awaiting Steve's decision) |
 | S5 · Plan | `implementations/dxos/plans/` | target | Plans 1, 2a, 2b, 2c, 2d (view-state), **2e (drag)** built |
 | S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a + 2b + 2c + 2d + **2e (drag-to-reshape: reorder/reparent/make-child via Pragmatic-dnd tree-item hitbox, bullet handle)** built — `build/test(53)/test-storybook(13)/lint` + `composer-app:build` green, whole-branch READY. **Never merged** — spun out later as a separate plugin |
 
