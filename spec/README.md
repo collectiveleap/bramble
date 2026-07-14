@@ -1,12 +1,36 @@
 # Table-stakes primitive specifications
 
-Two system-agnostic specifications of the table-stakes capabilities for the networked-notes / outliner / PKM product class (the class of Roam, Tana, Obsidian), plus a guide for using them downstream.
+Four system-agnostic specifications of the table-stakes primitives for the networked-notes / outliner / PKM product class (the class of Roam, Tana, Obsidian), plus a guide for using them downstream.
 
-- **[internal-primitives.mdl](internal-primitives.mdl)** — the **Specification of Internal Primitives (SIP)**: the substrate as a directed acyclic graph.
-- **[user-primitives.mdl](user-primitives.mdl)** — the **Specification of User Primitives (SUP)**: the user-facing capabilities, written assuming the SIP.
+- **[internal-primitives.mdl](internal-primitives.mdl)** — **Internal substrate (SIP, `IP-*`)**: the substrate as a directed acyclic graph.
+- **[user-primitives.mdl](user-primitives.mdl)** — **User capabilities (SUP, `UP-*`)**: what the user can do, assuming the substrate.
+- **[interaction-primitives.mdl](interaction-primitives.mdl)** — **User interaction (`IX-*`)**: the *manner* of those capabilities (directness, in-flow, immediacy, reversibility), modality-independent.
+- **[presentation-primitives.mdl](presentation-primitives.mdl)** — **User presentation (`PX-*`)**: how the outline is shown (marks, disclosure, nesting, state, rhythm, theme).
 - **[gap-analysis-guide.md](gap-analysis-guide.md)** — how a downstream process uses these to evaluate an existing system X and produce a gap analysis.
 
 Each requirement carries a **conformance test** (its `given/then`) and **probes** (questions that size the work when X fails it). Every user-facing `feat` carries `traces:` to the internal primitives it assumes, so an internal gap auto-flags the user capabilities it breaks. The `IP-*` / `UP-*` IDs are stable reference targets — downstream gap analyses, change specs, and separate user-experience specs cite them.
+
+## Layers and conformance status
+
+The specs are **layers**, each named for its noun:
+
+- **Internal substrate** (`IP`) — the substrate as a DAG.
+- **User capabilities** (`UP`) — what the user can do, assuming the substrate.
+- **User interaction** (`IX`) — the *manner* of those capabilities (directness, in-flow, immediacy, reversibility), modality-independent.
+- **User presentation** (`PX`) — how the outline is shown.
+
+These four are **neutral** (system-agnostic). System-specific work lives one layer out, under `implementations/<system>/`: a **design** layer (a target being built — e.g. DXOS) or a **reference** realization (an existing exemplar — e.g. Tana).
+
+Within the neutral layers, each requirement has a **conformance status**:
+
+- **floor** — a committed table-stakes requirement (the numbered `IP/UP/IX/PX-*`). The bar is *strong evidence + judgment*: a capability may enter the floor on the strength of Tana plus one other system, without waiting for all three — the gap-analysis probes carry the per-system verdict.
+- **appendix** — a *candidate for the class*: plausibly table-stakes but unverified as shared, held out of the floor pending a verification pass (e.g. daily-note, search).
+
+**Where a behavior richer than a reference system belongs**, by noun:
+
+- a richer **internal substrate** — one that still delivers the user floor but exceeds a reference system's substrate — stays in `IP`; the reference system is recorded **divergent** in the gap analysis (e.g. multi-predecessor edges vs Tana's owner + reference). Substrate richness lives here; the neutral *user* floor stays what the reference systems actually share.
+- a **user capability** that is a plausible class candidate but unverified → **user capabilities**, *appendix* status.
+- a **user capability that no reference system does** (a Bramble-specific enhancement) → the **design** layer (`implementations/<system>/`), never the neutral user-capabilities floor.
 
 ## The model in one breath
 
@@ -23,10 +47,10 @@ Read this before revising — these choices are intentional, not accidents.
 1. **User behavior follows Roam/Tana/Obsidian, at Tana's semantics where the three differ.** Typed objects (Tana supertags / DXOS ECHO types) and calendar/search nodes sit above the floor — optional, not table-stakes; typed objects are *accommodated but not required* by the SIP (`IP-1.typed-node`).
 2. **The internal model deliberately diverges from all three:** real edges, not references; **multi-predecessor** structural edges, not single-owner; **typed** edges (structural vs linked). A system can satisfy the SUP while failing the SIP (e.g. Tana — see validation).
 3. **Acyclicity binds the structural subgraph only.** Linked edges may cycle; inline expansion is on demand, so cycles never force unbounded rendering.
-4. **Scope = core 4 user primitives.** Daily-note/journal and search/query are candidate extensions in the SUP appendix, outside the conformance floor (verified for Tana only, not as shared).
+4. **Scope = the numbered user primitives (`UP-1`…`UP-5`).** Daily-note/journal and search/query are candidate extensions in the SUP appendix, outside the conformance floor (verified for Tana only, not as shared). `UP-5` (secondary view) entered the floor on Tana + Roam evidence (Obsidian unverified), per the strong-evidence bar (see *Layers and conformance status*).
 5. **Backlinks — split bar.** SIP requires inbound linked edges be enumerable/reverse-traversable; SUP requires a user-visible backlinks view. A query language is above the floor.
 6. **Content type is open.** A Node may hold text or non-text (drawing/audio/widget…); all primitives apply uniformly. No type is enumerated. Distinct axis: a Node MAY also carry a *schema-type* (a named type with typed fields) — optional and additive, accommodated by `IP-1.typed-node`, not required.
-7. **Interaction mechanics are out of scope** (`@` vs `[[ ]]`, panels, clicks, expand/collapse). Separate UX specs own those and cite the `UP-*` IDs.
+7. **Neutral interaction and presentation are in scope** — the `IX` and `PX` facets (the *manner* of the capabilities and the *look* of the outline, at law altitude). Only **concrete mechanics** (specific keystrokes, `@` vs `[[ ]]` syntax, exact panel behavior) stay out of the neutral specs; those live in the reference realization (`implementations/tana/user-experience.md`) and the target design, and cite the `UP-*` / `IX-*` / `PX-*` IDs.
 
 ## Conventions (when editing the specs)
 

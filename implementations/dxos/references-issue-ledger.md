@@ -14,8 +14,8 @@ needs recording) · `ASSESS` (needs an empirical live-Tana check) · `BLOCKED` (
 **Dependency order:** settle the model + stance (N1–N4, T1, B1) → record the deviation (D1) → fix the
 method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
-**Current focus: → T1** (floor vs ceiling tier). N1, N2, N3 done; N4/B1 near-closed in IP. Next: T1,
-D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
+**Current focus: → D1** (record the co-location deviation). N1, N2, N3, T1 done; N4/B1 near-closed in IP.
+Next: D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
 
 ---
 
@@ -63,8 +63,15 @@ D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
   `IP`, already there. **State: NEAR-CLOSED — confirm no UP-level restatement needed.**
 
 ## Stance / tier
-- **T1** — Floor vs ceiling, and where beyond-Tana capability lives (floor / appendix / substrate
-  door-open). The DAG-analogy question. — synthesis proposed; not chosen. **State: OPEN.**
+- **T1** — Floor vs ceiling, and where beyond-a-reference-system capability lives. **Resolved:** by noun
+  — richer **internal substrate** → `IP` (divergence recorded); a **user capability** no system does →
+  **design** (`implementations/dxos`), never the neutral user-capabilities floor; a plausible-but-unverified
+  class candidate → **appendix** status. Floor bar = strong-evidence + judgment (not all-3-verified).
+  Written up as a "Layers and conformance status" section in `spec/README.md`; facet nouns fully
+  parallel (internal substrate · user capabilities · user interaction · user presentation). **State: DONE.**
+  - Surfaced (needs Steve): `spec/README.md` decision-log staleness — **#4** ("core 4 user primitives" →
+    now 5, `UP-5` added) and **#7** ("interaction mechanics out of scope / separate UX specs" → `IX`/`PX`
+    are now neutral facets; only concrete mechanics live in the R realization). Proposed fixes pending.
 
 ## Design deviation (Bramble-specific)
 - **D1** — "All X-*as-a-node* elsewhere = co-location" (deviation from Tana's owner+reference; real
