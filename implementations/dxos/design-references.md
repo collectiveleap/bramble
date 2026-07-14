@@ -16,9 +16,9 @@ decomposition (the S4 → S5 bridge).
   edges.
 - **No structured-span content model** — plain text + a positional **marker token that
   references the linked `Edge` (by its id)**, never a target URL. The `Edge` is the one source
-  of truth for the target; the marker only fixes *where* the chip renders. The A-vs-B "RefSpan"
-  question is moot, and so is any markdown-URL (`[label](echo:/id)`) marker — that would put the
-  target in the text *and* the edge, re-introducing the text-URL the unify decision removed.
+  of truth for the target; the marker only fixes *where* the chip renders. The marker is
+  deliberately **not** a markdown-style link (`[label](…)`): that would put the target in the text
+  *and* the edge — the duplication the unified edge model exists to remove.
 - **Collapsed mention is atomic** (`IX-direct.reference-atomic`); the target is edited via its
   secondary view. Editable-collapsed is an above-floor option, not built (T1).
 - **Secondary view = one renderer, two placements** (`UP-5`): inline-expand (below the mention)
