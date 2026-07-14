@@ -85,8 +85,8 @@ Status values: `not-started · authoring · needs-review · done`.
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed; `UP-1.author` verdict added) |
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (§1–§4; §2 covers authoring + editable header + pointer affordances) |
-| S5 · Plan | `implementations/dxos/plans/` | target | Plans 1, 2a, 2b, 2c built; **Plan 2d (view-state: expand/collapse + zoom) written** — 2e (drag) next |
-| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a + **2b (editable outline)** built — branch, build/test/test-storybook/lint green, composer-app typecheck green, whole-branch READY |
+| S5 · Plan | `implementations/dxos/plans/` | target | Plans 1, 2a, 2b, 2c, **2d (view-state)** built; 2e (drag) next |
+| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a + 2b + 2c + **2d (view-state: expand/collapse + zoom, pointer + keyboard)** built — `build/test/test-storybook(12)/lint` + `composer-app:build` green, whole-branch READY. **Never merged** — spun out later as a separate plugin |
 
 ## Artifact index
 
