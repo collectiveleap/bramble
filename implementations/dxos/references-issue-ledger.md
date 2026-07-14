@@ -14,8 +14,8 @@ needs recording) · `ASSESS` (needs an empirical live-Tana check) · `BLOCKED` (
 **Dependency order:** settle the model + stance (N1–N4, T1, B1) → record the deviation (D1) → fix the
 method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
-**Current focus: → N2** (render-modes & editability). N1 done; N4/B1 near-closed in IP. Next: N2,
-then N3, T1, D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
+**Current focus: → N3** (backlinks = union). N1, N2 done; N4/B1 near-closed in IP. Next: N3, T1, D1
+→ then P1 (P1a output-sweep + P1b family/axis pattern) → build (I1–I4).
 
 ---
 
@@ -40,9 +40,16 @@ then N3, T1, D1 → then P1 (P1a output-sweep + P1b family/axis pattern) → bui
   routes differ on containment). `design.md §1/§2` already kept them distinct — no scrub needed;
   `design-references.md` gets revised downstream under N2/I1. **State: DONE (pending Steve's in-place
   review + commit).**
-- **N2** — Render-modes & editability of an appearance: collapsed-atomic chip (mention) /
-  expanded-editable panel (embed) / adjacent panel / nested bullet; + liveness across all. `UP-4.embed`
-  wrongly models the inline rendering as editable; the atomic collapsed mode is unspecced. **State: OPEN.**
+- **N2** — Render-modes & editability of an appearance. **Finding:** most was already specced
+  (collapsed-by-default + expand-on-demand + expand-editable + liveness in `IP-3`/`UP-4.embed`). Gaps
+  closed: (a) **collapsed mention is atomic** (floor) → new `IX-direct.reference-atomic`; editable-collapsed
+  stays above-floor (see T1). (b) **open-in-secondary-view** → new `UP-5`. (c) **"secondary view"**
+  unifies the inline-expand (`UP-4.embed`) and the alongside panel (`UP-5`) as ONE artifact, two
+  placements — cascades to I3 (one node-view renderer, two mount points). **State: DONE (committed).**
+  - `UP-5` corpus status: verified Tana + Roam; Obsidian unconfirmed. Placed in the **body** (Steve's
+    call, 2026-07-14) — the gap-analysis probes carry the per-system check.
+  - Follow-up (minor): `IX-direct.expand`'s "not a navigation to a separate viewer" now reads as the
+    *inline* placement's property; fine as-is, revisit if it confuses against `UP-5.open-beside`.
 - **N3** — "Mentioned in" = **union** of subtree-child occurrences (`targetOf`) + inline-mention
   occurrences (`referencedBy`). `UP-2.backlinks-view` under-specifies this. **State: OPEN.**
 - **N4** — "Real node, not shadow" invariant: every appearance of X is the real, editable X (one
@@ -89,3 +96,11 @@ _(appended as each issue resolves)_
   bundling is correct (it's the shared-identity axis). Chose **Light**: an open-typed-edge-family +
   per-axis paragraph in `internal-primitives.mdl` now; full axis-factoring deferred until a *3rd* edge
   kind arrives (YAGNI). New method guard (→ P1b): a new edge kind must declare its axes.
+- 2026-07-14 — **N2:** collapsed mention = **atomic** at the floor (`IX-direct.reference-atomic`);
+  editable-collapsed above-floor (T1). Editing a mention is always one gesture away (expand), so atomic
+  costs no capability — it only makes editing another node a deliberate step rather than something that
+  can happen while the user thinks they're editing their own sentence.
+- 2026-07-14 — **"Secondary view" unification:** the inline-expand panel (`UP-4.embed`) and the
+  alongside panel (`UP-5.open-beside`) are ONE artifact — a live, on-demand, bounded view of a Node +
+  subtree — in two placements (inline / alongside). Defined once in `UP-5`; reused by `UP-4.embed` and
+  `IX-direct.reference-atomic`. Cascades to I3: one renderer, two mount points.

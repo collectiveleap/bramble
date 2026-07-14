@@ -199,11 +199,34 @@ feat UP-4: Transclusion
     given: a Node A with a linked edge to Node T
     when: the user expands the link inline
     then:
-      - T's content renders inline within A
-      - editing the inline-rendered T changes T itself (one Node), and the inline rendering reflects later changes to T
+      - T's SECONDARY VIEW (UP-5) opens inline — below A's content, above A's own subtree
+      - it renders T live and edit-through — editing it changes T itself (one Node), and it reflects later changes to T
     probes:
       - Can the user render a referenced unit inline (embed/transclude) in X?
       - Does the embedded content stay in sync with its source and edit through to it, rather than being a detached copy?
+```
+
+```mdl
+feat UP-5: Secondary view
+  traces:
+    - IP-1
+  desc: |
+    A SECONDARY VIEW of a Node is a live, on-demand, bounded view of
+    that Node and its structural subtree, resolving to the one vertex —
+    edits flow to the Node and appear everywhere it is shown. It is
+    opened in addition to the primary view, and has two PLACEMENTS that
+    render the same view: INLINE — below a referring Node's content and
+    above that Node's own subtree (the inline expansion of a mention,
+    UP-4.embed) — and ALONGSIDE the primary view (this feat).
+  req UP-5.open-beside:
+    given: any Node T reachable from the current view
+    when: the user opens T alongside the current view
+    then:
+      - T's secondary view opens alongside the current one; the current view is not replaced
+      - it shows T live — an edit to T is reflected there and wherever else T appears
+    probes:
+      - In X, can the user open a unit in a secondary / side-by-side view without leaving the current one?
+      - Is that secondary view a live view of the same unit (edits reflected), or a static snapshot?
 ```
 
 ## Appendix — candidate extensions (not table-stakes)

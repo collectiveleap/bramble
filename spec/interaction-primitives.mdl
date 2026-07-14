@@ -87,6 +87,14 @@ feat IX-direct: Directness
     then: the expansion is a toggle on the reference in place — not a navigation to a separate viewer or a switch of context
     probes:
       - In X, is a referenced Node revealed inline where it sits, or by navigating away to open it?
+  req IX-direct.reference-atomic:
+    given: a collapsed linked-edge reference to Node T, shown inline within another Node's content
+    then:
+      - the collapsed reference behaves as a single selectable unit — acted on as a whole (selected, followed, or expanded), not edited character-by-character in place
+      - editing T is reached by opening T's secondary view (UP-5) — inline (IX-direct.expand) or alongside (UP-5.open-beside) — not by typing into the collapsed reference
+    probes:
+      - In X, is a collapsed inline reference an atomic token that must be expanded or opened to edit its target, or can the user type directly into it to change the target?
+      - Is the reference selectable / actionable as one unit rather than as editable text?
 ```
 
 ```mdl
