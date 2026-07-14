@@ -14,6 +14,8 @@ The internal data-model primitives for a networked-notes / outliner / PKM substr
 
 **Terminology** follows the established house DAG convention: PREDECESSOR / SUCCESSOR for edge direction, and a `kind` taxonomy over edges (*structural* / *linked*, with *embed* — inline expansion of a linked edge — reserved). PARENT / CHILD are avoided: in a DAG a Node has a set of predecessors, not a single parent.
 
+**Edges are an open, typed family.** Structural and linked are the first two *kinds* of a general edge — a directed relation between two Nodes — and the `kind` set is expected to grow. Each kind declares its semantics along a few axes: **containment** (does the target become a structural successor — is it nested?), **cyclicity** (acyclic-enforced, or may-cycle?), **shared-identity** (does the edge resolve to the one target vertex, so an edit is seen at every appearance?), and **expansion** (may the edge be expanded inline to embed its target, on demand?). (Inbound edges of any kind are reverse-traversable — backlinks.) User capabilities are defined over these **axes**, not over specific kinds, so a new edge kind participates in every capability its axes qualify it for and the taxonomy stays open. Structural declares containment=yes, acyclic, shared-identity=yes; linked declares containment=no, may-cycle, expansion=yes.
+
 ## Rules
 
 ```mdl

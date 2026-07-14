@@ -181,7 +181,14 @@ feat UP-4: Transclusion
     one vertex shown in each location (IP-2.shared-identity); and a
     linked edge can be expanded inline to render its target in place
     (IP-3.expand). Either way an edit flows to the one underlying Node,
-    and inline expansion is on demand.
+    and inline expansion is on demand. The routes are NOT
+    interchangeable: they share the SHARED-IDENTITY axis (the edge
+    resolves to the one vertex — what makes the edit flow through) but
+    DIFFER on CONTAINMENT — the structural route nests the target as a
+    successor (IP-2), the linked route does not (IP-3). Transclusion is
+    a capability of the shared-identity axis; these are the two current
+    edge kinds that carry it, and any future kind that resolves to the
+    one vertex would reach it too.
   req UP-4.edit-through:
     given: a Node shown at two or more locations (it has several structural predecessors)
     when: the user edits it at one location
