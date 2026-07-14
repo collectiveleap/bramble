@@ -16,18 +16,30 @@ method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
 ## ▶ RESUME POINT (2026-07-14 — survives compaction)
 
-**Now executing: Plan I3a, INLINE. Tasks 1 + 2 DONE; NEXT = Task 3 (@-picker).**
-Plan: `implementations/dxos/plans/2026-07-14-plan-i3a-mention-insertion.md` (4 tasks: 1 prereqs ✓ · 2 chip
-decoration [de-risk] ✓ · 3 @-picker · 4 deletion sync). Commits: T1 `7ef2795da0` (controller.db +
-NodeOutline structural filter), T2 `34f2769cdf` (`mention-extension.ts` — `{{ref:id}}` marker + custom
-chip decoration; **de-risk PROVEN** by the `Mention` storybook, chip renders the live label). All green
-(test 64/64, storybook 14/14, build, lint). Files: `mention-extension.ts` (helpers `makeMarker`/
-`markerEdgeIds`/`MARKER_RE`, `mentionChips` decoration, `refreshChips` effect); `RowEditor.tsx` (wires
-`mentionChips` + a linked-edges `resolveLabel` + refresh); `NodeOutline.stories.tsx` (`Mention` story).
-**T3 next:** `useMentionPicker` (popover/`EditorMenuProvider` + node-query; on select `createLinkedEdge`
-+ insert `makeMarker(edge.id)`), wrap `RowEditor` in `EditorMenuProvider`. **T4:** `staleEdgeIds` +
-deletion sync. **Story seeding gotcha:** set Text content via `Obj.update(t, (t) => { t.content = … })`,
-never direct assignment.
+**I3a (@-mention insertion + atomic chip) COMPLETE + review-clean.** All 4 tasks built inline, the
+whole-branch review run, its 3 findings verified against source + resolved. **NEXT = `I3c` (live labels)
+or `I3b` (secondary view)** — Steve to sequence (both pending; they share target-observation machinery).
+Plan: `implementations/dxos/plans/2026-07-14-plan-i3a-mention-insertion.md`.
+
+**I3a commits (branch `claude/plugin-bramble-substrate`, DXOS worktree, NEVER merged):**
+- T1 `7ef2795da0` (controller.db + NodeOutline structural filter) · T2 `34f2769cdf` (`mention-extension.ts`
+  — `{{ref:id}}` marker + custom chip decoration; de-risk PROVEN by the `Mention` story) · T3 `8ffff0ec37`
+  (`useMentionPicker` @-picker → `createLinkedEdge` + insert `makeMarker(edge.id)`; `EditorMenuProvider`
+  wrapper) · T4 `46540e2bae` (`staleEdgeIds` + `RowEditor` `updateListener` → `removeEdge`).
+- Whole-branch review (base `6697742093`) → 3 findings, ALL verified against source:
+  - **C1 (picker keyboard) FIXED `2fe6e9ddcd`** — the picker popover keymap and `brambleGestures` are
+    both `Prec.highest`; array-order breaks the tie, so the row gestures were stealing Enter/Arrow while
+    the menu was open (mouse-select hid it). Picker now registered BEFORE gestures in `RowEditor`. The
+    popover can't be driven by the storybook runner (synthetic `@` never opens it) → open-menu confirm
+    stays MANUAL; the closed-menu fall-through (Enter→new row when no menu) is covered by `EnterCreatesRow`
+    et al., now running with the picker-first order.
+  - **I3 (delete-sync guard) FIXED `2fe6e9ddcd`** — the listener now acts only on user input/delete
+    transactions (plan Task 4 Step 3 mandated this guard; it was omitted). Stops a remote-sync/undo change
+    that drops a marker from silently deleting the linked Edge.
+  - **C2 (label not live) → carved to `I3c`** (Steve chose A: fix C1+I3 now, carve C2). See `I3c` below.
+- Gate green throughout: build · lint · test 65/65 · storybook 15/15.
+- **Story seeding gotcha:** set Text content via `Obj.update(t, (t) => { t.content = … })`, never direct
+  assignment.
 
 **⚠ CRITICAL corrected-model constraint (do NOT re-drift):** the inline-mention marker is an
 **edge-referencing token `{{ref:<edgeId>}}`** in the node's plain text — it references the linked
@@ -51,8 +63,9 @@ that was the pre-unify leftover we caught + scrubbed via the move-down gate (com
 for I3 are in `design-references.md` (reuse the `@`-picker UI + node-query + `PreviewComponent`/Surface +
 `dx-anchor` chip visual — NOT `xmlTags`).
 
-After I3a: I3b (secondary view — `PreviewComponent`/Surface at inline-expand + open-beside, cycle-safe) →
-I4 (backlinks panel).
+After I3a: **I3c (live labels)** · **I3b (secondary view** — `PreviewComponent`/Surface at inline-expand +
+open-beside, cycle-safe) · I4 (backlinks panel). I3c + I3b both need target-node observation (subscribe to
+a target's yText → `refreshChips`/re-render) so can be built together or in either order — Steve to sequence.
 
 ---
 
@@ -145,14 +158,33 @@ I4 (backlinks panel).
     needed (`backlinks` covers it) — doc-only.
 - **I2** — Co-location substrate: multi-parent + cycle guard + multi-location render tests. Co-location
   *UX* (add-parent picker, render occurrence) pending. **State: BUILT (substrate); UX pending.**
-- **I3** — Reference/mention slice build (@-picker · chip · expand-panel Surface · backlinks-`Ref` ·
-  cycle-safe expansion). Gated on N/T/B. **State: BLOCKED.**
-- **I4** — Backlinks panel build (the union view). Gated on N3. **State: BLOCKED.**
+- **I3a** — @-mention insertion + atomic chip (marker `{{ref:id}}` · custom chip decoration · @-picker →
+  `createLinkedEdge` + insert marker · delete-sync). **BUILT + review-clean (2026-07-14, inline, 4 tasks,
+  commits `7ef2795da0..46540e2bae`; review fixes `2fe6e9ddcd`).** Gate green (test 65/65, storybook 15/15,
+  build, lint). **State: BUILT.**
+- **I3c** — Live mention labels (the "edit X → Y's chip updates immediately" behavior from the neutral
+  spec's live-update requirement). **Carved from I3a whole-branch review C2 (2026-07-14).** Diagnosis:
+  `RowEditor`'s `labelMap` is memoized on `[linkedEdges]` (the row's own outgoing Edges); `useQuery` is
+  membership-based, so editing a *target* node's title (two hops away through its yText) never changes that
+  set → `refreshChips` never fires → the chip keeps its initial label. Fix direction: subscribe to each
+  linked target's yText (a React `useQuery` won't react to an in-place yjs mutation) and fire `refreshChips`
+  on change. Shares target-observation machinery with I3b. **State: DESIGN (needs the subscription design).**
+- **I3b** — Secondary view (one `PreviewComponent`/Surface renderer, two mounts: inline-expand + open-beside;
+  cycle-safe expansion). Gated on N/T/B (settled). **State: READY to plan.**
+- **I4** — Backlinks panel build (the union view). Gated on N3 (settled). **State: READY to plan.**
 
 ---
 
 ## Decisions log
 _(appended as each issue resolves)_
+- 2026-07-14c — **I3a review outcome (Steve chose A).** Whole-branch review found 3 real issues (all
+  verified against source). Fixed now: **C1** picker-keymap precedence (register the @-picker before the
+  row gestures; both are `Prec.highest` so array order decides) and **I3** the delete-sync user-event guard
+  (plan-mandated, was omitted). Carved out: **C2** "chip label not live on target-title edit" → new item
+  **I3c**, because the fix is a cross-node yText-subscription — its own reactivity-design slice, not part of
+  I3a's insertion scope, and it shares machinery with I3b. Learned: the storybook runner can't open the
+  @-popover from synthetic keys, so the open-menu keyboard path is manual; the closed-menu fall-through is
+  regression-covered by the existing row-gesture tests running with the new picker-first extension order.
 - 2026-07-14b — **Marker mechanism corrected + move-down gate fix.** While grounding Plan I3 I adopted
   Composer's markdown-URL/`xmlTags` marker — inconsistent with unify (it puts the target in the text *and*
   the edge). Root cause: the D2 move-down carried `design-references.md`'s pre-unify **reuse anchors**
