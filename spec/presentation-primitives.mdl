@@ -120,6 +120,31 @@ feat PX-nesting: Nesting shown structurally
 ```
 
 ```mdl
+feat PX-embed: Secondary-view presentation
+  traces:
+    - UP-5 Secondary view
+    - IP-2 Structural edge
+  desc: |
+    A Node's INLINE secondary view (the expanded mention, UP-5) is presented IN
+    THE OUTLINE FLOW, not as a detached panel: it appears on its own line BELOW
+    the referring content and INSET beneath it, reading as nested under the
+    mention — the same containment language PX-nesting uses for a structural
+    successor. It is visually BOUNDED (it does not grow without limit) and
+    DISTINGUISHED from the referring Node's own content. Its concrete inset,
+    bound, border, corner, colour, and type scale are a realization concern
+    recorded in the reference visual-spec, not here.
+  req PX-embed.in-flow-below:
+    given: a Node whose content contains a mention, with that mention's inline secondary view open
+    then:
+      - the secondary view is presented on its own line below the referring content, inset beneath it — not beside it, and not as a floating or detached panel
+      - its containment reads consistently with how a structural successor is presented (PX-nesting)
+      - the view is visually bounded and distinguished from the referring Node's own content
+    probes:
+      - When a mention is expanded inline, does its view appear nested below the referring line, or elsewhere (beside it, a floating panel, a separate pane)?
+      - Is the expansion visually bounded and distinguished from the host Node's own content, or does it blend in / grow without limit?
+```
+
+```mdl
 feat PX-state: Affordance states
   traces:
     - UP-1 Atomic unit and outline

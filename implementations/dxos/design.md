@@ -239,7 +239,11 @@ Expansion is **per-occurrence, on-demand, cycle-safe** (`IP-3.expand`/`may-cycle
 the renderer stops re-expanding a Node already on the current expansion path, so a
 self/ancestor mention never expands unboundedly. Reuses Composer's `PreviewComponent`
 (target `Section` Surface). Composer's `@@` block-embed is dropped (no UP/IP
-counterpart). Traces `UP-4.embed` · `UP-5` · `IX-direct.expand` · `IP-3.expand`.
+counterpart). **Presentation (checkable, `PX-embed`):** the inline expansion renders on
+its own line **below** the referring content and **inset** beneath it (nested like a
+structural child, `PX-nesting`), bounded and visually distinguished — verified against the
+Tana visual-spec's `PX-embed` slots, not asserted as prose. Traces `UP-4.embed` · `UP-5` ·
+`IX-direct.expand` · `IP-3.expand` · `PX-embed`.
 
 A second transclusion route stays fully structural: a Node under two **structural**
 edges is one edit-through vertex in each location (`IP-2`, §1/§2) — **co-location**,

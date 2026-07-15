@@ -101,10 +101,10 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   verification path from that requirement to the pixels):**
   - **W1 build/tech:** flex-sibling layout. → row→column. **DONE.**
   - **W2 build/test:** existence-only assertion, no position check. → position assertion + memory `existence-tests-miss-layout-bugs`. **DONE.**
-  - **W3 plan (S5):** the build plan required no visual verification. → plans that touch a surface include a visual-check in DoD. **PROPOSE.**
-  - **W4 design (S4):** placement stated as prose, not a checkable/traced requirement. → design expresses layout as checkable, reference as oracle. **PROPOSE.**
-  - **W5 neutral spec (S1/S2):** `UP-5` states the placement but `PX-*` has no secondary-view presentation primitive → nothing neutral to verify against. → add a `PX` secondary-view primitive. **PROPOSE (Steve).**
-  - **W6 FLOW gate:** no standing presentation-verification stage; visual check was one-off for the base outline. → delivery-gate clause requiring a visual mapping + check vs `PX` + reference for surface work (= BR-17 elevated to a gate). **PROPOSE (Steve).**
+  - **W3 plan (S5):** the build plan required no visual verification. → **DONE** — folded into FLOW gate clause 5 as an upstream corollary (plan DoD carries the visual-check step).
+  - **W4 design (S4):** placement stated as prose, not a checkable/traced requirement. → **DONE** — `design.md` §3 embed now states the layout as a checkable `PX-embed` requirement + traces it.
+  - **W5 neutral spec (S1/S2):** `UP-5` states the placement but `PX-*` had no secondary-view presentation primitive → nothing neutral to verify against. → **DONE** — added floor `feat PX-embed` to `spec/presentation-primitives.mdl` (in-flow · below · inset · bounded); `tana/visual-spec.md` gains the `PX-embed` value slots (awaiting capture).
+  - **W6 FLOW gate:** no standing presentation-verification stage; visual check was one-off for the base outline. → **DONE** — `FLOW.md` delivery-gate **clause 5** (presentation fidelity: every surface gets a mapping + visual check vs `PX` + reference; a mis-positioned surface fails the gate). Elevates BR-17 from a ticket to a standing gate.
 - **Remaining fidelity (→ BR-17):** the left border rule, expansion background, exact spacing vs Tana.
 - Symptom (screenshot): the inline secondary-view panel renders the target's **full `NodeOutline` including a
   page-scale H1 header** plus children, unbounded — reads like a large side panel, not a compact expansion.
@@ -201,7 +201,12 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   create-nav-singleton cluster.
 
 ## BR-17 — Visual integrity check (Tana reference ↔ Composer implementation) not done
-`Status: open` · `Type: verify / process` · `Source: smoke test 2026-07-14`
+`Status: open (now a standing gate — FLOW clause 5)` · `Type: verify / process` · `Source: smoke test 2026-07-14`
+- **Groundwork done (2026-07-15, from BR-6's W5/W6):** `PX-embed` is a floor neutral requirement; `tana/visual-spec.md`
+  has the `PX-embed` value slots; FLOW gate clause 5 makes a visual check *required* for every surface. So BR-17 is
+  no longer "should we" — it's the concrete work: **(a)** capture the `PX-embed` numbers from Tana (fill the slots);
+  **(b)** author visual mappings for the references surfaces (chip, inline embed, backlinks panel); **(c)** run the
+  `visual-verification` loop against the running Composer surfaces vs those mappings; **(d)** file each delta.
 - The `visual-verification` skill (extract computed styles from the reference + the running DOM, diff
   deterministically) exists, and a PX check ran **once** against the **Storybook** outline surface
   (`composer-outline.json` mapping, 8 PX regions, both themes — `design.md` §Visual conformance, 2026-07-13).

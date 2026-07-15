@@ -1,6 +1,6 @@
 # Tana visual specification
 
-<!-- derives-from: [PX-mark, PX-disclosure, PX-nesting, PX-state, PX-rhythm, PX-theme, UP-1, IP-1]; role: reference; status: current -->
+<!-- derives-from: [PX-mark, PX-disclosure, PX-nesting, PX-state, PX-rhythm, PX-theme, PX-embed, UP-1, IP-1]; role: reference; status: current -->
 
 The **reference realization of the presentation primitives** (`PX-*`): Tana's
 concrete answer, per concern, to what a surface must present. It is the
@@ -77,6 +77,28 @@ stated theme**.
 - **Mark and geometry are theme-stable**; only colour varies. So a target is diffed **within one stated theme, never across**.
 - **Capture protocol:** geometry once; colour per theme by toggling Tana's theme (settings, top-right → "Enable dark mode") — because Tana's theme otherwise follows macOS time-of-day.
 - **Evidence:** `.editable` `color`, `--colorPanelBackground`, `--colorConfigEditorBackground`, `--colorUITupleStroke` harvested under each theme.
+
+### `PX-embed` — inline secondary-view (expanded reference)
+
+Tana's oracle for the presentation of an **inline-expanded reference** — Option-click a reference to
+expand its content in place. Values below are the "expected" side of the embed's visual diff; they are
+**not yet captured** — measure them live from Tana (the "Tana With Claude" workspace; expand a reference
+inline) and replace each slot. Geometry once; colour per theme (`PX-theme`).
+
+| Slot | Light | Dark | Evidence (selector / note) |
+|---|---|---|---|
+| **inset** (how far the expansion is set in under the referring line) | `[to measure]` | (geometry — same) | `[selector]` |
+| **max bound** (height before it scrolls, if any) | `[to measure]` | (geometry — same) | `[selector]` |
+| **containment rule** (left border / guide: width · style · colour) | `[to measure]` | `[to measure]` | `[selector]` |
+| **corner** (`border-radius`, if a panel) | `[to measure]` | (geometry — same) | `[selector]` |
+| **background / surface** | `[to measure]` | `[to measure]` | `[selector]` |
+| **content type scale** (font-size / weight of the embedded content vs a normal row) | `[to measure]` | (geometry — same) | `[selector]` |
+| **inter-block spacing** (gap above/below the expansion) | `[to measure]` | (geometry — same) | `[selector]` |
+
+**Note:** confirm Tana even renders the inline expansion *below and inset* (the `PX-embed.in-flow-below`
+behaviour) as part of the capture — if Tana's placement differs, that is a finding for `PX-embed`, not a
+target-only detail. Until captured, `PX-embed` is verified qualitatively (below-and-inset, bounded,
+distinguished); the numeric diff is pending these slots.
 
 ## Out-of-floor (Tana-exclusive chrome; reference detail only)
 

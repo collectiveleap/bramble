@@ -170,7 +170,18 @@ committed as complete), validate it against traceability:
    references move-down carried Composer's markdown-URL / `xmlTags` marker into
    `design-references.md`'s reuse anchors, contradicting the just-settled edge-based model; the
    gate, un-run on the design, missed it.)
-5. A failed trace **or an uncovered concern blocks delivery** until resolved.
+5. **Presentation fidelity is not optional for surfaces.** A build (or design) stage that ADDS or CHANGES
+   a user-facing surface is not delivered until that surface has a visual mapping and passes the
+   visual-integrity check — measured against BOTH the neutral `PX-*` requirements AND the reference
+   realization's visual-spec, within a pinned theme. Existence / behavior / unit tests do not satisfy this:
+   a surface that renders but is positioned or styled wrong must FAIL the gate. Every NEW surface (a chip,
+   an embed, a panel) gets its own mapping + check — not only the first surface built. **Upstream
+   corollaries:** the **design** (S4) expresses each surface's layout as a *checkable* requirement traced to
+   a `PX-*` (not prose), and the **plan** (S5) carries the visual-check as a step in its Definition of Done.
+   (2026-07-15: BR-6 — the inline mention-expansion rendered beside the row instead of below it,
+   contradicting `UP-5` / `PX-embed`, yet shipped green because no visual check was ever run on the
+   references surfaces; clause 3 said what a visual gate must *cover*, but nothing required one to *exist*.)
+6. A failed trace, an uncovered concern, **or a surface that fails its visual check blocks delivery** until resolved.
 
 ### Pending propagations
 
