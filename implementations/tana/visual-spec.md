@@ -80,25 +80,26 @@ stated theme**.
 
 ### `PX-embed` — inline secondary-view (expanded reference)
 
-Tana's oracle for the presentation of an **inline-expanded reference** — Option-click a reference to
-expand its content in place. Values below are the "expected" side of the embed's visual diff; they are
-**not yet captured** — measure them live from Tana (the "Tana With Claude" workspace; expand a reference
-inline) and replace each slot. Geometry once; colour per theme (`PX-theme`).
+Tana's oracle for the presentation of an **inline-expanded reference** — expand a reference to show its
+content in place. **Captured live 2026-07-15** (`getComputedStyle`, "Tana With Claude" workspace, light
+theme; geometry is theme-stable, colour per `PX-theme`). Selector: the expansion container
+`.Scrollable-module_scrollable__… .Scrollable-module_expand…`.
 
-| Slot | Light | Dark | Evidence (selector / note) |
-|---|---|---|---|
-| **inset** (how far the expansion is set in under the referring line) | `[to measure]` | (geometry — same) | `[selector]` |
-| **max bound** (height before it scrolls, if any) | `[to measure]` | (geometry — same) | `[selector]` |
-| **containment rule** (left border / guide: width · style · colour) | `[to measure]` | `[to measure]` | `[selector]` |
-| **corner** (`border-radius`, if a panel) | `[to measure]` | (geometry — same) | `[selector]` |
-| **background / surface** | `[to measure]` | `[to measure]` | `[selector]` |
-| **content type scale** (font-size / weight of the embedded content vs a normal row) | `[to measure]` | (geometry — same) | `[selector]` |
-| **inter-block spacing** (gap above/below the expansion) | `[to measure]` | (geometry — same) | `[selector]` |
+| Slot | Value | Note |
+|---|---|---|
+| **placement** | below the referring row, container **aligns with the row's left** (not indented as a whole) | `boxInsetVsRef = 0`; nesting reads from the border + inner padding, not a box indent |
+| **containment** | **full border `1px solid`**, colour = the `border` token (light `oklch(0.896 0 240)` / dark `oklch(0.306 0.0023 240)`) | NOT a left rule — a bordered region on all sides |
+| **corner** | `border-radius: 7.5px` | rounded box |
+| **background** | transparent | the themed page surface shows through (consistent with the tokens note) |
+| **content inset** | `padding-left: 24px` inside the container | one indent step, applied as inner padding |
+| **content type scale** | `15px / weight 400` — **normal row scale, no header emphasis** | the expanded Node's own line is a normal row, not a title |
+| **height bound** | `max-height: none`, `overflow-y: auto` | grows with content; bounded only by the outer pane's scroll |
+| **gap above** | ~`5px` between the referring row and the box | |
 
-**Note:** confirm Tana even renders the inline expansion *below and inset* (the `PX-embed.in-flow-below`
-behaviour) as part of the capture — if Tana's placement differs, that is a finding for `PX-embed`, not a
-target-only detail. Until captured, `PX-embed` is verified qualitatively (below-and-inset, bounded,
-distinguished); the numeric diff is pending these slots.
+**Finding:** Tana confirms `PX-embed.in-flow-below` (below the referring line, contained, bounded,
+distinguished) — but the "nested" reading comes from a **full bordered box + inner indent**, with the box
+**aligned to the row** (not the whole box indented). The neutral `PX-embed` wording is corrected to match
+(contained region, content nested), and `border-radius`/`border`/scale drive the target's realization.
 
 ## Out-of-floor (Tana-exclusive chrome; reference detail only)
 
