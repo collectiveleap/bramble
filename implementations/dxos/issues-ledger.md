@@ -21,6 +21,13 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 3. **If a fix needs Steve** (a design or scope decision) and he's unavailable, **turn that fix into a new ticket**
    (`BR-<n>`) linked back to the originating ticket (`from: BR-<x>`), rather than guessing. The originating ticket
    notes `blocked-by: BR-<n>`.
+4. **Root-cause to the right altitude (5-whys).** The proximate tech bug is rarely the root cause. Ask "why" up the
+   flow — build → test → plan (S5) → design (S4) → neutral spec (S1/S2) → FLOW gate — and propose a fix at **each**
+   rung that failed, not only the bottom one. A build that contradicts an explicit spec requirement and still ships
+   green is a *verification-path* gap higher up, not just a code bug. (Precedent: BR-6.)
+5. **Verification must match the bug class.** A visual/layout bug is verified by measuring the rendered result
+   (computed position relative to siblings) and looking at it — not by an existence/logic-green test. A surface-affecting
+   change is verified against the reference realization + the neutral `PX` requirements, not unit tests alone.
 
 ---
 
@@ -86,14 +93,19 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 
 ## BR-6 — Inline embed panel oversized / wrong-looking
 `Status: FIXED (app-verified :5180, 2026-07-15)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14, screenshot)` · `Fix: 0f8d06884f, 8eec32d604`
-- **Two root causes, both fixed:** (1) oversized 29px page-title header → scoped to 17px inside `.bramble-secondary`
-  (`0f8d06884f`); (2) **the expansion rendered to the far RIGHT of the row, not below the mention** — `.bramble-outline-row`
-  was `display:flex` and `MentionExpansions` was a flex sibling of the editor (measured x=1026 vs row x=374). Fixed by
-  making the row a column with an inner `.bramble-outline-row-line` for chevron/bullet/editor, so the expansion stacks
-  below, indented (`8eec32d604`; measured x=398, below the line).
-- **Verified:** build + lint; storybook 22/22 (`MentionExpand` asserts header <20px AND expansion below the row line);
-  app-confirmed on :5180 — the embed now renders indented below the mention showing the target's outline, Tana-like.
-- **Remaining (→ BR-17):** finer chrome fidelity vs Tana (the left border rule, expansion background, exact spacing).
+- **Symptom fixes (both done):** (1) 29px page-title header → 17px inside `.bramble-secondary` (`0f8d06884f`);
+  (2) expansion rendered to the far RIGHT (x=1026 vs row x=374) because `.bramble-outline-row` was `display:flex`
+  and `MentionExpansions` was a flex sibling of the editor → row made a column with an inner `.bramble-outline-row-line`
+  (`8eec32d604`; now x=398, below the line). App-verified :5180; storybook 22/22 (asserts header<20px + below-line).
+- **5-whys root cause (the real lesson — the spec AND design already said "below"; the failure was a missing
+  verification path from that requirement to the pixels):**
+  - **W1 build/tech:** flex-sibling layout. → row→column. **DONE.**
+  - **W2 build/test:** existence-only assertion, no position check. → position assertion + memory `existence-tests-miss-layout-bugs`. **DONE.**
+  - **W3 plan (S5):** the build plan required no visual verification. → plans that touch a surface include a visual-check in DoD. **PROPOSE.**
+  - **W4 design (S4):** placement stated as prose, not a checkable/traced requirement. → design expresses layout as checkable, reference as oracle. **PROPOSE.**
+  - **W5 neutral spec (S1/S2):** `UP-5` states the placement but `PX-*` has no secondary-view presentation primitive → nothing neutral to verify against. → add a `PX` secondary-view primitive. **PROPOSE (Steve).**
+  - **W6 FLOW gate:** no standing presentation-verification stage; visual check was one-off for the base outline. → delivery-gate clause requiring a visual mapping + check vs `PX` + reference for surface work (= BR-17 elevated to a gate). **PROPOSE (Steve).**
+- **Remaining fidelity (→ BR-17):** the left border rule, expansion background, exact spacing vs Tana.
 - Symptom (screenshot): the inline secondary-view panel renders the target's **full `NodeOutline` including a
   page-scale H1 header** plus children, unbounded — reads like a large side panel, not a compact expansion.
 - **Root cause:** the inline-expand direct-mounts `<NodeOutline subject={target}/>`, which carries the full outline
