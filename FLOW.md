@@ -81,9 +81,16 @@ whole-branch review-clean across **I1** (edge model) · **I2** (co-location) · 
 chip) · **I3c** (live labels) · **I3b** (secondary view) · **I4** (backlinks panel). Live tracker:
 `implementations/dxos/references-issue-ledger.md`.
 
-**Next action:** decide the next flow move — the remaining open work is the neutral-spec `S2` finalization
-(`IX`/`PX` still draft/authoring), the Tana `R` live-checks, and two logged task chips (dedup per-row query;
-a pre-existing structural-edge dangling-guard gap). None of these is the reference slice.
+**Smoke test (2026-07-14, Composer `:5174`) found integration bugs** the storybook gate never covered —
+focus-on-create, no left-nav presence, singleton question, per-keystroke live-embed lag, and an
+option-click double-handle + oversized embed panel. Captured in
+[`implementations/dxos/issues-ledger.md`](implementations/dxos/issues-ledger.md) (the plugin-wide tracker;
+references-specific items stay in `references-issue-ledger.md`).
+
+**Next action:** decide the next flow move. Open work now spans: (a) the smoke-test bugs (issues-ledger §A) —
+the real Composer integration the build never exercised; (b) two task chips (issues-ledger §B); (c) neutral-spec
+`S2` status promotion (`IX`/`PX` are drafted, not mid-authoring); (d) the Tana `R` live-checks. Not the reference
+slice — that's built.
 
 ## Pipeline & status
 
