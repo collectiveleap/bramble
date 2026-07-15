@@ -87,10 +87,10 @@ option-click double-handle + oversized embed panel. Captured in
 [`implementations/dxos/issues-ledger.md`](implementations/dxos/issues-ledger.md) (the plugin-wide tracker;
 references-specific items stay in `references-issue-ledger.md`).
 
-**Next action:** decide the next flow move. Open work now spans: (a) the smoke-test bugs (issues-ledger §A) —
-the real Composer integration the build never exercised; (b) two task chips (issues-ledger §B); (c) neutral-spec
-`S2` status promotion (`IX`/`PX` are drafted, not mid-authoring); (d) the Tana `R` live-checks. Not the reference
-slice — that's built.
+**Next action:** decide the next flow move. Open work now spans: the smoke-test bugs (issues-ledger `BR-1`…`BR-6`)
+— the real Composer integration the build never exercised; the two task chips (`BR-7`, `BR-8`); neutral-spec `S2`
+status promotion (`BR-11`; `IX`/`PX` are drafted, not mid-authoring); and the Tana `R` live-checks (`BR-12`). Not
+the reference slice — that's built.
 
 ## Pipeline & status
 
