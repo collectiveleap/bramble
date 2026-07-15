@@ -5,7 +5,7 @@
 Ticket tracker for the plugin build (branch `claude/plugin-bramble-substrate`, DXOS worktree, never
 merged). References-specific design items live in [`references-issue-ledger.md`](./references-issue-ledger.md).
 Each ticket has a unique `BR-<n>` id. `Status`: open · design · deferred · done. Root-cause guesses are
-marked **hyp** (unverified). Next id: **BR-16**.
+marked **hyp** (unverified). Next id: **BR-18**.
 
 > The green gate (unit 66/66, storybook 22/22) never covered BR-1…BR-6: Storybook runs the in-plugin
 > logic under `withClientProvider`; the app-framework create / nav / layout / anchor flow — where those
@@ -125,3 +125,33 @@ marked **hyp** (unverified). Next id: **BR-16**.
 `Status: open` · `Type: docs` · `Source: references-issue-ledger`
 - references-ledger decision-log `#4`/`#7` proposed fixes still to apply; a couple of "recording pending" doc items
   (the D1 co-location-vs-Tana deviation; the N1 distinct-relationships finding).
+
+## BR-16 — Heterogeneous typed rows / Composer-native instances as nodes (designed, not built)
+`Status: open` · `Type: design gap (needs decision)` · `Source: design review 2026-07-14`
+- The design treats a Composer native typed object (Person / Task / Document / Sketch …) as a **node** in the
+  outline, rendered by its own type's Section Surface; the build is a **homogeneous** outline of bramble `Node`s.
+- **Spec — accommodates (abstract):** `IP-1.content-type` (open content types) + `IP-1.typed-node` ("a Node that
+  carries a schema-type … the typed Node is a Node like any other," citing DXOS ECHO types). Doesn't pin identity —
+  whether a pre-existing Composer object instance *is* the node or a bramble wrapper.
+- **Design — explicit:** `design.md` §2 — "Typed-object node (Person / Task / Document / Sketch …) → the object's
+  Section Surface `<Surface … data={{ subject: node }} />`"; "heterogeneous typed rows … the key net-new
+  composition"; the plain `Node` is only the *fallback* Section surface.
+- **Built — no:** every row renders via `RowEditor` (CodeMirror bound to `Node.text`); `OutlineRow` has no per-row
+  Surface branch. The `@`-picker queries `Filter.type(Node)` (can't target Composer objects); edges, `makeNode`, the
+  embed (`<NodeOutline subject={target}/>`), and backlinks are all bramble-`Node`-typed.
+- **Why it matters:** underneath BR-2 (a bare Node has no nav identity; a typed object would), BR-3 (the singleton
+  question only exists because a "Bramble" is a loose bag of Nodes, not typed objects in the space), and the mention
+  scope (references can only point at bramble Nodes). Reshapes what "a node" *is* — settle before the BR-1/2/3
+  create-nav-singleton cluster.
+
+## BR-17 — Visual integrity check (Tana reference ↔ Composer implementation) not done
+`Status: open` · `Type: verify / process` · `Source: smoke test 2026-07-14`
+- The `visual-verification` skill (extract computed styles from the reference + the running DOM, diff
+  deterministically) exists, and a PX check ran **once** against the **Storybook** outline surface
+  (`composer-outline.json` mapping, 8 PX regions, both themes — `design.md` §Visual conformance, 2026-07-13).
+- But the **running Composer implementation** (`:5174`) has never been visually checked against the Tana reference
+  (`implementations/tana/visual-spec.md`), and the **references surfaces** (mention chip, inline embed panel,
+  backlinks panel) were built *after* that check and have **no visual mapping or verification at all** — BR-6 (the
+  oversized / wrong-looking embed panel) is direct evidence the fidelity is off.
+- Fix: run the visual-verification loop against the Composer app surfaces (outline, chip, embed, backlinks) with the
+  Tana visual-spec as reference; author mappings for the new references surfaces; capture each delta as its own ticket.
