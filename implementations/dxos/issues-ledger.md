@@ -65,7 +65,10 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   false pass. Reopened and closed I3c (references-ledger).
 
 ## BR-5 — Option-click chip double-handles (popup menu + expand panel)
-`Status: FIXED (storybook-verified)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: dbf5797145`
+`Status: FIXED (app-verified :5180, 2026-07-15)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: dbf5797145`
+- **App confirmation (2026-07-15):** created a bramble in the running Composer, inserted a real `@`-mention, and
+  Option-clicked the chip. Only the secondary view opened — **no preview popup**. DOM: chip is `SPAN.dx-tag--anchor`,
+  `dx-anchor` element count = 0, visible popovers = 0. The dx-anchor→preview path can no longer fire.
 - Symptom: Option-clicking the chip shows a **popup menu** AND opens the inline expand panel.
 - **Root cause (confirmed):** the `dx-anchor` custom element (`packages/ui/lit-ui/src/dx-anchor/dx-anchor.ts:37-43`)
   auto-wires its own `click` → `DxAnchorActivate` dispatch on `connectedCallback`; `plugin-preview` listens for
