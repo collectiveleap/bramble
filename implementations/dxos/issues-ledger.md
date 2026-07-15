@@ -66,15 +66,30 @@ marked **hyp** (unverified). Next id: **BR-16**.
   bounding doesn't tame the header scale. Needs a compact/embedded render mode (smaller header, tighter chrome).
 
 ## BR-7 — Dedup per-row linked-edges query
-`Status: open` · `Type: perf` · `Source: I3b review (task chip task_6f306a6e)`
-- `RowEditor` and `MentionExpansions` each run the same `useQuery(...sourceOf(Edge))` per row → two live
-  subscriptions where one would do; compounds with expansion depth. Fix: compute once, share it. Not blocking.
+`Status: open` · `Type: perf` · `Source: I3b review (was task chip task_6f306a6e)`
+- `RowEditor.tsx` (~line 42, for chip labels) and `MentionExpansions.tsx` (~line 22, for expanded mentions) each
+  run `useQuery(controller?.db, Query.select(Filter.id(node.id)).sourceOf(Edge)).filter(e => e.kind === 'linked')`
+  for the same node → two live subscriptions per row where one would do; compounds with expansion depth (each
+  nested outline mounts a fresh `RowEditor` + `MentionExpansions` pair per row).
+- Fix: compute the node's linked edges once and share — lift the query into `OutlineRow` and pass both components
+  a prop, or expose it via a shared hook / the row model. **Caveat:** `NodeOutline` renders `RowEditor` +
+  `MentionExpansions` for the zoom-root **directly** (not via `OutlineRow`), so the sharing mechanism must cover
+  that path too. Verify with `moon run plugin-bramble:{test,test-storybook -- NodeOutline,build,lint}`. Not blocking.
 
 ## BR-8 — Guard structural-edge dangling traversal
-`Status: open` · `Type: bug (latent)` · `Source: I4 review (task chip task_7ea83f8b)`
-- `Relation.getSource`/`getTarget` *throw* on a dangling edge; the I4 fix routed only the *linked*-edge paths
-  through `tryGet*`. The *structural* traversal (outline building, zoom-root resolution, cycle check) is still
-  unguarded. Pre-existing; rarely reachable. Fix: route those calls through `tryGet*` + a regression test.
+`Status: open` · `Type: bug (latent)` · `Source: I4 review (was task chip task_7ea83f8b)`
+- `Relation.getSource`/`getTarget` *throw* (not return undefined) when an endpoint can't resolve — e.g. a node was
+  deleted while its edge survives (`db.remove` has no relation cascade). The I4 fix added `tryGetTarget`/`tryGetSource`
+  (try/catch → undefined) in `src/model/edges.ts` and routed only the **linked**-edge render paths through them
+  (`BacklinksPanel`, `backlinks()`, `MentionExpansions`, `RowEditor`).
+- Still unguarded — the **structural**-edge traversal paths, which would throw on a dangling structural edge:
+  `components/NodeOutline/NodeOutline.tsx` (~lines 58, 69, zoom-root resolution via `Relation.getTarget`);
+  `model/outline.ts` (`outlineRows` building); `model/edges.ts` (~line 65, `wouldCreateCycle`'s ancestor walk via
+  `Relation.getSource`).
+- Less reachable than the linked case (the outline's delete gestures remove a node's structural edge when deleting
+  it), but the same latent crash class. Fix: route those calls through `tryGetTarget`/`tryGetSource` + a regression
+  story where a structural child's node is removed but its edge survives, asserting the outline renders without
+  crashing. Verify with `moon run plugin-bramble:{test,test-storybook -- NodeOutline,build,lint}` (no competing moon jobs).
 
 ## BR-9 — open-beside exact adjacency (pivotId)
 `Status: deferred` · `Type: enhancement` · `Source: I3b-2`
