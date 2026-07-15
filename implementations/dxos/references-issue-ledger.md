@@ -16,15 +16,23 @@ method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
 ## ▶ RESUME POINT (2026-07-14 — survives compaction)
 
-**I3a (mention insertion) + I3c (live labels, false positive) + I3b (secondary view — both UP-5
-placements) COMPLETE + whole-branch review-clean.** **NEXT = `I4` (backlinks panel) — the last references
-item.** Plans under `plans/` (`…-plan-i3a-…`, `…-plan-i3c-…`, `…-plan-i3b1-inline-expand`, `…-plan-i3b2-open-beside`).
+**REFERENCES SLICE COMPLETE — I1 · I2 · I3a · I3c · I3b · I4 all built + whole-branch review-clean.**
+The whole reference/backlink/transclusion behavior is realized on the DXOS plugin. **NEXT: back up to
+`FLOW.md` — the last major R behavior is done; decide the next flow move** (remaining open items are the
+neutral-spec `S2` finalization, the Tana live-checks, and the two deferred/pre-existing task chips below).
+Plans under `plans/` (`…-plan-i3a-…`, `…-plan-i3c-…`, `…-plan-i3b1-inline-expand`, `…-plan-i3b2-open-beside`,
+`…-plan-i4-backlinks-panel`).
 
-**I3b outcome:** Option-click a chip → the target's outline expands inline (bounded, live, edit-through,
-cycle-safe via `ExpansionPathContext`); Shift-click → opens the target alongside (`LayoutOperation.Open`).
-Built inline over 5 tasks + review fixes (commits `39cbdfa70e..2e218986b6`); gate green (test 66/66,
-storybook 20/20). Inline-expand direct-mounts `<NodeOutline subject={target}/>` (Steve-approved deviation
-from `<Surface>` — testability). One deferred perf item (duplicate per-row query, task `task_6f306a6e`).
+**I4 outcome:** `BacklinksPanel` — a Node's inbound edges, grouped + distinguished (structural "Appears
+under" / linked "Mentioned in"), live, click-to-open-beside; at the `Related` surface. Built (commits
+`910b1c58a1`, `43b3765554`); review found + fixed 1 Critical — `getSource`/`getTarget` throw (not return
+undefined), so the dangling-edge guards were dead code → `tryGetTarget`/`tryGetSource` in the model, all
+linked-edge paths routed through them (`cb1129e5d2`; `BacklinksDangling` story). Gate green (test 66/66,
+storybook 22/22).
+
+**Open task chips:** `task_6f306a6e` (dedup the duplicate per-row linked-edges query) · a pre-existing
+structural-edge dangling-guard gap (NodeOutline zoom-root + outline building call `getTarget`/`getSource`
+unguarded on structural edges).
 
 **I3c outcome:** the review's C2 ("chip label not live") did not reproduce — a substrate-level `Obj.update`
 of a non-rendered mentioned target already updates the chip (ECHO query reactivity re-renders the row +
@@ -203,12 +211,32 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
     survives) → `getTarget` null-guards in `MentionExpansions` + open-beside. Deferred (review Important #2,
     task chip `task_6f306a6e`): `RowEditor` + `MentionExpansions` run a duplicate per-row linked-edges query.
     Gate green (test 66/66, storybook 20/20, build, lint).
-- **I4** — Backlinks panel build (the union view). Gated on N3 (settled). **State: READY to plan.**
+- **I4** — Backlinks panel (`UP-2.backlinks-view`). `BacklinksPanel` reads a Node's inbound edges live
+  (`useQuery` `targetOf`), grouped + distinguished by kind — structural predecessors ("Appears under") +
+  linked referrers ("Mentioned in"); auto-populated by reverse traversal, no return edge; entries open
+  beside on click. Registered at the `AppSurface.Related` role (companion panel), reusing an extracted
+  `OpenBesideProvider`. **BUILT (2 tasks, commits `910b1c58a1`, `43b3765554`; plan
+  `plans/2026-07-14-plan-i4-backlinks-panel.md`).** Whole-branch review → **1 Critical, fixed** (`cb1129e5d2`):
+  `Relation.getSource`/`getTarget` **throw** (not return undefined) on an unresolvable endpoint, so the
+  `as Node | undefined` guards (here AND the I3b review's `MentionExpansions`/`RowEditor` guards) were dead
+  code that crashed render on a dangling edge → added `tryGetTarget`/`tryGetSource` (try/catch) in the model
+  and routed all linked-edge render paths through them (`BacklinksDangling` regression story). Gate green
+  (test 66/66, storybook 22/22, build, lint). **Pre-existing, out of scope:** structural-edge traversal
+  (NodeOutline zoom-root, outline building) is still unguarded — task chip filed. **State: BUILT.**
 
 ---
 
 ## Decisions log
 _(appended as each issue resolves)_
+- 2026-07-14g — **I4 backlinks panel built → references slice COMPLETE.** `BacklinksPanel` at the `Related`
+  surface renders inbound edges grouped + distinguished by kind (`UP-2.backlinks-view`). Whole-branch review
+  caught 1 Critical: `Relation.getSource`/`getTarget` **throw** on an unresolvable endpoint (not return
+  undefined), so the `as Node | undefined` + filter guards — here and in the I3b review's fixes — were dead
+  code that crashed render on a dangling edge. Fix: `tryGetTarget`/`tryGetSource` (try/catch) in the model,
+  every linked-edge render path routed through them, `BacklinksDangling` regression. Lesson (reinforces the
+  I3c one): a fix for a review finding still needs its own failing test — the I3b dangling-guard "fix" was
+  committed green because nothing exercised the dangling path; the I4 review is what exposed that it never
+  worked. Pre-existing structural-edge unguarded traversal flagged as a task chip, not fixed (out of scope).
 - 2026-07-14f — **I3b complete (both UP-5 placements) + whole-branch review-clean.** I3b-2 open-beside built
   (Shift-click → `LayoutOperation.Open` via a Surface-supplied `OpenBesideContext`; in-plugin half
   storybook-tested, adapter build/lint-gated). Whole-branch review over I3b-1+I3b-2 → READY; fixed 2 verified

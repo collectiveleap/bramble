@@ -73,15 +73,17 @@ fixed by the same 2c substrate rewrite. **Plans 2c (indent/outdent · reorder), 
 + zoom view-state, pointer + keyboard), and 2e (drag-to-reshape via the Pragmatic-dnd tree-item
 hitbox) are BUILT** — all subagent-driven, per-task + whole-branch reviewed, delivery gate green,
 branch unmerged for spin-out (see the ledger `.superpowers/sdd/progress.md` in the DXOS worktree for
-per-task detail). **Next action:** continue the reference/backlink/transclusion slice — the last major R behavior. Its
-design is **settled** (`implementations/dxos/design-references.md`, `current`): one unified kind-typed
-`Edge` (structural | linked); the inline mention is an **edge-referencing marker token** in the node's
-text, rendered by a **custom atomic chip decoration** (resolve marker → `Edge` → target → live label) —
-not a URL, not markdown. Build underway on the DXOS worktree: **I1** (edge model) + **I3a** (mention
-insertion + atomic chip) built + review-clean; **I3c** (live labels) closed as a false positive with a
-regression test; **I3b** (secondary view — inline-expand + open-beside, both UP-5 placements) built +
-whole-branch review-clean; remaining **I4** (backlinks panel — the last references item). Live tracker:
+per-task detail). **The reference/backlink/transclusion slice — the last major R behavior — is COMPLETE**
+on the DXOS plugin. Design **settled** (`implementations/dxos/design-references.md`, `current`): one unified
+kind-typed `Edge` (structural | linked); the inline mention is an **edge-referencing marker token** rendered
+by a custom atomic chip decoration; secondary view (inline-expand + open-beside); grouped backlinks. Built +
+whole-branch review-clean across **I1** (edge model) · **I2** (co-location) · **I3a** (mention insertion +
+chip) · **I3c** (live labels) · **I3b** (secondary view) · **I4** (backlinks panel). Live tracker:
 `implementations/dxos/references-issue-ledger.md`.
+
+**Next action:** decide the next flow move — the remaining open work is the neutral-spec `S2` finalization
+(`IX`/`PX` still draft/authoring), the Tana `R` live-checks, and two logged task chips (dedup per-row query;
+a pre-existing structural-edge dangling-guard gap). None of these is the reference slice.
 
 ## Pipeline & status
 
@@ -98,7 +100,7 @@ Status values: `not-started · authoring · needs-review · done`.
 | S4 · DXOS design | `implementations/dxos/design.md` | target | current (§1–§4; §2 covers authoring + editable header + pointer affordances) |
 | S4 · References sub-design | `implementations/dxos/design-references.md` | target | current (settled — unified kind-typed `Edge`; inline mention = an edge-referencing marker token rendered by a custom atomic chip decoration; the earlier `RefSpan` storage fork is resolved) |
 | S5 · Plan | `implementations/dxos/plans/` | target | Plans 1, 2a, 2b, 2c, 2d (view-state), **2e (drag)** built |
-| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a–2e + references model **I1 (kind-typed `Edge`: structural\|linked · `createLinkedEdge` may-cycle · `backlinks` grouped union · structural-only traversal)** + **I3a (@-mention insertion + atomic chip: `{{ref:id}}` marker · custom chip decoration · @-picker · delete-sync)** built — gate green (test 65, storybook 15, build, lint), both whole-branch reviewed + review-clean. **I3c (live labels)** closed as a false positive with a regression test (`MentionLive`; ECHO query reactivity already keeps the chip live); **I3b (secondary view)** built + whole-branch review-clean — Option-click a chip expands the target's outline inline (bounded, cycle-safe); Shift-click opens it alongside (`LayoutOperation.Open`); test 66, storybook 20. References slice remaining: I4 (backlinks panel — the last item). **Never merged** — spun out later as a separate plugin |
+| S6 · Plugin code | `packages/plugins/plugin-bramble` (DXOS monorepo) | target | Plan 1 + 2a–2e + references model **I1 (kind-typed `Edge`: structural\|linked · `createLinkedEdge` may-cycle · `backlinks` grouped union · structural-only traversal)** + **I3a (@-mention insertion + atomic chip: `{{ref:id}}` marker · custom chip decoration · @-picker · delete-sync)** built — gate green (test 65, storybook 15, build, lint), both whole-branch reviewed + review-clean. **I3c (live labels)** closed as a false positive with a regression test (`MentionLive`; ECHO query reactivity already keeps the chip live); **I3b (secondary view)** built + whole-branch review-clean — Option-click a chip expands the target's outline inline (bounded, cycle-safe); Shift-click opens it alongside (`LayoutOperation.Open`). **I4 (backlinks panel)** built + review-clean — `BacklinksPanel` at the `Related` surface shows a Node's inbound edges grouped + distinguished (structural "Appears under" / linked "Mentioned in"), click-to-open-beside; test 66, storybook 22. **References slice COMPLETE (I1–I4).** **Never merged** — spun out later as a separate plugin |
 
 ## Artifact index
 
