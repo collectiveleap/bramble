@@ -185,6 +185,12 @@ committed as complete), validate it against traceability:
 
 ### Pending propagations
 
+**Open — 2026-07-15 · secondary-view collapse (move-up, from BR-16 convergence design):** `UP-4.embed`
+(native content) and `UP-5.secondary-view` (structural subtree) collapse into **one secondary-view
+primitive = {structural | native} × {below | beside}** (see `implementations/dxos/design-object-graph.md` §4/§5).
+Refine `spec/user-primitives.mdl` (UP-4/UP-5 → one primitive, 2×2 — a *simplification*), then propagate to
+`design.md`. Sequenced as part of the BR-16 object-graph convergence build.
+
 **Resolved — 2026-07-13 · presentation facet + naming cleanup (move-up, U4):** the visual
 miss (Bramble outline not matching Tana despite a "4/4" gate) root-caused to a
 **missing neutral facet** — the specs described substrate, capabilities, and

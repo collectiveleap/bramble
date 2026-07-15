@@ -206,11 +206,12 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   `source/target: Node` → `Obj.Unknown`, drop the `as Node` casts; all traversal (`childEdges`/`backlinks`/cycle/
   order) is unchanged because it keys on `Filter.id` + `kind`, never type. Confirms **"Node = a role (any `Obj`),
   `Edge` = the only foundational schema."**
-- **Convergence is a phased build program (NOT a big-bang rebuild), and needs its own design pass first.** Phase 1
-  (done) = the text-Node outline. Open sub-questions to settle before building: how an existing object *joins* the
-  outline structure (who creates its structural edge); the current `Node` schema's role (becomes "the text content
-  type," one type among many, likely renamed); generalizing `Edge` endpoints from `Node` to any `Obj`; the `@`-picker
-  + backlinks over any `Obj`; edit-through via each type's Surface.
+- **Design pass DONE (2026-07-15) → [`design-object-graph.md`](./design-object-graph.md)** (the settled convergence
+  design). It settles: the foundational DAG (Node = role, `Edge` = only schema over `Obj.Unknown`, feasibility green);
+  node types = ECHO types + the text-node residual (leans A: native `Text.Text`); joining the DAG (create-new /
+  reference-existing, no new primitive); and **the uniform render model — one secondary-view primitive, 2×2**
+  ({structural | native} × {below | beside}, gesture algebra Option=below · Shift=beside · +⌘=native, one region per
+  placement). Collapses `UP-4`/`UP-5` into that primitive (spec move-up, folded into the plan). Phased build path in §7.
 - **Cascade — re-settle these under the object-graph model before building them:** BR-3 (a Bramble is now a **view**
   rooted at an object, not a bag of Nodes → the "singleton" question changes shape or dissolves); BR-2 (typed objects
   already carry nav identity — nav becomes about the Bramble *view*, not the Node); BR-1 (create/focus) follows.
