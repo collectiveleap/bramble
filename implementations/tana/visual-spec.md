@@ -101,6 +101,14 @@ distinguished) — but the "nested" reading comes from a **full bordered box + i
 **aligned to the row** (not the whole box indented). The neutral `PX-embed` wording is corrected to match
 (contained region, content nested), and `border-radius`/`border`/scale drive the target's realization.
 
+**Colour is surface-relative (`PX-theme`), so a target's fill legitimately differs from Tana's.** Tana's box
+is **transparent** and reads only because Tana's page is **white** (L≈1.0) behind a faint border. A target on a
+different surface must realize "distinguished" against *its* surface, verified by **contrast of the result**,
+not by copying `transparent`. (DXOS Composer: the deck is grey `oklch(0.875)`, so a transparent box vanishes;
+the plugin uses a **faint elevated card** derived from the deck surface — `oklch(from --surface-bg calc(l +
+0.045) …)`, ΔL≈0.045, theme-relative — to stay distinguished. Geometry — border width, radius, inset, scale —
+stays Tana's; only colour is surface-relative.)
+
 ## Out-of-floor (Tana-exclusive chrome; reference detail only)
 
 Anchors to no neutral concept (supertags/tasks/app-nav are outside the SUP floor);
