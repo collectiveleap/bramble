@@ -40,7 +40,9 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   intra-outline (post-gesture) focus, not focus-on-first-open. Investigate how a freshly-opened surface takes focus.
 
 ## BR-2 — Created Bramble has no left-nav presence
-`Status: open` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)`
+`Status: open · reshaped by BR-16` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)`
+- **⚠ Re-frame (BR-16 settled 2026-07-15):** with nodes = typed `Obj`s that already carry nav identity, nav is about
+  surfacing the **Bramble view** (its root object), not giving a bare `Node` an identity. Fix follows the BR-16 model.
 - Symptom: created a Bramble 3×; none appear in the left navigation.
 - **hyp:** the created `Node` is added to the space but never surfaced in the navtree. `BramblePlugin.tsx`
   contributes schema + surface + create-object + translations, but **no app-graph / navtree module**, and the
@@ -48,7 +50,10 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   navigable collection, and what does a nav-visible plugin contribute that bramble doesn't? Interacts with BR-3.
 
 ## BR-3 — Bramble should be a singleton — 1 per space
-`Status: design` · `Type: design decision (Steve)` · `Source: smoke test :5174 (2026-07-14)`
+`Status: design · reshaped by BR-16 (re-settle under the object-graph model)` · `Type: design decision (Steve)` · `Source: smoke test :5174 (2026-07-14)`
+- **⚠ Re-frame (BR-16 settled 2026-07-15):** a Bramble is now a **view** over Composer's object graph, not a bag of
+  Nodes — so "one Bramble per space" may dissolve into "what is the Bramble view's root, and is it singleton?" Settle
+  this question in the BR-16 convergence design, not standalone.
 - Ask: one Bramble root per space, not an unbounded set of Nodes. Create becomes **get-or-create**; "the Bramble"
   needs a stable per-space identity.
 - Open questions: what *is* the singleton — a designated root Node, or a Bramble wrapper object? How does nav show
@@ -186,7 +191,22 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   (the D1 co-location-vs-Tana deviation; the N1 distinct-relationships finding).
 
 ## BR-16 — Heterogeneous typed rows / Composer-native instances as nodes (designed, not built)
-`Status: open` · `Type: design gap (needs decision)` · `Source: design review 2026-07-14`
+`Status: SETTLED 2026-07-15 — affirm design (ii); build converges UP` · `Type: design decision → build program` · `Source: design review 2026-07-14`
+- **Decision (Steve, 2026-07-15):** Bramble is **"the structural outline over Composer's whole object graph."**
+  Affirm `design.md` §1(ii) + `IP-1.typed-node`: a node = **any typed ECHO `Obj`**; structural + linked edges connect
+  **arbitrary objects**; a row renders by its **type's Surface** (text is one type, `RowEditor` its renderer; a
+  fallback `Section` surface covers typeless objects). The spec + design already say this — the **build diverged**
+  (dedicated homogeneous `Node` schema, `makeNode`, `Filter.type(Node)`, `RowEditor` for every row). **Flow
+  direction: the build moves UP to the design.** The middle "Node-wraps-an-object" stance was rejected (it
+  re-introduces the object duplication the edge-native model exists to avoid).
+- **Convergence is a phased build program (NOT a big-bang rebuild), and needs its own design pass first.** Phase 1
+  (done) = the text-Node outline. Open sub-questions to settle before building: how an existing object *joins* the
+  outline structure (who creates its structural edge); the current `Node` schema's role (becomes "the text content
+  type," one type among many, likely renamed); generalizing `Edge` endpoints from `Node` to any `Obj`; the `@`-picker
+  + backlinks over any `Obj`; edit-through via each type's Surface.
+- **Cascade — re-settle these under the object-graph model before building them:** BR-3 (a Bramble is now a **view**
+  rooted at an object, not a bag of Nodes → the "singleton" question changes shape or dissolves); BR-2 (typed objects
+  already carry nav identity — nav becomes about the Bramble *view*, not the Node); BR-1 (create/focus) follows.
 - The design treats a Composer native typed object (Person / Task / Document / Sketch …) as a **node** in the
   outline, rendered by its own type's Section Surface; the build is a **homogeneous** outline of bramble `Node`s.
 - **Spec — accommodates (abstract):** `IP-1.content-type` (open content types) + `IP-1.typed-node` ("a Node that
