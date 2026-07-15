@@ -11,6 +11,17 @@ marked **hyp** (unverified). Next id: **BR-18**.
 > logic under `withClientProvider`; the app-framework create / nav / layout / anchor flow — where those
 > bugs live — is absent there. Fixes for them must be verified in the running Composer app (`:5174`).
 
+## Resolution protocol
+
+Resolving any ticket requires, as part of the work (not just a code patch):
+1. **Root-cause assessment** — the actual cause, not the symptom. Investigate and cite state before proposing.
+2. **Proposed fixes, naming the flow direction.** A fix may move **up** the flow (amend the neutral spec `S1`/`S2`,
+   the `S4` design, or `references-issue-ledger`) or **down** (change the `S5` plan / `S6` build) — say which. Don't
+   default to a code patch when the root cause is a spec/design gap.
+3. **If a fix needs Steve** (a design or scope decision) and he's unavailable, **turn that fix into a new ticket**
+   (`BR-<n>`) linked back to the originating ticket (`from: BR-<x>`), rather than guessing. The originating ticket
+   notes `blocked-by: BR-<n>`.
+
 ---
 
 ## BR-1 — New Bramble: no focus cursor on create
