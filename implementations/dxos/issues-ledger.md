@@ -72,7 +72,7 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   RowEditor observes the target's live text), unless the ECHO asymmetry turns out to be an upstream bug (→ new ticket).
 
 ## BR-5 — Option-click chip double-handles (popup menu + expand panel)
-`Status: fixed (storybook re-verify pending)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: dbf5797145`
+`Status: FIXED (storybook-verified)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: dbf5797145`
 - Symptom: Option-clicking the chip shows a **popup menu** AND opens the inline expand panel.
 - **Root cause (confirmed):** the `dx-anchor` custom element (`packages/ui/lit-ui/src/dx-anchor/dx-anchor.ts:37-43`)
   auto-wires its own `click` → `DxAnchorActivate` dispatch on `connectedCallback`; `plugin-preview` listens for
@@ -82,12 +82,14 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   visual class (`.dx-tag--anchor` is a plain class selector, works on any element), no platform click behavior;
   bramble owns the chip's semantics via `mentionClicks`. Updated `mentionClicks` + all story selectors to the
   tag-agnostic `[data-edge-id]`.
-- **Verification:** build + lint green. Storybook behavioral re-run blocked by env load (~54; mass-flake — runner
-  missing-file + unrelated stories failing to render). Re-run in a clean env to confirm; the popup-absence itself
-  isn't storybook-testable (no `plugin-preview` there) — needs the Composer app (`:5174`).
+- **Verification:** build + lint green; **storybook 20/22** — the chip-dependent stories (`MentionExpand`,
+  `HeaderMentionExpand`, `OpenBeside`, `MentionLive`, `MentionExpandCycle`) all pass, locating the chip via
+  `[data-edge-id]` and option-clicking it, so the span chip + `mentionClicks` work. (The 2 fails, `Default` +
+  `Mention`, are `waitFor` timeouts under env load ~34, not regressions.) The popup-ABSENCE itself isn't
+  storybook-testable (no `plugin-preview` there) — confirm in the Composer app (`:5174`) when convenient.
 
 ## BR-6 — Inline embed panel oversized / wrong-looking
-`Status: partial fix (storybook re-verify pending)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14, screenshot)` · `Fix: 0f8d06884f`
+`Status: FIXED header-scale (storybook-verified); panel fidelity → BR-17` · `Type: bug` · `Source: smoke test :5174 (2026-07-14, screenshot)` · `Fix: 0f8d06884f`
 - Symptom (screenshot): the inline secondary-view panel renders the target's **full `NodeOutline` including a
   page-scale H1 header** plus children, unbounded — reads like a large side panel, not a compact expansion.
 - **Root cause:** the inline-expand direct-mounts `<NodeOutline subject={target}/>`, which carries the full outline
@@ -96,8 +98,8 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   17px/500 so the embed's header reads as an inline line, not a title. `MentionExpand` story asserts the embedded
   header font-size < 20px.
 - **Remaining (→ BR-17 visual pass):** this fixes the glaring header scale only; the panel's placement, width, and
-  chrome fidelity vs Tana still need the visual-integrity check. **Verification:** build + lint green; storybook
-  measurement pending a clean env.
+  chrome fidelity vs Tana still need the visual-integrity check. **Verification:** build + lint green; `MentionExpand`
+  storybook passes its computed-style assertion (embedded header font-size < 20px).
 
 ## BR-7 — Dedup per-row linked-edges query
 `Status: open` · `Type: perf` · `Source: I3b review (was task chip task_6f306a6e)`
