@@ -2,14 +2,18 @@
 
 # I3c — Live mention labels Implementation Plan
 
-> **OUTCOME (2026-07-14):** The TDD red step did not go red. The `MentionLive` test (Step 1) —
-> which mutates a mentioned target purely at the substrate level (`Obj.update`, target not rendered)
-> and asserts the chip updates — **passed against the unmodified code**. The whole-branch review's C2
-> was a **false positive**: ECHO query reactivity already re-renders the mentioning row and recomputes
-> the label on a target change. Resolution: **Steve chose to close I3c with the regression test only** —
-> Steps 3–5 (the `Obj.subscribe` production change) were **NOT applied** (YAGNI; the test guards against
-> a future reactivity change breaking liveness). Committed test: `d64dfae3d7`. Steps 3–5 remain here as
-> the defensive fallback if `MentionLive` ever regresses.
+> **OUTCOME — CORRECTED (2026-07-15):** the 2026-07-14 "false positive" closure was **WRONG**. The
+> `MentionLive` test's red step didn't go red because it mutated the target via `Obj.update` (fires ECHO
+> reactivity) instead of the **real per-keystroke editor path** (a CM→automerge write, which does NOT
+> re-render the mentioning row's `useQuery`). A Composer smoke test surfaced the true bug — the chip lagged
+> until Enter (`issues-ledger BR-4`). **Fix shipped under BR-4 (`f488ae465b`):** the label is now read live at
+> chip-build time (`targetMap`, not a cached string) AND `RowEditor` subscribes to each target's live text via
+> the automerge accessor-`change` signal (the editor's own per-keystroke signal — this proved more reliable
+> than `Obj.subscribe`, which shares the same ECHO-reactivity path that missed the write) → `refreshChips`.
+> `MentionLive` was rewritten to edit X through its own row editor (real path); node `mention-live.test.ts`
+> covers the signal. Verified clean: node 68/68, storybook 22/22. **Lesson: a finding's failing test must
+> reproduce the ACTUAL user path, not a programmatic proxy.** Steps below are the original draft (superseded by
+> the BR-4 fix, which used the accessor signal rather than `Obj.subscribe`).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking. This is a single-file change (`RowEditor.tsx`) plus one storybook test — execute inline.
 

@@ -180,16 +180,17 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
   `createLinkedEdge` + insert marker · delete-sync). **BUILT + review-clean (2026-07-14, inline, 4 tasks,
   commits `7ef2795da0..46540e2bae`; review fixes `2fe6e9ddcd`).** Gate green (test 65/65, storybook 15/15,
   build, lint). **State: BUILT.**
-- **I3c** — Live mention labels (`IX-immediate`: "edit X → Y's chip updates immediately"). **⚠ REOPENED
-  (2026-07-14): the "false positive" was likely a false pass.** A Composer smoke test found per-keystroke
-  edits of X do NOT update Y's chip until Enter (issues-ledger `BR-4`) — the exact C2 behavior. `MentionLive`
-  passed only because it drove `Obj.update` (which fires ECHO reactivity), not a per-keystroke CM→automerge
-  write (which apparently does not re-render Y's `useQuery`). The regression test does not reproduce the app
-  behavior. Track the fix under `BR-4`; the deferred `Obj.subscribe`/live-handle-observe fix in
-  `plans/2026-07-14-plan-i3c-live-labels.md` is the candidate. **Lesson: a review finding's own failing test
-  must reproduce the ACTUAL user path (per-keystroke editing), not a programmatic proxy — the proxy gave a
-  false pass and I wrongly closed C2.** Prior (now-doubted) writeup follows.
-  Carved from I3a review C2, then closed as a false positive (2026-07-14): The C2 diagnosis (that `useQuery` is
+- **I3c** — Live mention labels (`IX-immediate`: "edit X → Y's chip updates immediately"). **REOPENED then
+  RESOLVED via `BR-4` (2026-07-15, `f488ae465b`).** The original "false positive" closure was WRONG: a Composer
+  smoke test found per-keystroke edits of X did NOT update Y's chip until Enter (`BR-4`) — the exact C2 behavior.
+  `MentionLive` had given a **false pass** because it drove `Obj.update` (fires ECHO reactivity), not a
+  per-keystroke CM→automerge write (which does not re-render Y's `useQuery`). **Fix shipped under BR-4:**
+  `RowEditor` subscribes to each target's live text via the automerge accessor-`change` signal and refreshes the
+  chip per keystroke; `MentionLive` was rewritten to edit X through its own row editor (the real path), and a node
+  `mention-live.test.ts` covers the write-path signal. **Lesson (now canon): a review finding's own failing test
+  must reproduce the ACTUAL user path (per-keystroke editing), not a programmatic proxy — the proxy gave a false
+  pass and I wrongly closed C2.** Prior (now-corrected) writeup follows.
+  Carved from I3a review C2, closed as a false positive (2026-07-14), then reopened + fixed (2026-07-15): The C2 diagnosis (that `useQuery` is
   membership-based and won't re-render the mentioning row on a target's in-place edit) did **not hold
   empirically**: the `MentionLive` regression test mutates a mentioned target purely at the substrate level
   (`Obj.update`, target NOT rendered — a faithful remote-edit proxy) and the chip updates live against the

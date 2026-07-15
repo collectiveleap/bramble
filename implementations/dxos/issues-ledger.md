@@ -48,28 +48,21 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   it (BR-2)? What happens to Nodes already created in testing? Needs a decision before build; couples to BR-1/BR-2.
 
 ## BR-4 — Embed live-update lags until Enter (should be per-keystroke)
-`Status: open · diagnosed (write-path ruled out; fix needs live repro)` · `Type: bug · HIGH` · `Source: smoke test :5174 (2026-07-14)`
-- Symptom: embed node X in node Y; edit X → Y reflects the edit only after **Enter**, not per keystroke.
-  The exact Tana `IX-immediate` behavior that motivated the whole references slice.
-- **Investigation (2026-07-14):**
-  - **Write path RULED OUT.** The CM↔automerge binding writes on *every* change — `ui-editor/.../automerge.ts:97-105`
-    reconciles CM→automerge on each non-empty doc change, no throttle/debounce. So X's automerge doc updates per
-    keystroke; the lag is **not** a write-side debounce.
-  - **Suspect: the observation / re-render side.** Y's chip label refreshes only when Y's `RowEditor` re-renders
-    (its `labelMap` recomputes → `refreshChips`). Y's `useQuery` is over **Y's own** outgoing edges; editing **X's**
-    text changes neither Y's edge set. A **membership** change (Enter → `createEdge`) *does* re-render Y's query →
-    the chip refreshes — matching "until I hit Enter."
-  - **Unresolved tension (do not overclaim):** storybook `MentionLive` drives `Obj.update(X.text)` and the chip DID
-    update — so `Obj.update` and a CM→automerge write appear to trigger **different** reactivity (Obj.update fires
-    ECHO's reactive notify; the raw automerge handle-change may not). I have **not** pinned the exact ECHO mechanism.
-- **⚠ Casts doubt on I3c.** BR-4 is the live manifestation of review finding **C2**, which I closed in I3c as a
-  "false positive." `MentionLive` likely gave a **false pass** (Obj.update ≠ per-keystroke CM write). **I3c should be
-  reopened** (see references-ledger); its deferred `Obj.subscribe` fix — or observing the target's live automerge
-  handle `change` (the signal the editor itself uses) and firing `refreshChips` — is the candidate fix.
-- **Blocked on:** live-app reproduction (or deeper ECHO-reactivity spelunking) to pin the mechanism + verify a fix —
-  the storybook harness gives a false pass, so a fix can't be verified there. Not shipping a speculative fix under
-  the current loaded env; needs a proper repro. Flow direction of the eventual fix: **down / build** (in-plugin,
-  RowEditor observes the target's live text), unless the ECHO asymmetry turns out to be an upstream bug (→ new ticket).
+`Status: FIXED (verified)` · `Type: bug · HIGH` · `Source: smoke test :5174 (2026-07-14)` · `Fix: f488ae465b`
+- Symptom: edit X → Y's chip reflected it only after **Enter**, not per keystroke (Tana `IX-immediate`).
+- **Root cause (confirmed):** the write path was fine (CM↔automerge writes per keystroke, no throttle —
+  `ui-editor/.../automerge.ts:97-105`). The lag was **observation-side**: the chip label was read once into a
+  `labelMap` and rebuilt only when Y's `RowEditor` re-rendered — which fires on a **membership** change
+  (Enter → `createEdge`) but NOT on the target's in-place per-keystroke text edit (Y's `useQuery` is over **Y's
+  own** edges). Hence "until Enter."
+- **Fix (flow: down / build, in-plugin):** `RowEditor` now (1) holds a `targetMap` so `resolveLabel` reads the
+  target's `.content` **live** at chip-build time, and (2) subscribes to each linked target's text via the same
+  automerge accessor-`change` signal the editor itself uses (fires per keystroke) → dispatches `refreshChips`.
+  Re-subscribes only when the mention set changes.
+- **Verification (clean env, load ~9):** build + lint green; node **68/68** incl. new `mention-live.test.ts`
+  (accessor-change fires on the editor write path); storybook **22/22** incl. `MentionLive` **rewritten** to edit
+  X through its own row editor — the real per-keystroke path, replacing the `Obj.update` proxy that gave I3c its
+  false pass. Reopened and closed I3c (references-ledger).
 
 ## BR-5 — Option-click chip double-handles (popup menu + expand panel)
 `Status: FIXED (storybook-verified)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: dbf5797145`
