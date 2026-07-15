@@ -16,14 +16,15 @@ method (P1, now informed by the model) → build (I1–I4). I2 is already done.
 
 ## ▶ RESUME POINT (2026-07-14 — survives compaction)
 
-**I3a (mention insertion) + I3c (live labels, false positive) + I3b-1 (inline-expand secondary view)
-COMPLETE.** **NEXT = `I3b-2` (open-beside) then `I4` (backlinks panel).** Consider a whole-branch review
-once I3b-2 lands (both UP-5 placements together). Plans under `plans/` (`…-plan-i3a-…`, `…-plan-i3c-…`,
-`…-plan-i3b1-inline-expand`).
+**I3a (mention insertion) + I3c (live labels, false positive) + I3b (secondary view — both UP-5
+placements) COMPLETE + whole-branch review-clean.** **NEXT = `I4` (backlinks panel) — the last references
+item.** Plans under `plans/` (`…-plan-i3a-…`, `…-plan-i3c-…`, `…-plan-i3b1-inline-expand`, `…-plan-i3b2-open-beside`).
 
-**I3b-1 outcome:** Option-click a chip expands the target's outline inline (bounded, live, edit-through,
-cycle-safe). Built inline (commits `39cbdfa70e..0bd2e27783`); gate green (test 66/66, storybook 18/18).
-Direct-mounts `<NodeOutline subject={target}/>` (Steve-approved deviation from `<Surface>` — testability).
+**I3b outcome:** Option-click a chip → the target's outline expands inline (bounded, live, edit-through,
+cycle-safe via `ExpansionPathContext`); Shift-click → opens the target alongside (`LayoutOperation.Open`).
+Built inline over 5 tasks + review fixes (commits `39cbdfa70e..2e218986b6`); gate green (test 66/66,
+storybook 20/20). Inline-expand direct-mounts `<NodeOutline subject={target}/>` (Steve-approved deviation
+from `<Surface>` — testability). One deferred perf item (duplicate per-row query, task `task_6f306a6e`).
 
 **I3c outcome:** the review's C2 ("chip label not live") did not reproduce — a substrate-level `Obj.update`
 of a non-rendered mentioned target already updates the chip (ECHO query reactivity re-renders the row +
@@ -190,15 +191,31 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
     Node-only targets; swap to `<Surface>` in one line if a cross-type target ever arrives. **State: BUILT.**
   - **I3b-2 — open-beside.** Shift-click a chip → `LayoutOperation.Open` (from `@dxos/app-toolkit`) via
     `useOperationInvoker` (`@dxos/app-framework/ui`), payload `{ subject: [Paths.getObjectPathFromObject(target)],
-    pivotId: <current pane>, navigation: 'immediate' }`. New framework wiring for bramble (no operation-invoker
-    today); not storybook-gated (no layout context there) — test by asserting the dispatch payload. **State:
-    READY to plan.**
+    navigation: 'immediate' }` — supplied through `OpenBesideContext` from the plugin's Surface (null/no-op
+    outside it). **BUILT (2 tasks, commits `8431182d47`, `a73f00cb2f`; plan `plans/2026-07-14-plan-i3b2-open-beside.md`).**
+    In-plugin click→resolve→handler is storybook-tested (`OpenBeside`); the thin Surface adapter is
+    build/lint-gated (no operation-invoker in the story harness). `pivotId` exact-adjacency deferred.
+    **State: BUILT.**
+  - **I3b whole-branch review (base `d64dfae3d7`) → READY** with 2 Important + robustness findings, all
+    verified + fixed (`2e218986b6`): (1) a mention in the **header's own text** toggled expansion but never
+    rendered (header renders via `RowEditor`, not `OutlineRow`) → extracted `MentionExpansions`, rendered for
+    both header and rows (`HeaderMentionExpand` story); (2) **dangling linked edge** (target removed, edge
+    survives) → `getTarget` null-guards in `MentionExpansions` + open-beside. Deferred (review Important #2,
+    task chip `task_6f306a6e`): `RowEditor` + `MentionExpansions` run a duplicate per-row linked-edges query.
+    Gate green (test 66/66, storybook 20/20, build, lint).
 - **I4** — Backlinks panel build (the union view). Gated on N3 (settled). **State: READY to plan.**
 
 ---
 
 ## Decisions log
 _(appended as each issue resolves)_
+- 2026-07-14f — **I3b complete (both UP-5 placements) + whole-branch review-clean.** I3b-2 open-beside built
+  (Shift-click → `LayoutOperation.Open` via a Surface-supplied `OpenBesideContext`; in-plugin half
+  storybook-tested, adapter build/lint-gated). Whole-branch review over I3b-1+I3b-2 → READY; fixed 2 verified
+  findings (header-hosted mentions couldn't expand → extracted `MentionExpansions` for header + rows;
+  dangling-target null-guards) and deferred one perf item (duplicate per-row query, chip `task_6f306a6e`).
+  Storybook-flake note: under peak concurrent load the browser story suite mass-times-out (saw 14/20 fail at
+  197s); a clean isolated run is 20/20 at ~13s test time — run the gate without competing moon jobs.
 - 2026-07-14e — **I3b split + inline-expand deviation (Steve chose recommended on both).** I3b (secondary
   view) split into **I3b-1 inline-expand** (built now, storybook-gated) and **I3b-2 open-beside** (separate
   plan — `LayoutOperation.Open`, framework wiring, tested by dispatch payload not storybook). Deviation: the
