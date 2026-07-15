@@ -48,33 +48,56 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   it (BR-2)? What happens to Nodes already created in testing? Needs a decision before build; couples to BR-1/BR-2.
 
 ## BR-4 — Embed live-update lags until Enter (should be per-keystroke)
-`Status: open` · `Type: bug · HIGH` · `Source: smoke test :5174 (2026-07-14)`
+`Status: open · diagnosed (write-path ruled out; fix needs live repro)` · `Type: bug · HIGH` · `Source: smoke test :5174 (2026-07-14)`
 - Symptom: embed node X in node Y; edit X → Y reflects the edit only after **Enter**, not per keystroke.
-  Expected: **each keystroke** updates Y.
-- Why it matters: the exact Tana `IX-immediate` behavior ("edit X → every place showing X updates without a
-  manual refresh") that motivated the entire references slice.
-- Why the gate missed it: storybook `MentionLive` drove a *programmatic* `Obj.update`, not per-keystroke typing.
-  **hyp:** the CodeMirror↔automerge text binding (`createDataExtensions` / `Doc.createAccessor`) batches/defers
-  the commit (throttle, or on certain events), so Y's reactive re-render doesn't fire until the change lands, and
-  Enter forces a commit. Investigate the commit cadence; possibly a debounce to remove, or Y should observe X's
-  live doc rather than the committed ECHO value. Cross-ref references-ledger I3c (closed only the programmatic case).
+  The exact Tana `IX-immediate` behavior that motivated the whole references slice.
+- **Investigation (2026-07-14):**
+  - **Write path RULED OUT.** The CM↔automerge binding writes on *every* change — `ui-editor/.../automerge.ts:97-105`
+    reconciles CM→automerge on each non-empty doc change, no throttle/debounce. So X's automerge doc updates per
+    keystroke; the lag is **not** a write-side debounce.
+  - **Suspect: the observation / re-render side.** Y's chip label refreshes only when Y's `RowEditor` re-renders
+    (its `labelMap` recomputes → `refreshChips`). Y's `useQuery` is over **Y's own** outgoing edges; editing **X's**
+    text changes neither Y's edge set. A **membership** change (Enter → `createEdge`) *does* re-render Y's query →
+    the chip refreshes — matching "until I hit Enter."
+  - **Unresolved tension (do not overclaim):** storybook `MentionLive` drives `Obj.update(X.text)` and the chip DID
+    update — so `Obj.update` and a CM→automerge write appear to trigger **different** reactivity (Obj.update fires
+    ECHO's reactive notify; the raw automerge handle-change may not). I have **not** pinned the exact ECHO mechanism.
+- **⚠ Casts doubt on I3c.** BR-4 is the live manifestation of review finding **C2**, which I closed in I3c as a
+  "false positive." `MentionLive` likely gave a **false pass** (Obj.update ≠ per-keystroke CM write). **I3c should be
+  reopened** (see references-ledger); its deferred `Obj.subscribe` fix — or observing the target's live automerge
+  handle `change` (the signal the editor itself uses) and firing `refreshChips` — is the candidate fix.
+- **Blocked on:** live-app reproduction (or deeper ECHO-reactivity spelunking) to pin the mechanism + verify a fix —
+  the storybook harness gives a false pass, so a fix can't be verified there. Not shipping a speculative fix under
+  the current loaded env; needs a proper repro. Flow direction of the eventual fix: **down / build** (in-plugin,
+  RowEditor observes the target's live text), unless the ECHO asymmetry turns out to be an upstream bug (→ new ticket).
 
 ## BR-5 — Option-click chip double-handles (popup menu + expand panel)
-`Status: open` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)`
-- Symptom: Option-clicking the chip shows a **popup menu** AND opens the inline expand panel. The popup is
-  unexpected — only the panel should open.
-- **hyp:** the chip renders as a `<dx-anchor>` (`mention-extension.ts` `ChipWidget`), which the platform's
-  preview/anchor mechanism (plugin-preview's `DX_ANCHOR_ACTIVATE`) also reacts to — two click handlers fire on the
-  one chip. Our `mentionClicks` `mousedown` `preventDefault` may not suppress the platform anchor handler.
+`Status: fixed (storybook re-verify pending)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: dbf5797145`
+- Symptom: Option-clicking the chip shows a **popup menu** AND opens the inline expand panel.
+- **Root cause (confirmed):** the `dx-anchor` custom element (`packages/ui/lit-ui/src/dx-anchor/dx-anchor.ts:37-43`)
+  auto-wires its own `click` → `DxAnchorActivate` dispatch on `connectedCallback`; `plugin-preview` listens for
+  `DX_ANCHOR_ACTIVATE` and opens a preview popover. Our `ChipWidget` rendered a `<dx-anchor>` with no `dxn` (we set
+  `data-edge-id`), so **every** click fired an empty-`dxn` preview popover alongside bramble's option-click expand.
+- **Fix (flow: down / build, in-plugin):** render the chip as a `<span class="dx-tag--anchor" role="button">` — same
+  visual class (`.dx-tag--anchor` is a plain class selector, works on any element), no platform click behavior;
+  bramble owns the chip's semantics via `mentionClicks`. Updated `mentionClicks` + all story selectors to the
+  tag-agnostic `[data-edge-id]`.
+- **Verification:** build + lint green. Storybook behavioral re-run blocked by env load (~54; mass-flake — runner
+  missing-file + unrelated stories failing to render). Re-run in a clean env to confirm; the popup-absence itself
+  isn't storybook-testable (no `plugin-preview` there) — needs the Composer app (`:5174`).
 
 ## BR-6 — Inline embed panel oversized / wrong-looking
-`Status: open` · `Type: bug` · `Source: smoke test :5174 (2026-07-14, screenshot)`
+`Status: partial fix (storybook re-verify pending)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14, screenshot)` · `Fix: 0f8d06884f`
 - Symptom (screenshot): the inline secondary-view panel renders the target's **full `NodeOutline` including a
-  page-scale H1 header** ("this is 3.1 iajshd jas") plus its children, unbounded, set off by a vertical rule — it
-  reads like a large side panel, not a compact in-line expansion.
-- Root: the inline-expand direct-mounts `<NodeOutline subject={target}/>`, which carries the whole outline chrome
-  (large header, full width); `NodeOutline` does not adapt to a compact/embedded `role`, and `.bramble-secondary`'s
-  bounding doesn't tame the header scale. Needs a compact/embedded render mode (smaller header, tighter chrome).
+  page-scale H1 header** plus children, unbounded — reads like a large side panel, not a compact expansion.
+- **Root cause:** the inline-expand direct-mounts `<NodeOutline subject={target}/>`, which carries the full outline
+  chrome; the header is `.bramble-outline-header .cm-content { font-size: 29px !important }` (Tana page-title scale).
+- **Fix applied (flow: down / build, CSS):** scope `.bramble-secondary .bramble-outline-header .cm-content` down to
+  17px/500 so the embed's header reads as an inline line, not a title. `MentionExpand` story asserts the embedded
+  header font-size < 20px.
+- **Remaining (→ BR-17 visual pass):** this fixes the glaring header scale only; the panel's placement, width, and
+  chrome fidelity vs Tana still need the visual-integrity check. **Verification:** build + lint green; storybook
+  measurement pending a clean env.
 
 ## BR-7 — Dedup per-row linked-edges query
 `Status: open` · `Type: perf` · `Source: I3b review (was task chip task_6f306a6e)`
@@ -88,7 +111,11 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   that path too. Verify with `moon run plugin-bramble:{test,test-storybook -- NodeOutline,build,lint}`. Not blocking.
 
 ## BR-8 — Guard structural-edge dangling traversal
-`Status: open` · `Type: bug (latent)` · `Source: I4 review (was task chip task_7ea83f8b)`
+`Status: FIXED` · `Type: bug (latent)` · `Source: I4 review (was task chip task_7ea83f8b)` · `Fix: 143430e71a`
+- **Done (flow: down / build):** routed `outlineRows` (both sites), `wouldCreateCycle`, and NodeOutline's zoom-root
+  resolution through `tryGetTarget`/`tryGetSource`, skipping a dangling edge. Node unit test (`outline.test.ts`)
+  removes a structural child while its edge survives and asserts `outlineRows` skips it, not throws — **passes**
+  (build + lint green; verified via the node test, robust under the loaded env).
 - `Relation.getSource`/`getTarget` *throw* (not return undefined) when an endpoint can't resolve — e.g. a node was
   deleted while its edge survives (`db.remove` has no relation cascade). The I4 fix added `tryGetTarget`/`tryGetSource`
   (try/catch → undefined) in `src/model/edges.ts` and routed only the **linked**-edge render paths through them
