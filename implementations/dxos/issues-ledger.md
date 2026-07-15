@@ -85,7 +85,15 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   storybook-testable (no `plugin-preview` there) — confirm in the Composer app (`:5174`) when convenient.
 
 ## BR-6 — Inline embed panel oversized / wrong-looking
-`Status: FIXED header-scale (storybook-verified); panel fidelity → BR-17` · `Type: bug` · `Source: smoke test :5174 (2026-07-14, screenshot)` · `Fix: 0f8d06884f`
+`Status: FIXED (app-verified :5180, 2026-07-15)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14, screenshot)` · `Fix: 0f8d06884f, 8eec32d604`
+- **Two root causes, both fixed:** (1) oversized 29px page-title header → scoped to 17px inside `.bramble-secondary`
+  (`0f8d06884f`); (2) **the expansion rendered to the far RIGHT of the row, not below the mention** — `.bramble-outline-row`
+  was `display:flex` and `MentionExpansions` was a flex sibling of the editor (measured x=1026 vs row x=374). Fixed by
+  making the row a column with an inner `.bramble-outline-row-line` for chevron/bullet/editor, so the expansion stacks
+  below, indented (`8eec32d604`; measured x=398, below the line).
+- **Verified:** build + lint; storybook 22/22 (`MentionExpand` asserts header <20px AND expansion below the row line);
+  app-confirmed on :5180 — the embed now renders indented below the mention showing the target's outline, Tana-like.
+- **Remaining (→ BR-17):** finer chrome fidelity vs Tana (the left border rule, expansion background, exact spacing).
 - Symptom (screenshot): the inline secondary-view panel renders the target's **full `NodeOutline` including a
   page-scale H1 header** plus children, unbounded — reads like a large side panel, not a compact expansion.
 - **Root cause:** the inline-expand direct-mounts `<NodeOutline subject={target}/>`, which carries the full outline
