@@ -199,6 +199,13 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   (dedicated homogeneous `Node` schema, `makeNode`, `Filter.type(Node)`, `RowEditor` for every row). **Flow
   direction: the build moves UP to the design.** The middle "Node-wraps-an-object" stance was rejected (it
   re-introduces the object duplication the edge-native model exists to avoid).
+- **Feasibility gate GREEN (verified 2026-07-15):** ECHO relations span arbitrary objects. `Obj.Unknown` is the
+  any-object endpoint type, and `plugin-inbox`'s `ExtractedFrom` relation already declares `source: Obj.Unknown,
+  target: Obj.Unknown` (exactly Bramble's needed shape; `SyncBinding` uses a mixed `Connection`/`Obj.Unknown`).
+  Endpoints are stored as DXN refs (metadata, not a write-time type lock). So `Edge` generalizes mechanically:
+  `source/target: Node` → `Obj.Unknown`, drop the `as Node` casts; all traversal (`childEdges`/`backlinks`/cycle/
+  order) is unchanged because it keys on `Filter.id` + `kind`, never type. Confirms **"Node = a role (any `Obj`),
+  `Edge` = the only foundational schema."**
 - **Convergence is a phased build program (NOT a big-bang rebuild), and needs its own design pass first.** Phase 1
   (done) = the text-Node outline. Open sub-questions to settle before building: how an existing object *joins* the
   outline structure (who creates its structural edge); the current `Node` schema's role (becomes "the text content
