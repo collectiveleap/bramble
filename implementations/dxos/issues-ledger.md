@@ -105,7 +105,10 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   - **W4 design (S4):** placement stated as prose, not a checkable/traced requirement. → **DONE** — `design.md` §3 embed now states the layout as a checkable `PX-embed` requirement + traces it.
   - **W5 neutral spec (S1/S2):** `UP-5` states the placement but `PX-*` had no secondary-view presentation primitive → nothing neutral to verify against. → **DONE** — added floor `feat PX-embed` to `spec/presentation-primitives.mdl` (in-flow · below · inset · bounded); `tana/visual-spec.md` gains the `PX-embed` value slots (awaiting capture).
   - **W6 FLOW gate:** no standing presentation-verification stage; visual check was one-off for the base outline. → **DONE** — `FLOW.md` delivery-gate **clause 5** (presentation fidelity: every surface gets a mapping + visual check vs `PX` + reference; a mis-positioned surface fails the gate). Elevates BR-17 from a ticket to a standing gate.
-- **Remaining fidelity (→ BR-17):** the left border rule, expansion background, exact spacing vs Tana.
+- **Visual fidelity DONE (2026-07-15, live pass vs Tana):** captured Tana's inline-expansion computed styles and
+  matched the embed — full 1px bordered box, 7.5px corners, transparent, 24px inner inset, 15px/400 content, row
+  highlight scoped to the line so the box sits clean. `MentionExpand` story asserts these values (`e0a73fac3a`).
+  Tana values recorded in `tana/visual-spec.md`; `PX-embed` wording corrected. App-confirmed on :5180 vs Tana.
 - Symptom (screenshot): the inline secondary-view panel renders the target's **full `NodeOutline` including a
   page-scale H1 header** plus children, unbounded — reads like a large side panel, not a compact expansion.
 - **Root cause:** the inline-expand direct-mounts `<NodeOutline subject={target}/>`, which carries the full outline
@@ -207,6 +210,9 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   no longer "should we" — it's the concrete work: **(a)** capture the `PX-embed` numbers from Tana (fill the slots);
   **(b)** author visual mappings for the references surfaces (chip, inline embed, backlinks panel); **(c)** run the
   `visual-verification` loop against the running Composer surfaces vs those mappings; **(d)** file each delta.
+- **Progress (2026-07-15):** the **inline embed** surface is done — Tana `PX-embed` values captured live + matched +
+  locked in the `MentionExpand` story (see BR-6). **Remaining surfaces:** the mention **chip** and the **backlinks
+  panel** still need their Tana capture + mapping + check.
 - The `visual-verification` skill (extract computed styles from the reference + the running DOM, diff
   deterministically) exists, and a PX check ran **once** against the **Storybook** outline surface
   (`composer-outline.json` mapping, 8 PX regions, both themes — `design.md` §Visual conformance, 2026-07-13).
