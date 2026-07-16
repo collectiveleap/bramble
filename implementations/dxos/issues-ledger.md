@@ -32,6 +32,13 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 5. **Verification must match the bug class.** A visual/layout bug is verified by measuring the rendered result
    (computed position relative to siblings) and looking at it — not by an existence/logic-green test. A surface-affecting
    change is verified against the reference realization + the neutral `PX` requirements, not unit tests alone.
+6. **Trace a claim before acting on it; ground a reversal.** State intent from the spec (`UP/IP/IX`), never inferred
+   from the current build (the build is what the flow converges — reading intent off it is circular). Any decision that
+   fixes *what an operation targets or how it discriminates / routes* cites the req it realizes. A ticket that
+   **contradicts a settled decision** (a decision-log answer, a Steve call, a spec req) must carry
+   `contradicts: <D-n | req-id>` **and** `grounded-by: <req-id | runnable test>` — never a subagent's assertion;
+   without a valid `grounded-by` it is `UNVERIFIED — do not act on`. (Precedent: BR-19 — an over-match claim inferred
+   from `Filter.type(Node)`, contradicting `UP-2`/`UP-3`/`IP-1`, reshaped D2 with no grounding.)
 
 ---
 
@@ -203,15 +210,16 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 - **Build progress (plan Phase 1):**
   - **1.1 Edge generalization DONE** (2026-07-15) — `Edge` endpoints `Node → Obj.Unknown`, constructors accept any
     object (`788ea1937e`, `dd0d9194f8`); gate 70/70. Finding: `Node ≈ Obj.Unknown` structurally (see `design-object-graph.md` §2).
-  - **1.2 text node type → RESHAPED to BR-19** (2026-07-15) — pure schema A breaks UI discrimination; safe default keeps `Node` as discriminator; A-vs-B needs Steve.
+  - **1.2 text node type → schema A confirmed** (D2) — BR-19's "pure-A breaks discrimination" was **withdrawn** (2026-07-16, false premise: the spec `UP-2`/`UP-3`/`IP-1` and the design already require linking any typed object). The residual type-agnostic work (`@`-scoping + surface routing) is recast into BR-19; `Node`-as-type-discriminator is not required.
   - **1.3a heterogeneous render (read-only slice) DONE** (2026-07-16) — a row now renders by its object's type: a
     Bramble `Node` → text `RowEditor`; any other object → its registered `Section` surface (read-only) + plain-text
     fallback (`Obj.instanceOf(Node,…)` branch; `attendableId` threaded). Commits `ef8728c517`, `a4d7e0bd1f`,
     `9f2d5da480`; build green, new stories `HeterogeneousRow`+`Fallback` pass, 24/25 storybook in low-load run (lone
     `Default` failure is a pre-existing ECHO index-query load-flake, not a regression).
-  - **Blocked for now:** 1.4 (render 2×2) / 1.5 (lifecycle + `@`-picker) / 1.7 (create-nav) all depend on the BR-19
-    discrimination decision; and the build machine is load-saturated (storybook flake counts swing 9/16/1), so
-    further storybook-gated phases can't be reliably verified until it cools down. Keyboard gestures on non-text rows = 1.3b.
+  - **Next / notes:** on **schema A** (D2, confirmed), 1.4 (render 2×2) / 1.5 (lifecycle + `@`-picker) carry the
+    type-agnostic `@`-scoping + surface-routing work (recast BR-19) — no discrimination decision is pending. The
+    build machine was load-saturated during 1.3a (storybook flake counts swung 9/16/1) — re-verify on a cool box.
+    Keyboard gestures on non-text rows = 1.3b.
 - **Decision (Steve, 2026-07-15):** Bramble is **"the structural outline over Composer's whole object graph."**
   Affirm `design.md` §1(ii) + `IP-1.typed-node`: a node = **any typed ECHO `Obj`**; structural + linked edges connect
   **arbitrary objects**; a row renders by its **type's Surface** (text is one type, `RowEditor` its renderer; a
@@ -290,26 +298,10 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   future build); keep compaction off Bramble objects. See [`design-object-graph.md`](./design-object-graph.md) §3/§7.5.
 - **Cross-links:** `FLOW.md` → Pending propagations (non-destructive substrate); the RESUME POINT in `design-object-graph.md`.
 
-## BR-19 — Schema-A (native `Text.Text`) breaks UI discrimination — A-vs-B needs re-settling
-`Status: open (needs Steve — reshapes D2)` · `Type: design decision (Steve)` · `Source: plan Phase 1.2 surface-map, 2026-07-15` · `from: BR-16` · `blocks: plan 1.2/1.3`
-- **Finding (mapped, 2026-07-15):** decision **D2 chose schema A** (retire the Bramble `Node` type, use native
-  `Text.Text` directly). The 1.2 surface-map shows pure-A breaks **UI discrimination** — the `Node` type is
-  load-bearing for UI, not data:
-  1. **Picker/query over-match** — `useMentionPicker.ts:33` uses `Filter.type(Node)` to scope the `@`-picker to
-     Bramble rows. Retargeted to `Filter.type(Text.Text)` it matches **every** `Text.Text` in the space,
-     including the content blob behind every `Markdown.Document` (`Markdown` stores `content: Ref(Text.Text)`).
-  2. **Surface collision** — `plugin-markdown` already registers Article/Section surfaces for `Text.Text`
-     (`plugin-markdown/react-surface.tsx`). Bramble registering surfaces for the same type creates a resolver
-     conflict over which plugin renders an opened `Text.Text`.
-- **Key point:** the graph model works with bare `Text.Text` (edges are `Obj.Unknown`, proven by BR-16/1.1). The
-  `Node` type earns its keep **only** as a UI discriminator (surface routing + picker scoping) — exactly where A
-  breaks. `Text.Text` already carries `HiddenAnnotation` + its own icon, so the create-menu/hide behaviour is not
-  the issue; discrimination is.
-- **Safe default taken (to keep the autonomous run moving, non-blocking):** **keep the Bramble `Node` type as the
-  discriminator** (status quo — effectively schema B / a hybrid: `Node` wraps `Text.Text` for content + provides
-  UI identity). Phase 1.2's pure-A flip is **deferred**; 1.2's substantive work folds into **1.3** (render/surface
-  dispatch), where discrimination is concrete. This is fully functional and reversible.
-- **Decision for Steve (reshapes D2):** given this evidence, (a) confirm **B / hybrid** (keep a Bramble
-  discriminator type — recommended), or (b) pursue **A** with an *alternate* discriminator (e.g. "a Bramble row =
-  a `Text.Text` with an inbound structural `Edge`", or a lightweight Bramble marker), accepting the surface-routing
-  work. Recommend settling at 1.3. Until then the safe default (a) governs.
+## BR-19 — Type-agnostic discrimination under schema A (`@`-picker scope + surface routing)
+`Status: open` · `Type: enhancement / build` · `Source: plan Phase 1.2 surface-map, 2026-07-15; recast 2026-07-16` · `from: BR-16` · `grounded-by: UP-2, UP-3, IP-1.typed-node`
+- **Recast (2026-07-16) — the original "pure-A breaks UI discrimination, A-vs-B needs re-settling" framing is WITHDRAWN as ungrounded.** It rested on a false premise — that the `@`-picker's intended target set is "bramble rows." The neutral spec (`UP-2` *"the user links to a Node"*, `UP-3` *"any Node is a link destination"*, `IP-1.typed-node`/`IP-1.content-type` *"unchanged by / independent of type"*) **and** the design (`design-object-graph.md` §1 *"type re-enters at render by dispatch, never in the substrate"*, §2 *"regardless of type"*, §3 *"all types"*, §4 *"any node"*) already require linking **any typed object**. So **D2 = schema A stands, confirmed**; there is no discrimination to "re-settle." (Root-cause + prevention: Resolution protocol #6; FLOW gate clauses 6–7.)
+- **The real, narrow, type-agnostic work under schema A:**
+  - **`@`-picker scope** — offer *any* object as a mention target (not `Filter.type(Node)`), excluding **internal sub-objects** (an object that is another object's `content`/ref-target — e.g. a `Markdown.Document`'s body `Text.Text`) by **edge/ref-role, never by type**. (`useMentionPicker.ts:33`.)
+  - **Surface routing** — a text node opened standalone renders via its own text surface; the Bramble *outline* is rooted at a container/day object (D1/BR-3), so no bramble-vs-markdown `Text.Text` surface collision arises. Discriminate "render as an outline" by **edge membership** (has bramble structural edges), not type.
+- **`grounded-by`:** `UP-2`, `UP-3`, `IP-1.typed-node` (spec). This is a **build task under D2/A**, not a reshape of it. Folds into 1.3 (routing) / 1.5 (picker).

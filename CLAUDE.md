@@ -51,3 +51,11 @@ work currently stands. The operating model is specified in
 - **Traceability header.** Every downstream artifact opens with:
   `<!-- derives-from: [<upstream req IDs>]; role: reference|target|neutral; status: not-started|draft|current|needs-review -->`.
   Reverse lookup for a changed req is `grep -r "<req-id>" spec/ implementations/`.
+- **Trace behavioural decisions to a req; derive intent from the spec, not the build.** Before executing a
+  build-phase plan, run its `## Traces` table against `spec/`: every decision that fixes *what an operation targets
+  or how it discriminates / routes* (a query filter, a picker's candidate set, a surface router, a type check) must
+  cite a real `UP-*/IP-*/IX-*`. The current build is what the flow converges — never read intent off it. A claim
+  with no req to cite (e.g. "the `@`-picker targets bramble rows") is blocked, not acted on. (BR-19 precedent; FLOW gate clause 6.)
+- **Reversing a settled decision needs `grounded-by`.** A ticket that contradicts a decision-log answer, a Steve
+  call, or a spec req must carry `grounded-by:` = a spec req or a runnable test — never a subagent's claim, never
+  "keep the status quo." Without it, mark `UNVERIFIED — do not act on`. (FLOW gate clause 7.)

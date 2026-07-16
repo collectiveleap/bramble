@@ -95,8 +95,11 @@ decide at build step 2 (the lifecycle argument for B dissolved: removal is unifo
   - `@` **inside text** → a **linked** mention (a chip);
   - `@` in an **empty / pending bullet** → a **structural** co-locate (a real child bullet). *(Exactly Tana's
     co-locate gesture — `@` typed in an empty child.)*
-- Scope: the current space, all types (cross-space later). No new primitive — `makeEdge` / `makeLinkedEdge`
-  over `Obj.Unknown`.
+- Scope: the current space, **all types** — the `@`-picker's candidate set is **any node = any typed object**
+  (`UP-2`/`UP-3`/`IP-1.typed-node`: a linked edge targets any node, unchanged by type), scoped only to exclude
+  **internal sub-objects** (an object that is another object's `content`/ref-target — e.g. a `Markdown.Document`'s
+  body `Text.Text`), discriminated by **edge / ref-role, never by type**. Cross-space later. No new primitive —
+  `makeEdge` / `makeLinkedEdge` over `Obj.Unknown`.
 
 **Lifecycle — uniform and non-destructive (`IP-4`):**
 - A text bullet is just an `Obj` like any other, so removal is **uniform for every node**: *remove from Bramble

@@ -190,7 +190,20 @@ committed as complete), validate it against traceability:
    (2026-07-15: BR-6 — the inline mention-expansion rendered beside the row instead of below it,
    contradicting `UP-5` / `PX-embed`, yet shipped green because no visual check was ever run on the
    references surfaces; clause 3 said what a visual gate must *cover*, but nothing required one to *exist*.)
-6. A failed trace, an uncovered concern, **or a surface that fails its visual check blocks delivery** until resolved.
+6. **Behavioural decisions trace up at *authoring*, not only at delivery.** Any decision in a **plan (S5)** or a
+   build-scoping **ticket** that fixes *what set an operation targets, or how it discriminates / routes* — a query
+   filter, a picker's candidate set, a surface router, a type check — must cite the `UP-*/IP-*/IX-*` it realizes,
+   grep-verified, before an implementer runs. Every build-phase plan opens with a **`## Traces`** table (one row per
+   such decision → its req); the SDD Pre-Flight review greps each cited req in `spec/` and confirms every behavioural
+   decision in the plan body has a row. **State intent from the spec, never inferred from the current build** (the
+   build is what the flow converges — reading intent off it is circular). An un-cited decision blocks execution.
+   (2026-07-16: BR-19 — "the `@`-picker targets bramble rows" was inferred from `Filter.type(Node)`; it contradicts
+   `UP-2`/`UP-3`/`IP-1.typed-node` and the design, and steered a decision because no rung required it to cite a req.)
+7. **Reshaping a settled decision requires grounding.** A ticket that contradicts a settled decision (a decision-log
+   answer, a Steve call, or a spec req) must carry `contradicts: <D-n | req-id>` and `grounded-by: <req-id | runnable
+   test>` — a spec citation or reproducible verification, never a subagent's assertion. Without it the ticket is
+   `UNVERIFIED — do not act on`, and must not steer build work or reshape a plan.
+8. A failed trace, an uncovered concern, an **un-cited behavioural decision**, an **ungrounded decision-reversal**, or a surface that fails its visual check **blocks delivery** until resolved.
 
 ### Pending propagations
 

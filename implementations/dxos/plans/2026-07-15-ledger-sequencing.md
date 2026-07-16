@@ -13,7 +13,7 @@ reached. It is not itself a TDD task list.
 | # | Decision | Answer |
 |---|---|---|
 | D1 | BR-3 singleton — what is "the Bramble"? | **Interim: get-or-create one simple root object per space.** Don't over-build the singleton now. **Eventual** open-target is a **daily node** (or similar) Bramble opens to — a future slice (the spec's appendix *daily-note* candidate, README decision 4). |
-| D2 | BR-16 text schema | **A — native `Text.Text`** *(⚠ reshaped by BR-19, 2026-07-15: pure-A breaks UI discrimination; safe default reverts to keeping the Bramble `Node` type / hybrid until Steve re-settles A-vs-B at 1.3)*. |
+| D2 | BR-16 text schema | **A — native `Text.Text`** (confirmed 2026-07-16). BR-19's "pure-A breaks discrimination" claim is **withdrawn** — false premise (that the `@`-picker targets only bramble rows), whereas `UP-2`/`UP-3`/`IP-1` and the design already require linking *any* typed object. The real A-work is type-agnostic (edge-based `@`-scoping + surface routing), tracked in the recast BR-19. |
 | D3 | BR-18 undo model | **Undo = append a corrective event / un-tombstone**, as the `IP-4` consequence (grounded by the verified removal gate). |
 | D4 | BR-11 S2 promotion | **Yes — promote if content-complete + no placeholders** (verified in-run); fix FLOW's illegal `draft` label. |
 | D5 | BR-9 + BR-10 | **Kept deferred**; the render/lifecycle rewrite (1.4/1.5) absorbs them later. Reversible. |
@@ -42,7 +42,7 @@ reached. It is not itself a TDD task list.
 
 ### Phase 1 — BR-16 convergence build (high risk; phased per [`design-object-graph.md`](../design-object-graph.md) §7)
 - **1.1** Edge generalization `Node → Obj.Unknown` (substrate; drop `as Node` casts; traversal unchanged)
-- **1.2** Text node type — **RESHAPED (BR-19, 2026-07-15):** the 1.2 surface-map showed pure schema **A** (retire `Node` → native `Text.Text`) breaks UI discrimination (picker over-match + markdown surface collision). Safe default: **keep the Bramble `Node` type as the discriminator** (status quo / hybrid); the A-vs-B flip is deferred to **BR-19** (needs Steve) and folds into **1.3** where discrimination is concrete. No standalone risky flip.
+- **1.2** Text node type — **schema A confirmed** (D2; 2026-07-16). The earlier "pure-A breaks discrimination" (BR-19) is **withdrawn** — false premise; `UP-2`/`UP-3`/`IP-1` and the design already require linking any typed object. The residual is type-agnostic — edge-based `@`-picker scoping + surface routing + exclude internal sub-objects — recast into **BR-19**, folded into **1.3/1.5**. `Node`-as-type-discriminator is not required (it cuts against BR-16's "key on `id`+`kind`, never type").
 - **1.3** Heterogeneous row render (per-type `Section` Surface + fallback)
 - **1.4** Secondary-view primitive **2×2** → realizes `UP-4/UP-5` collapse; **BR-17** chip/embed/beside visual checks ride the delivery (FLOW gate clause 5)
 - **1.5** Joining + lifecycle → create (`Enter`/`/`) + reference (`@`) gestures; **non-destructive removal via `db.remove`** (BR-18 realized; **no** compaction / `unlinkDeletedObjects` on Bramble objects)
