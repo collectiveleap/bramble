@@ -200,6 +200,10 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 
 ## BR-16 — Heterogeneous typed rows / Composer-native instances as nodes (designed, not built)
 `Status: SETTLED 2026-07-15 — affirm design (ii); build converges UP` · `Type: design decision → build program` · `Source: design review 2026-07-14`
+- **Build progress (plan Phase 1):** **1.1 Edge generalization DONE** (2026-07-15) — `Edge` endpoints
+  `Node → Obj.Unknown`, `makeEdge`/`makeLinkedEdge`/`createLinkedEdge` accept any object (commits `788ea1937e`,
+  `dd0d9194f8`); gate green (70/70 tests). Finding: `Node` is structurally `≈ Obj.Unknown` (all-optional `text?`),
+  so the widening is declarative/foundational, not runtime-observable — see `design-object-graph.md` §2. Next: 1.2 text node type (schema A).
 - **Decision (Steve, 2026-07-15):** Bramble is **"the structural outline over Composer's whole object graph."**
   Affirm `design.md` §1(ii) + `IP-1.typed-node`: a node = **any typed ECHO `Obj`**; structural + linked edges connect
   **arbitrary objects**; a row renders by its **type's Surface** (text is one type, `RowEditor` its renderer; a

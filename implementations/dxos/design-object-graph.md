@@ -78,6 +78,13 @@ decide at build step 2 (the lifecycle argument for B dissolved: removal is unifo
   **property** (type doesn't define identity), *not* a mandate that in-place retype be supported — so ECHO's
   intrinsic types don't violate it. ("Convert this text bullet to a Task" is a new object + re-edge, which
   the spec never forbade.)
+- **Build finding (1.1, 2026-07-15):** the plugin's `Node` declares one field, optional `text?`, so
+  structurally `Node ≈ Obj.Unknown` — every ECHO object already satisfies it. The old `Edge: Node` endpoints
+  therefore enforced nothing; widening them to `Obj.Unknown` (commit `788ea1937e`) is **declarative honesty +
+  the foundation for later phases**, not a runtime-behaviour change — so no red→green TDD is available for it
+  (verified by the schema declaration + a green gate, not a failing test). This **affirms BR-16** (a node is a
+  role, not a type constraint) and **reinforces D2 / schema A** (native `Text.Text`): dropping the `Node`
+  wrapper loses no type-safety that ever existed.
 
 ## 3. Joining & lifecycle (authoring)
 
