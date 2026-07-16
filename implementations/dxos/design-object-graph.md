@@ -109,8 +109,12 @@ decide at build step 2 (the lifecycle argument for B dissolved: removal is unifo
   projection*, the history retains it, and it is reversible.
 - **"Gone from Bramble" = out of the current projection when its edges are gone** — GC-like, but nothing is
   destroyed; and **never destroy the referenced ECHO object** (per `IP-4`, never destroy *anything*).
-- **`db.remove` already satisfies `IP-4` — it is a reversible tombstone, not a purge (feasibility gate
-  VERIFIED GREEN, 2026-07-15).** `db.remove(obj)` flips one boolean (`system.deleted = true`) and leaves all
+- **⚠ CORRECTED (2026-07-16) — `db.remove` is a reversible tombstone but does NOT fully satisfy `IP-4`.** The
+  2026-07-15 gate verified reversibility (true) but missed that `db.remove` sets `deleted=true` — exactly what
+  compaction (`unlinkDeletedObjects`) targets — so it is non-destructive *only until compaction*; and an **edge is an
+  `Obj` too**, so `removeEdge`'s `db.remove(edge)` hard-flags an edge for the sweep IP-4 forbids. **Realize removal as
+  an append-only *projection*, never `db.remove`, for nodes AND edges** (BR-18 / plan 1.5); verify ECHO compaction
+  semantics first. The verified mechanics remain an accurate description of `db.remove`: `db.remove(obj)` flips one boolean (`system.deleted = true`) and leaves all
   data inline; the mutation is an append-only automerge `change`, so the document's full history survives and
   prior heads stay reachable. It is reversible: re-`add` clears the flag with data intact,
   `getObjectById(id, {deleted:true})` reads a removed object's live data. **Relations/edges remove via the

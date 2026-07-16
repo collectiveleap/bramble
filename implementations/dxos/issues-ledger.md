@@ -280,22 +280,28 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   Tana visual-spec as reference; author mappings for the new references surfaces; capture each delta as its own ticket.
 
 ## BR-18 — Non-destructive substrate (`IP-4`) propagation & realization
-`Status: open (spec done · gate verified · fold + realization pending)` · `Type: spec/design propagation (cross-layer S1→S6)` · `Source: move-up 2026-07-15 (docs/ + input docs/ substrate-principles corpus)` · `Sequence: plan Phase 0.1 + 1.5`
+`Status: open (spec done/floor · removal realization CORRECTED 2026-07-16 — projection + compaction gate pending)` · `Type: spec/design propagation (cross-layer S1→S6)` · `Source: move-up 2026-07-15 · corrected 2026-07-16 (F7 + edge-append-only)` · `Sequence: plan Phase 0.1 done + 1.5`
 - **Origin:** the neutral spec missed the append-only / non-destructive / provenance substrate stance (grounded in
   `docs/conceptual-foundations.md` "append, never overwrite" and `input docs/substrate-principles-and-scenarios.md`
   "never destructive … any prior state reconstructable"). Surfaced while working the object-graph lifecycle (BR-16).
-- **Done:** `feat IP-4` (append-only · non-destructive-removal · provenance) added to `spec/internal-primitives.mdl`,
-  framed as **substrate richness / divergent** (like the multi-predecessor DAG), confirmed by Steve (`7ea8aba`, `83068c5`).
-  **ECHO removal-history feasibility gate VERIFIED GREEN** (`32b1f48`): `db.remove` is already a reversible tombstone —
-  it flips `system.deleted`, keeps data inline, retains automerge history; re-`add` restores; relations remove the same
-  way. So the build needs **no custom tombstone mechanism**.
-- **Pending:**
-  - **`IX-reversible` fold** (undo = append a corrective event / un-tombstone, as the `IP-4` consequence; decision D3) →
-    `spec/interaction-primitives.mdl`. Plan Phase 0.1.
-  - **Non-destructive removal realized in the build** — removal uses `db.remove` as-is; **do not** invoke compaction /
-    `unlinkDeletedObjects` on Bramble objects. Rides BR-16 lifecycle (plan Phase 1.5).
-- **Provisos (recorded):** no high-level `getHistory`/`restore` API (re-`add` is the restore; a history affordance is a
-  future build); keep compaction off Bramble objects. See [`design-object-graph.md`](./design-object-graph.md) §3/§7.5.
+- **Done:** `feat IP-4` (append-only · non-destructive-removal · provenance) in `spec/internal-primitives.mdl`, framed
+  as **substrate richness / divergent — committed floor, NOT appendix** (reaffirmed Steve 2026-07-16); confirmed
+  (`7ea8aba`, `83068c5`). The 2026-07-15 gate (`32b1f48`) verified `db.remove` is a reversible soft-delete (flips
+  `system.deleted`, retains automerge history, re-`add` restores) — **that fact holds**, but its *conclusion*
+  ("`db.remove` satisfies IP-4; no custom mechanism") is **CORRECTED** below.
+- **`IX-reversible` fold** — ✓ DONE (plan 0.1).
+- **Removal realization (plan 1.5) — CORRECTED 2026-07-16:** "removal via `db.remove` as-is" is wrong — `db.remove`
+  sets `system.deleted = true`, exactly what compaction (`unlinkDeletedObjects`) targets, so it is non-destructive
+  *only until compaction runs*; and an **edge is an `Obj` too** (equally IP-4-bound), so `removeEdge`'s
+  `db.remove(edge)` hard-flags an edge for the forbidden sweep. **Realize removal as an append-only app-level
+  *projection* — never `db.remove`, for nodes AND edges** (nothing carries `deleted=true`; the outline query filters
+  the projection). Sub-work: (a) **feasibility gate** — is ECHO compaction flag-based or reachability-based? (grep the
+  compaction path); (b) a **retention root** (shadow list) for objects Bramble references but *another* surface
+  `db.remove`s; (c) confirm full automerge-history retention for `IP-4.provenance`. Grounded: F7 + the
+  edge-is-append-only observation + the verified `db.remove → system.deleted → unlinkDeletedObjects` chain.
+- **Provisos:** no high-level `getHistory`/`restore` API yet (a future affordance); the projection realization + the
+  compaction feasibility gate **replace** the earlier unenforceable "keep compaction off Bramble objects" rule. See
+  [`design-object-graph.md`](./design-object-graph.md) §3 (corrected) / §7.5.
 - **Cross-links:** `FLOW.md` → Pending propagations (non-destructive substrate); the RESUME POINT in `design-object-graph.md`.
 
 ## BR-19 — Type-agnostic discrimination under schema A (`@`-picker scope + surface routing)

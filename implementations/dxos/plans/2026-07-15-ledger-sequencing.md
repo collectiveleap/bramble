@@ -51,9 +51,16 @@ still cannot mention a non-Node — yet every gate is green. So:
 - **F4 · load-flaky verification** — pass counts swing (9/16/1); "load flake" is becoming an accepted excuse, so a
   real regression in the same costume gets waved through. Mitigation: quarantine load-sensitive stories; the core
   gate must be 100% deterministic.
-- **F7 · IP-4 rests on a guarantee the plugin can't enforce** — "don't run compaction on Bramble objects" is a rule
-  with no mechanism (compaction is host-level GC), and there's no user-facing restore. Mitigation: demote IP-4 from
-  floor/substrate-richness to appendix/aspirational until ECHO exposes a compaction opt-out.
+- **F7 · IP-4 realization — a planned gate, NOT a demotion (Steve, 2026-07-16).** IP-4 **stays committed floor**
+  (substrate richness / divergent — `internal-primitives.mdl` "NOT an appendix candidate"). The pre-mortem's
+  "demote it" is **rejected**; its compaction-safety is *planned verification work* resolved in-build (Phase 1.5):
+  (a) realize removal as an **append-only app-level projection — never `db.remove`** for nodes *or edges* (so no
+  Bramble object ever carries `deleted=true`, the flag compaction targets); (b) **feasibility gate** — verify
+  whether ECHO compaction is flag-based or reachability-based (one grep of the compaction path); (c) a **retention
+  root** (shadow list) for objects Bramble references but another surface `db.remove`s; (d) confirm full
+  automerge-history retention for `IP-4.provenance`. **Supersedes** the earlier "`db.remove` satisfies IP-4" gate
+  (`32b1f48`) — it verified reversibility but missed that the `deleted` flag is compaction's target. Grounded: F7 +
+  the edge-is-append-only observation + the verified `db.remove → system.deleted → unlinkDeletedObjects` chain.
 
 ## Captured decisions (2026-07-15)
 
@@ -108,7 +115,7 @@ These get *re-fitted* only if BR-16 later changes their shape (1.7) — but the 
 - **1.3-fix (BR-20 move-up — NEW; blocks 1.4/1.5):** *every node shows a text equivalent on its row by default; native rendering on command.* (a) author the neutral **`PX`** req (present for review; confirm Tana R); (b) propagate to `design-object-graph.md` §4 (row line = text equivalent; native = 2×2 secondary-view only); (c) **rework 1.3a** — invert to text-first (label default; native surface via the secondary-view command); (d) fold the queued 1.3a cleanup (discriminator `Obj.instanceOf(Node)` → edge / text-node basis).
 - **1.3b** Native-render-on-command gestures on any row ("non-text rows" was a misnomer — all rows are text by default): keyboard structural gestures + the native toggle.
 - **1.4** Secondary-view primitive **2×2** → realizes `UP-4/UP-5` collapse; **BR-17** chip/embed/beside visual checks ride the delivery (FLOW gate clause 5)
-- **1.5** Joining + lifecycle → create (`Enter`/`/`) + reference (`@`, incl. recast **BR-19** `@`-scoping) gestures; **non-destructive removal via `db.remove`** (BR-18 realized; no compaction on Bramble objects)
+- **1.5** Joining + lifecycle → create (`Enter`/`/`) + reference (`@`, incl. recast **BR-19** `@`-scoping) gestures; **non-destructive removal via an append-only app-level projection — NOT `db.remove`** for nodes *or edges* (BR-18). Carries the **IP-4 realization gate**: verify ECHO compaction semantics (flag vs reachability), realize removal as a projection the outline query filters out, add a retention root for externally-deleted references, confirm history retention. (Corrects the earlier "removal via `db.remove`" step.)
 - **1.6** `UP-4/UP-5` collapse → `design.md` propagation
 - **1.7** **Re-fit** BR-1/2/3 to the converged model *only if* the Phase 1.0 fixes need adjustment (e.g. nav now surfaces the Bramble *view* root; singleton under the object-graph model). Not a from-scratch build — 1.0 already shipped them.
 
