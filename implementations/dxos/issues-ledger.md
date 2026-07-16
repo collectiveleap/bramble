@@ -200,10 +200,18 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 
 ## BR-16 — Heterogeneous typed rows / Composer-native instances as nodes (designed, not built)
 `Status: SETTLED 2026-07-15 — affirm design (ii); build converges UP` · `Type: design decision → build program` · `Source: design review 2026-07-14`
-- **Build progress (plan Phase 1):** **1.1 Edge generalization DONE** (2026-07-15) — `Edge` endpoints
-  `Node → Obj.Unknown`, `makeEdge`/`makeLinkedEdge`/`createLinkedEdge` accept any object (commits `788ea1937e`,
-  `dd0d9194f8`); gate green (70/70 tests). Finding: `Node` is structurally `≈ Obj.Unknown` (all-optional `text?`),
-  so the widening is declarative/foundational, not runtime-observable — see `design-object-graph.md` §2. Next: 1.2 text node type (schema A).
+- **Build progress (plan Phase 1):**
+  - **1.1 Edge generalization DONE** (2026-07-15) — `Edge` endpoints `Node → Obj.Unknown`, constructors accept any
+    object (`788ea1937e`, `dd0d9194f8`); gate 70/70. Finding: `Node ≈ Obj.Unknown` structurally (see `design-object-graph.md` §2).
+  - **1.2 text node type → RESHAPED to BR-19** (2026-07-15) — pure schema A breaks UI discrimination; safe default keeps `Node` as discriminator; A-vs-B needs Steve.
+  - **1.3a heterogeneous render (read-only slice) DONE** (2026-07-16) — a row now renders by its object's type: a
+    Bramble `Node` → text `RowEditor`; any other object → its registered `Section` surface (read-only) + plain-text
+    fallback (`Obj.instanceOf(Node,…)` branch; `attendableId` threaded). Commits `ef8728c517`, `a4d7e0bd1f`,
+    `9f2d5da480`; build green, new stories `HeterogeneousRow`+`Fallback` pass, 24/25 storybook in low-load run (lone
+    `Default` failure is a pre-existing ECHO index-query load-flake, not a regression).
+  - **Blocked for now:** 1.4 (render 2×2) / 1.5 (lifecycle + `@`-picker) / 1.7 (create-nav) all depend on the BR-19
+    discrimination decision; and the build machine is load-saturated (storybook flake counts swing 9/16/1), so
+    further storybook-gated phases can't be reliably verified until it cools down. Keyboard gestures on non-text rows = 1.3b.
 - **Decision (Steve, 2026-07-15):** Bramble is **"the structural outline over Composer's whole object graph."**
   Affirm `design.md` §1(ii) + `IP-1.typed-node`: a node = **any typed ECHO `Obj`**; structural + linked edges connect
   **arbitrary objects**; a row renders by its **type's Surface** (text is one type, `RowEditor` its renderer; a
