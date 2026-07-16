@@ -170,10 +170,10 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   at multiple locations — is unbuilt.
 
 ## BR-11 — S2 neutral spec status promotion
-`Status: open` · `Type: docs` · `Source: FLOW pipeline`
-- `IX` = `draft`, `PX` = `authoring`, but both files are content-complete (no TODO/placeholder). Promotion to done
-  is a **review/label** act, not authoring. Also fix the FLOW label inconsistency (`draft` isn't a legal pipeline
-  status value). See [FLOW.md](../../FLOW.md).
+`Status: DONE (2026-07-15, plan 0.5)` · `Type: docs` · `Source: FLOW pipeline`
+- **Done (D4 authorized):** verified `IX`/`PX` content-complete (no placeholders), promoted both to `done` in the
+  FLOW pipeline table (was `draft`/`authoring` — the illegal `draft` label removed), and set each file's
+  front-matter + derives-from header `status: draft → current`. See [FLOW.md](../../FLOW.md).
 
 ## BR-12 — Tana R reference live-checks
 `Status: open` · `Type: verify` · `Source: FLOW (2026-07-12)`

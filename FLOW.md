@@ -100,8 +100,8 @@ Status values: `not-started · authoring · needs-review · done`.
 | Stage | Artifact | Role | Status |
 |---|---|---|---|
 | S1 · Neutral substrate + capabilities | `spec/internal-primitives.mdl` (`IP-*`, internal substrate), `spec/user-primitives.mdl` (`UP-*`, capabilities) | neutral | done |
-| S2 · Neutral surface — interaction | `spec/interaction-primitives.mdl` (`IX-*`) | neutral | draft |
-| S2 · Neutral surface — presentation | `spec/presentation-primitives.mdl` (`PX-*`) | neutral | authoring |
+| S2 · Neutral surface — interaction | `spec/interaction-primitives.mdl` (`IX-*`) | neutral | done |
+| S2 · Neutral surface — presentation | `spec/presentation-primitives.mdl` (`PX-*`) | neutral | done |
 | R · Reference realization (Tana) | `implementations/tana/` | reference | current · open live-checks (lifecycle + pointer, 2026-07-12) |
 | S3 · Gap analysis — substrate | `implementations/dxos/gap-analysis.md` | target | done |
 | S3 · Gap analysis — UX | `implementations/dxos/gap-analysis-ux.md` | target | done (→ new plugin needed; `UP-1.author` verdict added) |

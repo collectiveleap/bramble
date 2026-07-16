@@ -2,10 +2,10 @@
 id: spec.presentation-primitives
 name: Specification of Presentation Primitives
 version: 0.1.0
-status: draft
+status: current
 ---
 
-<!-- derives-from: [UP-1, IP-1, IP-2]; role: neutral; status: draft -->
+<!-- derives-from: [UP-1, IP-1, IP-2]; role: neutral; status: current -->
 
 The system-agnostic **presentation** primitives — how a surface PRESENTS the SUP
 capabilities to the user: the visible marks, affordances, structure, states,

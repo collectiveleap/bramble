@@ -2,10 +2,10 @@
 id: spec.interaction-primitives
 name: Specification of Interaction Primitives
 version: 0.1.0
-status: draft
+status: current
 ---
 
-<!-- derives-from: [UP-1, UP-2, UP-3, UP-4, IP-4]; role: neutral; status: draft -->
+<!-- derives-from: [UP-1, UP-2, UP-3, UP-4, IP-4]; role: neutral; status: current -->
 
 The system-agnostic interaction primitives — the user-facing gestures and
 experience — for a networked-notes / outliner / PKM product. Written assuming
