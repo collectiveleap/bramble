@@ -110,8 +110,8 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
   thread's design talk. **Fix (Light, chosen 2026-07-14):** added an *open, typed edge family + per-axis
   capabilities* paragraph to `internal-primitives.mdl`; clarified `UP-4` (shared-identity axis bundles;
   routes differ on containment). `design.md §1/§2` already kept them distinct — no scrub needed;
-  `design-references.md` gets revised downstream under N2/I1. **State: DONE (pending Steve's in-place
-  review + commit).**
+  `design-references.md` gets revised downstream under N2/I1. **State: DONE (committed — the open
+  typed-edge-family + per-axis paragraph is `internal-primitives.mdl` line 18; `UP-4` clarified).**
 - **N2** — Render-modes & editability of an appearance. **Finding:** most was already specced
   (collapsed-by-default + expand-on-demand + expand-editable + liveness in `IP-3`/`UP-4.embed`). Gaps
   closed: (a) **collapsed mention is atomic** (floor) → new `IX-direct.reference-atomic`; editable-collapsed
@@ -141,9 +141,9 @@ a target's yText → `refreshChips`/re-render) so can be built together or in ei
   class candidate → **appendix** status. Floor bar = strong-evidence + judgment (not all-3-verified).
   Written up as a "Layers and conformance status" section in `spec/README.md`; facet nouns fully
   parallel (internal substrate · user capabilities · user interaction · user presentation). **State: DONE.**
-  - Surfaced (needs Steve): `spec/README.md` decision-log staleness — **#4** ("core 4 user primitives" →
-    now 5, `UP-5` added) and **#7** ("interaction mechanics out of scope / separate UX specs" → `IX`/`PX`
-    are now neutral facets; only concrete mechanics live in the R realization). Proposed fixes pending.
+  - Applied (verified 2026-07-15): `spec/README.md` decision-log **#4** now reads "`UP-1`…`UP-5`" and
+    **#7** scopes `IX`/`PX` as neutral facets (only concrete mechanics stay in the R realization). The
+    staleness is resolved — fixed in the `UP-5` addition + the U4 `PX`/`IX` propagation; no stale phrasing remains.
 
 ## Design deviation (Bramble-specific)
 - **D1** — "All X-*as-a-node* elsewhere = co-location" (deviation from Tana's owner+reference; real

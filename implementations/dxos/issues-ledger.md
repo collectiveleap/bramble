@@ -190,9 +190,13 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 - The non-plain (Inter) font is a shared `@dxos/ui-theme` change (out-of-plugin), deferred.
 
 ## BR-15 — Pending process-fix propagations + doc recordings
-`Status: open` · `Type: docs` · `Source: references-issue-ledger`
-- references-ledger decision-log `#4`/`#7` proposed fixes still to apply; a couple of "recording pending" doc items
-  (the D1 co-location-vs-Tana deviation; the N1 distinct-relationships finding).
+`Status: DONE (verified 2026-07-15, plan 0.3 — all items already applied)` · `Type: docs` · `Source: references-issue-ledger`
+- **Verified 2026-07-15:** every listed item was already applied in prior commits (the main-ledger description
+  was stale) — README decision-log `#4` reads "`UP-1`…`UP-5`" and `#7` scopes `IX`/`PX` as neutral facets (no
+  stale phrasing remains); D1 (co-location-vs-Tana deviation) recorded in `design.md §1/§2` + `gap-analysis.md`;
+  N1 (distinct subtree-child vs inline-mention) recorded as the open typed-edge-family paragraph in
+  `internal-primitives.mdl` line 18 + the `UP-4` clarification. Stale "pending" notes in the references ledger
+  (T1 #4/#7, N1) corrected to match.
 
 ## BR-16 — Heterogeneous typed rows / Composer-native instances as nodes (designed, not built)
 `Status: SETTLED 2026-07-15 — affirm design (ii); build converges UP` · `Type: design decision → build program` · `Source: design review 2026-07-14`
