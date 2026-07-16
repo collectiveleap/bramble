@@ -219,12 +219,15 @@ feat IP-4: Non-destructive history
     Every event carries PROVENANCE — at minimum a holder (who or what produced it)
     and a time — and, where derived, what it was derived from.
 
-    CONFORMANCE STATUS: this is a DISTINCTIVE substrate property, STRONGER than the
-    outliner floor (Roam/Tana/Obsidian typically mutate in place and destroy on
-    delete). It is not table-stakes for the class; it is the foundation Bramble's
-    history / provenance / reversibility capabilities rest on. Grounded in the
-    substrate-principles corpus ("append, never overwrite"; "forbids destructive
-    migration … additive … never destructive … any prior state reconstructable").
+    CONFORMANCE STATUS: like the multi-predecessor DAG, this is SUBSTRATE RICHNESS —
+    a committed `IP` requirement that deliberately EXCEEDS the reference systems
+    (Roam/Tana/Obsidian mutate in place and destroy on delete), which are recorded
+    DIVERGENT in the gap analysis (spec/README §Layers). It still delivers the user
+    floor and exceeds the reference substrate, so it stays in `IP` — it is NOT an
+    appendix candidate. It is the foundation Bramble's history / provenance /
+    reversibility capabilities rest on. Grounded in the substrate-principles corpus
+    ("append, never overwrite"; "forbids destructive migration … additive … never
+    destructive … any prior state reconstructable").
   req IP-4.append-only:
     given: any state of the substrate reached by a sequence of operations
     when: an operation is applied — a Node is created, content is edited, or an edge is added or removed

@@ -45,7 +45,7 @@ One design choice drives everything: **where reference-based tools introduce a "
 Read this before revising — these choices are intentional, not accidents.
 
 1. **User behavior follows Roam/Tana/Obsidian, at Tana's semantics where the three differ.** Typed objects (Tana supertags / DXOS ECHO types) and calendar/search nodes sit above the floor — optional, not table-stakes; typed objects are *accommodated but not required* by the SIP (`IP-1.typed-node`).
-2. **The internal model deliberately diverges from all three:** real edges, not references; **multi-predecessor** structural edges, not single-owner; **typed** edges (structural vs linked). A system can satisfy the SUP while failing the SIP (e.g. Tana — see validation).
+2. **The internal model deliberately diverges from all three:** real edges, not references; **multi-predecessor** structural edges, not single-owner; **typed** edges (structural vs linked); **non-destructive / append-only** (`IP-4`), not mutate-and-delete. A system can satisfy the SUP while failing the SIP (e.g. Tana — see validation).
 3. **Acyclicity binds the structural subgraph only.** Linked edges may cycle; inline expansion is on demand, so cycles never force unbounded rendering.
 4. **Scope = the numbered user primitives (`UP-1`…`UP-5`).** Daily-note/journal and search/query are candidate extensions in the SUP appendix, outside the conformance floor (verified for Tana only, not as shared). `UP-5` (secondary view) entered the floor on Tana + Roam evidence (Obsidian unverified), per the strong-evidence bar (see *Layers and conformance status*).
 5. **Backlinks — split bar.** SIP requires inbound linked edges be enumerable/reverse-traversable; SUP requires a user-visible backlinks view. A query language is above the floor.
