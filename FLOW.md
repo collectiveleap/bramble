@@ -87,10 +87,11 @@ option-click double-handle + oversized embed panel. Captured in
 [`implementations/dxos/issues-ledger.md`](implementations/dxos/issues-ledger.md) (the plugin-wide tracker;
 references-specific items stay in `references-issue-ledger.md`).
 
-**Next action:** decide the next flow move. Open work now spans: the smoke-test bugs (issues-ledger `BR-1`…`BR-6`)
-— the real Composer integration the build never exercised; the two task chips (`BR-7`, `BR-8`); neutral-spec `S2`
-status promotion (`BR-11`; `IX`/`PX` are drafted, not mid-authoring); and the Tana `R` live-checks (`BR-12`). Not
-the reference slice — that's built.
+**Next action:** execute the ledger sequencing plan — [`implementations/dxos/plans/2026-07-15-ledger-sequencing.md`](implementations/dxos/plans/2026-07-15-ledger-sequencing.md).
+It orders **every** open ledger item by dependency + risk, with the Steve-decisions (D1–D6) captured up-front so it
+can run autonomously: **Phase 0** settle & decide (`IX-reversible` fold · `UP-4/UP-5` collapse · BR-15 · BR-11
+promotion); **Phase 1** the BR-16 object-graph convergence build (the hub — reshapes BR-1/2/3, realizes BR-18 removal
++ BR-17 surface checks); **Phase 2** cleanup & verify (BR-7 · BR-17 remaining · BR-12). Deferred: BR-9/BR-10/BR-13/BR-14.
 
 ## Pipeline & status
 
@@ -185,16 +186,18 @@ committed as complete), validate it against traceability:
 
 ### Pending propagations
 
-**Open — 2026-07-15 · non-destructive substrate (move-up, `IP-4` added):** the neutral spec **missed** the
-append-only / non-destructive / provenance substrate stance — grounded in the substrate-principles corpus
-(`docs/conceptual-foundations.md` "append, never overwrite"; `input docs/substrate-principles-and-scenarios.md`
+**Open (tracked as `BR-18`) — 2026-07-15 · non-destructive substrate (move-up, `IP-4` added):** the neutral spec
+**missed** the append-only / non-destructive / provenance substrate stance — grounded in the substrate-principles
+corpus (`docs/conceptual-foundations.md` "append, never overwrite"; `input docs/substrate-principles-and-scenarios.md`
 "forbids destructive migration … additive … never destructive … any prior state reconstructable"). **Added
-`feat IP-4`** (append-only · non-destructive removal · provenance) to `spec/internal-primitives.mdl`, marked a
-**distinctive** property *above* the outliner floor. **Propagate** (`grep -r IP-4 spec/ implementations/`):
-`UP-1.author` stays floor-neutral ("takes it out of the outline"); **`IX-reversible` (undo) becomes a
-*consequence* of `IP-4`** — fold when IX is finalized; the object-graph build realizes removal
-non-destructively (no `db.remove`; verify the ECHO removal-history gate). **Open: confirm conformance status**
-(distinctive/above-floor, as drafted — vs floor) with Steve.
+`feat IP-4`** (append-only · non-destructive removal · provenance) to `spec/internal-primitives.mdl`. **Conformance
+status CONFIRMED (Steve, 2026-07-15):** substrate richness / **divergent** (like the multi-predecessor DAG), not
+appendix. **Propagate** (`grep -r IP-4 spec/ implementations/`): `UP-1.author` stays floor-neutral ("takes it out of
+the outline"); **`IX-reversible` (undo) becomes a *consequence* of `IP-4`** — fold when IX is finalized (plan Phase 0.1).
+**ECHO removal-history gate VERIFIED GREEN (2026-07-15):** `db.remove` is already a reversible tombstone (flips
+`system.deleted`, retains automerge history; re-`add` restores) — the object-graph build realizes removal
+non-destructively **with `db.remove` as-is** (no custom tombstone; keep compaction off Bramble objects), plan
+Phase 1.5. Full detail in `implementations/dxos/issues-ledger.md` `BR-18` + `design-object-graph.md` §3/§7.5.
 
 **Open — 2026-07-15 · secondary-view collapse (move-up, from BR-16 convergence design):** `UP-4.embed`
 (native content) and `UP-5.secondary-view` (structural subtree) collapse into **one secondary-view

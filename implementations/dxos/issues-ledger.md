@@ -2,10 +2,14 @@
 
 # Bramble DXOS plugin — issues ledger
 
-Ticket tracker for the plugin build (branch `claude/plugin-bramble-substrate`, DXOS worktree, never
-merged). References-specific design items live in [`references-issue-ledger.md`](./references-issue-ledger.md).
+Issue tracker for the Bramble plugin program (branch `claude/plugin-bramble-substrate`, DXOS worktree,
+never merged). Tracks **all issue classes** — bugs, design decisions, verification, docs, and cross-layer
+spec/design propagations (an item may span the neutral spec `S1`/`S2`, the `S4` design, and the `S6` build) —
+not only plugin bugs. References-specific design items live in
+[`references-issue-ledger.md`](./references-issue-ledger.md). The dependency- and risk-ordered execution
+sequence across these tickets is [`plans/2026-07-15-ledger-sequencing.md`](./plans/2026-07-15-ledger-sequencing.md).
 Each ticket has a unique `BR-<n>` id. `Status`: open · design · deferred · done. Root-cause guesses are
-marked **hyp** (unverified). Next id: **BR-18**.
+marked **hyp** (unverified). Next id: **BR-19**.
 
 > The green gate (unit 66/66, storybook 22/22) never covered BR-1…BR-6: Storybook runs the in-plugin
 > logic under `withClientProvider`; the app-framework create / nav / layout / anchor flow — where those
@@ -250,3 +254,22 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   oversized / wrong-looking embed panel) is direct evidence the fidelity is off.
 - Fix: run the visual-verification loop against the Composer app surfaces (outline, chip, embed, backlinks) with the
   Tana visual-spec as reference; author mappings for the new references surfaces; capture each delta as its own ticket.
+
+## BR-18 — Non-destructive substrate (`IP-4`) propagation & realization
+`Status: open (spec done · gate verified · fold + realization pending)` · `Type: spec/design propagation (cross-layer S1→S6)` · `Source: move-up 2026-07-15 (docs/ + input docs/ substrate-principles corpus)` · `Sequence: plan Phase 0.1 + 1.5`
+- **Origin:** the neutral spec missed the append-only / non-destructive / provenance substrate stance (grounded in
+  `docs/conceptual-foundations.md` "append, never overwrite" and `input docs/substrate-principles-and-scenarios.md`
+  "never destructive … any prior state reconstructable"). Surfaced while working the object-graph lifecycle (BR-16).
+- **Done:** `feat IP-4` (append-only · non-destructive-removal · provenance) added to `spec/internal-primitives.mdl`,
+  framed as **substrate richness / divergent** (like the multi-predecessor DAG), confirmed by Steve (`7ea8aba`, `83068c5`).
+  **ECHO removal-history feasibility gate VERIFIED GREEN** (`32b1f48`): `db.remove` is already a reversible tombstone —
+  it flips `system.deleted`, keeps data inline, retains automerge history; re-`add` restores; relations remove the same
+  way. So the build needs **no custom tombstone mechanism**.
+- **Pending:**
+  - **`IX-reversible` fold** (undo = append a corrective event / un-tombstone, as the `IP-4` consequence; decision D3) →
+    `spec/interaction-primitives.mdl`. Plan Phase 0.1.
+  - **Non-destructive removal realized in the build** — removal uses `db.remove` as-is; **do not** invoke compaction /
+    `unlinkDeletedObjects` on Bramble objects. Rides BR-16 lifecycle (plan Phase 1.5).
+- **Provisos (recorded):** no high-level `getHistory`/`restore` API (re-`add` is the restore; a history affordance is a
+  future build); keep compaction off Bramble objects. See [`design-object-graph.md`](./design-object-graph.md) §3/§7.5.
+- **Cross-links:** `FLOW.md` → Pending propagations (non-destructive substrate); the RESUME POINT in `design-object-graph.md`.
