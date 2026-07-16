@@ -9,7 +9,7 @@ not only plugin bugs. References-specific design items live in
 [`references-issue-ledger.md`](./references-issue-ledger.md). The dependency- and risk-ordered execution
 sequence across these tickets is [`plans/2026-07-15-ledger-sequencing.md`](./plans/2026-07-15-ledger-sequencing.md).
 Each ticket has a unique `BR-<n>` id. `Status`: open · design · deferred · done. Root-cause guesses are
-marked **hyp** (unverified). Next id: **BR-21**.
+marked **hyp** (unverified). Next id: **BR-22**.
 
 > The green gate (unit 66/66, storybook 22/22) never covered BR-1…BR-6: Storybook runs the in-plugin
 > logic under `withClientProvider`; the app-framework create / nav / layout / anchor flow — where those
@@ -353,3 +353,18 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   4. **Re-scope 1.3b** — "non-text rows" is a misnomer (all rows are text by default); 1.3b becomes the
      native-render-on-command gestures + any per-type label specifics.
 - **Cross-refs:** BR-16; `design-object-graph.md` §4 / §5 (`UP-4`/`UP-5` 2×2); plan 1.3a / 1.3b.
+
+## BR-21 — Create menu shows the raw typename, not a friendly label
+`Status: open` · `Type: bug (UX / i18n)` · `Source: live BR-1 verification (2026-07-16, Composer :5180)`
+- **Symptom (observed live):** the **Create Object** dialog lists the Bramble entry as **`org.dxos.type.bramble.node`**
+  (the raw typename), subtitle "Bramble Plugin" — where every other plugin shows a friendly label (Document,
+  Collection, Channel, Event…). It is the first thing a new user sees when creating a Bramble.
+- **Verified facts (not hypothesis):** the translation **exists** — `translations.ts:12` maps
+  `'typename org.dxos.type.bramble.node': 'Node'` under `[meta.profile.key]`; and it **is registered** —
+  `BramblePlugin.tsx:17` `AppPlugin.addTranslationsModule({ translations })`. So the string is present and loaded
+  but is not resolving at the create-menu lookup.
+- **hyp (unverified):** namespace / key-shape mismatch — the create menu resolves a type's display label from a
+  different i18n namespace (or key form) than `meta.profile.key`. **Investigation:** compare against a plugin whose
+  create-menu label *does* resolve (e.g. `plugin-markdown`'s "Document") and match its namespace + key shape.
+- Cheap once the correct key is identified. Adjacent to **BR-2** (nav label/metadata) — likely the same
+  label-resolution story.
