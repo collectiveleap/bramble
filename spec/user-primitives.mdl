@@ -11,7 +11,8 @@ The user-facing, table-stakes capabilities for a networked-notes / outliner / PK
 - **UP-1 — Atomic unit & outline.** Content is a nested outline of individually-addressable Nodes; a Node may appear in more than one location.
 - **UP-2 — Links & backlinks.** The user links to a Node; the target surfaces a backlinks view of what links to it.
 - **UP-3 — Granular addressing.** Any Node is a link destination, including a Node nested beneath others.
-- **UP-4 — Transclusion.** A referenced Node renders inline, edit-through, and on demand.
+- **UP-4 — Transclusion.** A referenced Node renders inline, edit-through, and on demand — the inline placement of the one secondary view (`UP-5`).
+- **UP-5 — Secondary view.** One live, on-demand, bounded, edit-through view of a Node and its structural subtree, in two placements: inline (`UP-4.embed`) and beside (`UP-5.open-beside`).
 
 **Resolution rule.** Where Roam, Tana, and Obsidian differ on a shared capability, the floor takes **Tana's** observable semantics. Layers ABOVE this floor are not table-stakes: **typed objects** (a Node carrying a named type with typed fields — e.g. Tana's supertags, DXOS's ECHO types; *accommodated* by the SIP's `IP-1.typed-node` but not required) and calendar/search nodes. Candidate capabilities that are plausibly table-stakes but unverified as shared (daily-note/journal, search/query) live in the appendix, outside the conformance floor.
 
@@ -219,11 +220,21 @@ feat UP-5: Secondary view
   desc: |
     A SECONDARY VIEW of a Node is a live, on-demand, bounded view of
     that Node and its structural subtree, resolving to the one vertex —
-    edits flow to the Node and appear everywhere it is shown. It is
-    opened in addition to the primary view, and has two PLACEMENTS that
-    render the same view: INLINE — below a referring Node's content and
-    above that Node's own subtree (the inline expansion of a mention,
-    UP-4.embed) — and ALONGSIDE the primary view (this feat).
+    edits flow to the Node and appear everywhere it is shown. This is the
+    ONE secondary-view primitive, opened in addition to the primary view,
+    with two PLACEMENTS that render the same view: INLINE — below a
+    referring Node's content and above that Node's own subtree (the inline
+    expansion of a mention, UP-4.embed) — and ALONGSIDE the primary view
+    (UP-5.open-beside). UP-4.embed and UP-5.open-beside are the two
+    PLACEMENTS of this single primitive, not two separate mechanisms.
+
+    A target design MAY elaborate a SECOND axis — WHAT the secondary view
+    renders — so that placement × rendering forms a matrix. The rendering
+    choice (the Node's structural subtree, or, for a typed Node, its
+    type-native surface) depends on typed nodes and is therefore
+    DESIGN-LAYER, above this floor (see the target's convergence design).
+    At the floor the secondary view renders the Node and its structural
+    subtree, in either placement.
   req UP-5.open-beside:
     given: any Node T reachable from the current view
     when: the user opens T alongside the current view
