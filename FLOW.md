@@ -97,6 +97,14 @@ promotion); **Phase 1** the BR-16 object-graph convergence build (the hub — re
 
 Status values: `not-started · authoring · needs-review · done`.
 
+**Stages are verbs; artifacts are nouns.** Each `S<n>` is a **down-transformation** that consumes the
+prior stage's artifact and produces its own: S1/S2 **specify** the neutral substrate & surface
+(`IP·UP·IX·PX`), S3 **analyzes** the gap in the target system, S4 **designs** the target realization,
+S5 **plans** the build, S6 **builds** the code. Intent flows *down* the verbs; **traceability** (below)
+links the nouns *back up*; the **delivery gate** guards each verb by checking its output artifact still
+traces to the input requirement it realizes. A verb that silently drops a requirement — the design/plan
+that fails to carry a neutral req down — is the BR-19 failure class.
+
 | Stage | Artifact | Role | Status |
 |---|---|---|---|
 | S1 · Neutral substrate + capabilities | `spec/internal-primitives.mdl` (`IP-*`, internal substrate), `spec/user-primitives.mdl` (`UP-*`, capabilities) | neutral | done |
