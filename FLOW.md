@@ -185,6 +185,17 @@ committed as complete), validate it against traceability:
 
 ### Pending propagations
 
+**Open — 2026-07-15 · non-destructive substrate (move-up, `IP-4` added):** the neutral spec **missed** the
+append-only / non-destructive / provenance substrate stance — grounded in the substrate-principles corpus
+(`docs/conceptual-foundations.md` "append, never overwrite"; `input docs/substrate-principles-and-scenarios.md`
+"forbids destructive migration … additive … never destructive … any prior state reconstructable"). **Added
+`feat IP-4`** (append-only · non-destructive removal · provenance) to `spec/internal-primitives.mdl`, marked a
+**distinctive** property *above* the outliner floor. **Propagate** (`grep -r IP-4 spec/ implementations/`):
+`UP-1.author` stays floor-neutral ("takes it out of the outline"); **`IX-reversible` (undo) becomes a
+*consequence* of `IP-4`** — fold when IX is finalized; the object-graph build realizes removal
+non-destructively (no `db.remove`; verify the ECHO removal-history gate). **Open: confirm conformance status**
+(distinctive/above-floor, as drafted — vs floor) with Steve.
+
 **Open — 2026-07-15 · secondary-view collapse (move-up, from BR-16 convergence design):** `UP-4.embed`
 (native content) and `UP-5.secondary-view` (structural subtree) collapse into **one secondary-view
 primitive = {structural | native} × {below | beside}** (see `implementations/dxos/design-object-graph.md` §4/§5).

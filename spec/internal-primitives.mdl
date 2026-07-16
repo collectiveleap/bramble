@@ -11,6 +11,7 @@ The internal data-model primitives for a networked-notes / outliner / PKM substr
 - **Node** — the atomic unit of content and the only kind of vertex.
 - **Structural edge** — a directed `predecessor → successor` relation. A Node may have a *set* of structural predecessors (multi-predecessor is first-class); the structural subgraph is **acyclic** — this is the DAG backbone. There is no designated root: the structural top is the **emergent** set of Nodes with no incoming structural edge. A Node reached by two structural paths is one and the same vertex, so an edit in one location is an edit everywhere.
 - **Linked edge** — a directed cross-reference (the `[[X]]` mention). It does not place its target among its structural successors; it renders lazily (collapsed by default, expand-on-demand). **Linked edges may form cycles.** A Node's *backlinks* are its incoming linked edges, recovered by reverse traversal — there is no stored back-edge.
+- **Non-destructive history** — the substrate is APPEND-ONLY: the current state is a *projection* over an immutable event history; operations are additive and reversible, nothing is destroyed (a "removal" projects a thing out, it does not erase it), and every event carries provenance (holder + time). A *distinctive* property, above the outliner floor (see `IP-4`).
 
 **Terminology** follows the established house DAG convention: PREDECESSOR / SUCCESSOR for edge direction, and a `kind` taxonomy over edges (*structural* / *linked*, with *embed* — inline expansion of a linked edge — reserved). PARENT / CHILD are avoided: in a DAG a Node has a set of predecessors, not a single parent.
 
@@ -101,7 +102,7 @@ feat IP-1: Node
     probes:
       - Does X assign an identifier to each atomic content unit, or only to top-level containers (e.g. files or pages)?
       - Is the identifier unique across the whole store, not merely within one top-level container?
-      - After a unit is deleted, can its identifier be reassigned to a different unit?
+      - After a unit is removed, can its identifier be reassigned to a different unit? (Under IP-4 nothing is truly deleted, so an id is never reassigned.)
   req IP-1.stable-identity:
     given: a Node resolved by its identifier
     when: the Node's content is edited, or structural/linked edges incident to the Node are added or removed
@@ -202,4 +203,53 @@ feat IP-3: Linked edge
     probes:
       - When X renders a referenced unit inline, does editing it change the source unit (one vertex), or a detached copy?
       - Does inline expansion of references proceed one level on demand, bounding cyclic references?
+```
+
+```mdl
+feat IP-4: Non-destructive history
+  traces:
+    - IP-1
+  desc: |
+    The substrate is APPEND-ONLY: its state is a PROJECTION over an ordered
+    history of events, and every operation — creating a Node, editing content,
+    adding or removing an edge — is recorded ADDITIVELY on top of that history.
+    NO operation destroys prior state. A "removal" takes its target out of the
+    CURRENT projection; it does not erase it from the history. Any prior state is
+    reconstructable, and any change is reversible by appending a corrective event.
+    Every event carries PROVENANCE — at minimum a holder (who or what produced it)
+    and a time — and, where derived, what it was derived from.
+
+    CONFORMANCE STATUS: this is a DISTINCTIVE substrate property, STRONGER than the
+    outliner floor (Roam/Tana/Obsidian typically mutate in place and destroy on
+    delete). It is not table-stakes for the class; it is the foundation Bramble's
+    history / provenance / reversibility capabilities rest on. Grounded in the
+    substrate-principles corpus ("append, never overwrite"; "forbids destructive
+    migration … additive … never destructive … any prior state reconstructable").
+  req IP-4.append-only:
+    given: any state of the substrate reached by a sequence of operations
+    when: an operation is applied — a Node is created, content is edited, or an edge is added or removed
+    then:
+      - the operation is recorded additively on the history; no prior state is destroyed
+      - the current state is a projection over that history, and any prior state is reconstructable
+      - the change is reversible by appending a corrective event
+    probes:
+      - In X, is any edit or removal destructive, or can any prior state be reconstructed by moving through the history?
+      - Is the state the user sees a projection over a retained history, or the only copy?
+  req IP-4.non-destructive-removal:
+    given: a Node (or edge) present in the current projection
+    when: the user removes it
+    then:
+      - it is taken out of the current projection but RETAINED in the history — it is not erased
+      - its identifier is never reassigned to a different unit (nothing is truly deleted)
+      - the removal is reversible by appending a corrective event
+    probes:
+      - When a unit is removed in X, is its content destroyed, or projected-out and recoverable?
+      - Can a removal be undone, restoring the exact prior state — or is it irreversible?
+  req IP-4.provenance:
+    given: any event in the substrate's history (a create, an edit, an edge change)
+    then:
+      - the event carries, at minimum, its HOLDER (who or what produced it) and its TIME
+      - where the event derives from prior content, what it was derived from is recorded
+    probes:
+      - Does every change in X carry who made it and when (and what it derived from), or is attribution / time lost?
 ```

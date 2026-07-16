@@ -1,4 +1,4 @@
-<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, UP-4, UP-5]; role: target; status: current -->
+<!-- derives-from: [IP-1, IP-1.typed-node, IP-2, IP-3, IP-4, UP-4, UP-5]; role: target; status: current -->
 
 # Object-graph convergence — settled design (BR-16)
 
@@ -43,13 +43,29 @@ diverged from. It feeds a phased plan under `plans/`.
   intrinsic types don't violate it. ("Convert this text bullet to a Task" is a new object + re-edge, which
   the spec never forbade.)
 
-## 3. Joining the DAG (no new primitive)
+## 3. Joining & lifecycle (authoring)
 
-- **Create new:** a new typed instance (default: a text node) becomes a bullet via a **structural** edge from
-  its parent. Standard authoring.
-- **Reference existing:** pull an object already in the space into the outline — a **structural** edge
-  co-locates it as a bullet (BR-10); a **linked** edge mentions it inline (the references work).
-- Both are just `makeEdge` / `makeLinkedEdge` over `Obj.Unknown`.
+**Two verbs, symmetric — placement picks the edge kind (grounded in Tana):**
+- **Create** — `Enter` / typing = a **text** node (default bullet); **`/`** = a **type picker** → a new
+  instance of a chosen type (Task, Person, Doc…). Both attach via a **structural** edge from the parent.
+- **Reference** (`@`) — the *same* gesture; context decides the edge kind:
+  - `@` **inside text** → a **linked** mention (a chip);
+  - `@` in an **empty / pending bullet** → a **structural** co-locate (a real child bullet). *(Exactly Tana's
+    co-locate gesture — `@` typed in an empty child.)*
+- Scope: the current space, all types (cross-space later). No new primitive — `makeEdge` / `makeLinkedEdge`
+  over `Obj.Unknown`.
+
+**Lifecycle — uniform and non-destructive (`IP-4`):**
+- A text bullet is just an `Obj` like any other, so removal is **uniform for every node**: *remove from Bramble
+  = a versioned removal of the edge* (`IP-4.non-destructive-removal`) — the node/edge leaves the *current
+  projection*, the history retains it, and it is reversible.
+- **"Gone from Bramble" = out of the current projection when its edges are gone** — GC-like, but nothing is
+  destroyed; and **never destroy the referenced ECHO object** (per `IP-4`, never destroy *anything*).
+- **Fixes a latent bug:** today's `mergeBackward` calls `db.remove` (destructive) and deletes on "last inbound
+  edge" — under `IP-4` it must append a removal event (project-out / tombstone), never `db.remove`.
+- **Feasibility gate (like the Edge gate — verify before building):** ECHO/automerge is versioned at the
+  *document* level (text edits carry history for free); confirm whether ECHO **object / edge removal** preserves
+  reconstructable history — if not, removal is realized as tombstone events, never `db.remove`.
 
 ## 4. The uniform render model — one secondary-view primitive, 2×2
 
@@ -97,7 +113,7 @@ convergence, then propagate to `design.md`. This is a *simplification* of the sp
 3. **Heterogeneous row render** — inline row by type (text → editor; others → `Section` surface + fallback).
 4. **Secondary-view primitive** — the 2×2 (extend the built `expandedMentions` / inline-expand with a native
    toggle + a below/beside axis).
-5. **Joining** — create-new-typed + reference-existing gestures; `@`-picker + backlinks over any `Obj`.
+5. **Joining + lifecycle** — create (`Enter` text / `/` typed) + reference (`@` in-text=linked, `@` empty-bullet=co-locate); `@`-picker + backlinks over any `Obj`. **Non-destructive removal (`IP-4`):** replace `mergeBackward`'s `db.remove` with a versioned removal (project-out / tombstone); verify the ECHO removal-history gate first.
 6. **UP-4/UP-5 collapse** (spec move-up) + `design.md` propagation.
 7. **Reshaped BR-3 / BR-2 / BR-1.**
 
