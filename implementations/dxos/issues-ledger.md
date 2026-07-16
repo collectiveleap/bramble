@@ -62,7 +62,27 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   then stop). Re-measured live via a focus-poll: `finalInHeader = true`. **Done.**
 
 ## BR-2 — Created Bramble has no left-nav presence
-`Status: open · reshaped by BR-16` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)`
+`Status: open · root cause CONFIRMED · first attempt REVERTED (2026-07-16)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Unblocked by: BR-3 (root now exists)`
+- **Root cause (confirmed 2026-07-16, not hyp):** two facts, both verified —
+  1. `BramblePlugin.tsx:13-19` contributes only schema / surface / create-object / translations. There is **no
+     app-graph (navtree) module** at all.
+  2. `Node` carries `HiddenAnnotation.set(true)` (`types/Node.ts:16-17`) — which is **correct** and must stay: every
+     bullet is a `Node`, so un-hiding would list every bullet in the navtree. The fix is therefore **surface the
+     per-space ROOT** (BR-3's `BrambleRootAnnotation`), not un-hide `Node`.
+- **Mechanism identified (verified against the real API):** `AppPlugin.addAppGraphModule({ activate })` →
+  `GraphBuilder.createExtension({ id, match, connector })` → `Capability.contributes(AppCapabilities.AppGraphBuilder, …)`.
+  Use **`AppNodeMatcher.whenSpace`** (from `@dxos/app-toolkit`) — it yields the **Space**; plugin-graph's
+  `NodeMatcher.whenSpace` does **not** exist and a plain graph node carries no `db`/`properties`. Build the entry with
+  **`AppNode.makeObject({ get, db, object })`** (`app-toolkit/app-graph/AppNode.ts:182`). Needs a new
+  `@dxos/plugin-graph` dep. References: `plugin-connector/src/capabilities/app-graph-builder.ts` (whenSpace-style
+  connector + `makeObject` + reactive `get(...atom)`), `plugin-commerce`, `plugin-space/.../extensions/*`.
+- **⚠ First attempt REVERTED (2026-07-16, not committed):** the implementation **typechecked but HUNG plugin
+  activation** — the app died with `Error: Startup timed out after 30000ms` (`app-framework/ui/hooks/useApp.tsx:239`)
+  and was unusable; reverted to restore the app. **Next attempt must diagnose the hang first.** Candidates (untested):
+  the connector reading `space.properties` / `rootRef.target` during activation; or misuse of
+  `Effect.all`/`createExtension`. Diff line-by-line against `plugin-commerce`'s `whenSpace` connector before retrying.
+  Note the boot log did show "Activating bramble", so the module loads — it is the *extension/connector* that stalls.
+- *(Historical framing below.)*
 - **⚠ Re-frame (BR-16 settled 2026-07-15):** with nodes = typed `Obj`s that already carry nav identity, nav is about
   surfacing the **Bramble view** (its root object), not giving a bare `Node` an identity. Fix follows the BR-16 model.
 - Symptom: created a Bramble 3×; none appear in the left navigation.
