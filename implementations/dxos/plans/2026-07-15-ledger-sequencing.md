@@ -25,8 +25,35 @@ reached — and each such plan now opens with a **`## Traces`** table (FLOW gate
 - **BR-20 (neutral req)** — *every node shows a text equivalent on its row by default; native rendering on command.*
   The design (§4) + 1.3a do the **inverse**; this **move-up now gates the render phases**.
 
-**Next:** the **BR-20 move-up** (author the `PX` req → propagate §4 → rework 1.3a) **before** 1.4/1.5. Build box was
-load-saturated during 1.3a — re-verify on a cool machine.
+**Next:** in parallel — **(a)** Phase 1.0: fix the user-visible bugs BR-1/2/3 against the *current* build now
+(pre-mortem F8); **(b)** the **BR-20 move-up** (author the `PX` req → propagate §4 → rework 1.3a) **before** 1.4/1.5.
+Build box was load-saturated during 1.3a — re-verify on a cool machine.
+
+## BR-16 is done when *behaviour* converges — not when traces are green (pre-mortem F1)
+
+A pre-mortem (2026-07-16, subagent) found the load-bearing risk: this flow measures convergence by
+trace-cleanliness (citations, `## Traces` tables, green storybook), which is **orthogonal** to whether
+Composer-native objects actually behave as nodes. Two phases in, the `@`-picker still runs `Filter.type(Node)` — you
+still cannot mention a non-Node — yet every gate is green. So:
+- **BR-16's definition of done is one end-to-end, user-observable proof, not a set of green traces:** in a real
+  Composer space, `@`-mention a **native object (e.g. a Person)** into a Bramble, see it as a row showing its **text
+  equivalent** (BR-20), and **expand it to its native card on command**. Until that gesture works live, BR-16 is not
+  converging, whatever the gate colour.
+- **A phase that cannot express success as a failing→passing *user-path* test changed no behaviour** and does not
+  count as convergence progress (1.1 type-widening is the cautionary example — the design itself notes "no red→green
+  TDD is available"). Traceability is *necessary, not sufficient*: the gates verify citations; this proof verifies
+  convergence. (memory: `test-reproduces-real-user-path`.)
+
+**Other pre-mortem findings — tracked as open risks (not yet actioned):**
+- **F3 · never-merged branch rot** — 78 commits ahead, `origin` last fetched Jul 13 vs HEAD Jul 16, tree
+  perpetually dirty. Mitigation: a weekly `git fetch && git rebase origin/main` on the branch even without merging;
+  a rebase that no longer builds is a real ticket.
+- **F4 · load-flaky verification** — pass counts swing (9/16/1); "load flake" is becoming an accepted excuse, so a
+  real regression in the same costume gets waved through. Mitigation: quarantine load-sensitive stories; the core
+  gate must be 100% deterministic.
+- **F7 · IP-4 rests on a guarantee the plugin can't enforce** — "don't run compaction on Bramble objects" is a rule
+  with no mechanism (compaction is host-level GC), and there's no user-facing restore. Mitigation: demote IP-4 from
+  floor/substrate-richness to appendix/aspirational until ECHO exposes a compaction opt-out.
 
 ## Captured decisions (2026-07-15)
 
@@ -41,16 +68,17 @@ load-saturated during 1.3a — re-verify on a cool machine.
 
 ## Dependency graph (what blocks what)
 
-- **BR-16 (object-graph convergence) is the hub.** It reshapes the create-nav-singleton cluster (BR-1/2/3),
-  *contains* the `UP-4/UP-5` collapse and BR-18's removal realization, and its render/lifecycle rewrite is where
-  BR-9 / BR-10 / BR-17 land.
+- **BR-16 (object-graph convergence) is the hub.** It *contains* the `UP-4/UP-5` collapse and BR-18's removal
+  realization, and its render/lifecycle rewrite is where BR-9 / BR-10 / BR-17 land. **But it no longer holds the
+  create-nav-singleton cluster hostage** — BR-1/2/3 are fixed NOW against the current build (Phase 1.0) and only
+  *re-fitted* if BR-16 later changes their shape (1.7), per pre-mortem F8.
 - **BR-20 (neutral req, 2026-07-16) gates the render phases.** "Text equivalent per node by default; native on
   command" — design §4 and the 1.3a build do the inverse, so BR-20's move-up (PX req → §4 → rework 1.3a) must land
   **before** 1.4 (2×2) and 1.5 build further on the wrong default.
 - **Process gates now bind the build** (FLOW clauses 6–8): every inner-loop build-phase plan opens with a `## Traces`
   table; any decision reversal needs `grounded-by`.
 - **BR-7** targets files BR-16 rewrites (`RowEditor`, `MentionExpansions`) → must come **after** BR-16, else throwaway.
-- **BR-3** (singleton, decided D1) gates the BR-1/2/3 realization at 1.7.
+- **BR-1/2/3** are fixed NOW (Phase 1.0) against the current build; 1.7 only *re-fits* them if BR-16 changes their shape — they are no longer blocked by the convergence (pre-mortem F8).
 - **BR-18** — the `IX-reversible` fold is a standalone spec edit (0.1); non-destructive removal *realization* rides BR-16 (1.5).
 - **BR-11** (0.5) requires 0.1 done first (else it promotes an about-to-change `IX` spec).
 - **Independent, any time:** BR-12, BR-15.
@@ -64,6 +92,15 @@ load-saturated during 1.3a — re-verify on a cool machine.
 - **0.3** ✓ BR-15 — verified already-applied (no new authoring needed)
 - **0.4** ✓ decisions captured (table above) · **0.5** ✓ BR-11 — S2 promoted to `done`, FLOW `draft` label fixed
 
+### Phase 1.0 — Un-hostage the user-visible bugs, NOW, against the current build (pre-mortem F8)
+BR-1/2/3 are the bugs a real smoke test found (no cursor on create, no left-nav presence, no singleton) — small and
+user-visible. Holding them behind the open-ended BR-16 rewrite is the F8 failure. **Fix them against the *current*
+homogeneous `Node` build; do not wait for the convergence:**
+- **BR-1** — focus the header / first-row editor on create (`capabilities/create-object.ts` places no focus today).
+- **BR-2** — surface the Bramble in the left nav (no app-graph / navtree module today).
+- **BR-3** — get-or-create one root object per space (D1 interim), so "the Bramble" is a stable singleton.
+These get *re-fitted* only if BR-16 later changes their shape (1.7) — but the user gets a working create / nav / singleton now.
+
 ### Phase 1 — BR-16 convergence build (per [`design-object-graph.md`](../design-object-graph.md) §7)
 - **1.1** ✓ Edge generalization `Node → Obj.Unknown` (gate 70/70; `Node ≈ Obj.Unknown` finding)
 - **1.2** ✓ Text node type — **schema A confirmed** (D2). BR-19's "pure-A breaks discrimination" **withdrawn** (false premise; `UP-2`/`UP-3`/`IP-1` and the design already require linking any node). Residual = type-agnostic `@`-scoping + surface routing, recast into **BR-19**, folded into 1.3b/1.5. `Node`-as-type-discriminator not required.
@@ -73,7 +110,7 @@ load-saturated during 1.3a — re-verify on a cool machine.
 - **1.4** Secondary-view primitive **2×2** → realizes `UP-4/UP-5` collapse; **BR-17** chip/embed/beside visual checks ride the delivery (FLOW gate clause 5)
 - **1.5** Joining + lifecycle → create (`Enter`/`/`) + reference (`@`, incl. recast **BR-19** `@`-scoping) gestures; **non-destructive removal via `db.remove`** (BR-18 realized; no compaction on Bramble objects)
 - **1.6** `UP-4/UP-5` collapse → `design.md` propagation
-- **1.7** Reshaped **BR-3 / BR-2 / BR-1** — interim get-or-create root (D1) + nav surfacing + focus-on-create
+- **1.7** **Re-fit** BR-1/2/3 to the converged model *only if* the Phase 1.0 fixes need adjustment (e.g. nav now surfaces the Bramble *view* root; singleton under the object-graph model). Not a from-scratch build — 1.0 already shipped them.
 
 ### Phase 2 — Cleanup & verify
 - **2.1** BR-7 — dedup per-row linked-edges query (render now rewritten)
@@ -84,16 +121,22 @@ load-saturated during 1.3a — re-verify on a cool machine.
 - BR-9, BR-10 (D5 — absorbed later by 1.4/1.5) · BR-13 (post-plugin visual diff) · BR-14 (D6 — out-of-plugin font)
 
 ## Autonomy guardrails
-- **Stop policy — a HARD BLOCKER is the only thing that halts the run and surfaces to Steve.** A hard blocker is:
-  (a) the build cannot be made green after the bounded fix retries; (b) a step needs a credential / permission, or an
-  out-of-plugin change, that genuinely *blocks* forward progress; or (c) a decision with no safe default AND no way to
-  defer it to a ticket. **Everything else does NOT block:** a review finding → the fix loop or a `BR`; a new decision
-  with any safe default → take the default (record it) and, if worth revisiting, spawn a `BR`; a non-blocking
-  out-of-plugin need → spawn a `BR` and continue the in-scope work. Milestones and phase boundaries do **not** pause the
-  run — the chain advances automatically.
+- **Stop policy — a HARD BLOCKER halts the run and surfaces to Steve.** A hard blocker is: (a) the build cannot be
+  made green after the bounded fix retries; (b) a step needs a credential / permission or an out-of-plugin change that
+  genuinely *blocks* progress; (c) a decision with no safe default and no way to defer; **or (d — added 2026-07-16 per
+  pre-mortem F5/F6) any ticket that is a `move-up` / neutral requirement, or that reshapes a settled decision or a
+  target-set.** These (d) are **Steve-altitude and MUST NOT be resolved by a subagent "safe default"** — BR-19 (a
+  reshaped decision) and BR-20 (a neutral requirement) both walked through the old safe-default door, drifting the
+  build from intent while looking compliant. They now block.
+- **Everything else does NOT block:** an implementation-level review finding → the fix loop or a `BR`; a routine new
+  choice *within* an already-settled decision → sensible default + record. Milestones and phase boundaries do not pause
+  the run — the chain advances automatically.
 - **Never** merge the DXOS branch `claude/plugin-bramble-substrate`; **never** stage `.claude/launch.json` or `.changeset/config.json` (local-only).
 - Every build item passes the delivery gate (FLOW clauses **1–8**): **clause 5** visual check per surface; **clause 6** behavioural decisions cite a req (build-phase plan opens with a `## Traces` table); **clause 7** a decision-reversal needs `grounded-by`.
-- BR-16 build runs **subagent-driven** via the Workflow tool (deterministic orchestration — planner → build → review per phase), so the chain has no main-session pause points; per-task + whole-branch review as in the prior 2a–2e plans.
+- BR-16 build runs **subagent-driven** via the Workflow tool for *mechanical* phases (planner → build → review), but
+  per the tightened stop policy any phase that **reshapes a decision, a target-set, or a requirement** halts for a
+  human checkpoint — the reviewer that caught BR-19's ungrounded claim (pre-mortem F5) is **not** removed for the
+  phases that most need it. Autonomy is for transcription-and-test work, not for Steve-altitude calls.
 
 ## Links
 - Ledger: [`issues-ledger.md`](../issues-ledger.md) · references: [`references-issue-ledger.md`](../references-issue-ledger.md)
