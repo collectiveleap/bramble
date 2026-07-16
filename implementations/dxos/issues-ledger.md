@@ -43,7 +43,7 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 ---
 
 ## BR-1 — New Bramble: no focus cursor on create
-`Status: FIXED (storybook-verified) · live-verify pending` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: 9117e6728d` · `Traces: UP-1.author + IX-direct`
+`Status: FIXED (live-verified in Composer, 2026-07-16)` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: 9117e6728d + e8c1c47458` · `Traces: UP-1.author + IX-direct`
 - Symptom: creating a new Bramble shows no caret; must click around to find where to type.
 - **Root cause (confirmed):** nothing focused the header on first open — `create-object.ts` adds the Node and
   returns with no focus; `NodeOutline` mounted but never called the controller's `focusRow`. (The focus machinery
@@ -54,9 +54,12 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   steal focus). Story `AutoFocusOnOpen` asserts the caret lands in the header (green, 332ms; genuine red→green — nothing
   else focuses on mount). Traces `UP-1.author` (view-top authored in place) + `IX-direct` (no intervening step). Plan:
   [`plans/2026-07-16-plan-1.0-user-visible-fixes.md`](./plans/2026-07-16-plan-1.0-user-visible-fixes.md) Task 1.
-- **Live-verify pending (the real done-line, pre-mortem F1):** confirm in running Composer — create a Bramble → caret
-  in the header, type immediately, no click. (Storybook covers the focus-on-mount logic; the app-framework create flow
-  needs the live app, per the BR-1…6 note above.)
+- **Live-verified (2026-07-16, Composer :5180) — and it caught a real bug storybook missed (pre-mortem F1):** the
+  first fix *did* fire (caret in header ~704ms) but was **stolen** ~160ms later by the **Deck** focusing the plank's
+  `.dx-attention-surface`, plus the header editor's **transitional re-mount** dropping focus to `<body>`. Neither
+  exists in storybook (no deck / attention), so storybook was green while live failed. Second fix (`e8c1c47458`):
+  `OutlineController.isFocused` + a **bounded re-assert loop** (re-focus the header until focus stably lands there,
+  then stop). Re-measured live via a focus-poll: `finalInHeader = true`. **Done.**
 
 ## BR-2 — Created Bramble has no left-nav presence
 `Status: open · reshaped by BR-16` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)`
