@@ -5,7 +5,7 @@ version: 0.1.0
 status: draft
 ---
 
-<!-- derives-from: [UP-1, UP-2, UP-3, UP-4]; role: neutral; status: draft -->
+<!-- derives-from: [UP-1, UP-2, UP-3, UP-4, IP-4]; role: neutral; status: draft -->
 
 The system-agnostic interaction primitives — the user-facing gestures and
 experience — for a networked-notes / outliner / PKM product. Written assuming
@@ -159,19 +159,30 @@ feat IX-reversible: Reversibility
     - UP-1 Atomic unit and outline
     - UP-2 Links and backlinks
     - UP-4 Transclusion
+    - IP-4 Non-destructive history
   desc: |
     Each interaction gesture is INDIVIDUALLY undoable — the user reverses
     the last gesture and the store returns to its prior state. The MANNER
     across every capability: whatever the user just did (nest, reorder,
     link, expand, edit) can be taken back as a discrete step, so the
     interface is safe to explore.
+
+    This manner is a CONSEQUENCE of the non-destructive substrate (IP-4):
+    because nothing is ever destroyed and every prior state is retained and
+    reconstructable, undo returns to a retained state by APPENDING a
+    corrective (inverse) step — not by recovering destroyed data. It
+    follows that undo is itself non-destructive: the undone state stays
+    reachable, so redo is always available — undo and redo compose
+    symmetrically and are never clobbered by intervening history.
   req IX-reversible.undo:
     given: a completed interaction gesture that changed the store
     when: the user issues undo
     then:
       - the store returns to the state immediately before that gesture
       - undo is gesture-granular — one gesture, one undo step — not all-or-nothing for a whole session or document
+      - undo is non-destructive: the undone state remains reachable, so the gesture can be redone
     probes:
       - In X, can the user undo the last structural / reference / edit gesture individually?
       - Is undo gesture-granular, or coarse (e.g. only whole-document, or absent)?
+      - After an undo, can the user redo — i.e. is the undone state retained, not destroyed?
 ```
