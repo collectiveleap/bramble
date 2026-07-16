@@ -7,6 +7,40 @@ This is the settled design for converging the *build* (a homogeneous `Node`-type
 `design.md` §1(ii) ("Node = any typed `Obj`"), which the spec + design already committed to and the build
 diverged from. It feeds a phased plan under `plans/`.
 
+## ▶ RESUME POINT — IP-4 / non-destructive substrate follow-through (2026-07-15, survives compaction)
+
+**Context.** BR-16 is **SETTLED**: Bramble = the structural outline over Composer's object graph (Node = role,
+`Edge` = the only foundational schema over `Obj.Unknown`; feasibility verified via `plugin-inbox`'s
+`ExtractedFrom`). This doc is the settled convergence design. `IP-4` (non-destructive / append-only /
+provenance) was added to the neutral spec as **substrate richness** (distinctive, *divergent* — same category
+as the multi-predecessor DAG). Commits: BR-16 settle `78f0dc3` · feasibility `99ea244` · convergence design +
+render 2×2 `2341943` · IP-4 draft + §3 lifecycle `7ea8aba` · IP-4 conformance harmonized `83068c5`.
+
+**`IP-4` is DONE in the neutral spec.** `spec/internal-primitives.mdl` = `feat IP-4` (3 reqs: `append-only` ·
+`non-destructive-removal` · `provenance`) + intro bullet + the `IP-1` "deleted" probe neutralized;
+`spec/README.md` lists it in the "deliberately diverges" set. Conformance status **CONFIRMED by Steve**:
+distinctive above-floor / substrate richness (divergent), NOT appendix.
+
+**Pending `IP-4`-related work (the resume tasks) — also in `FLOW.md` → Pending propagations:**
+1. **`IX-reversible` fold** — make undo a *consequence* of `IP-4` (undo = append a corrective event), not a
+   bolt-on. Edit `spec/interaction-primitives.mdl` (look for an `IX-reversible` req; `design.md` §2 gesture-map
+   notes "Undo — gesture-granular — see open item"). Small propagation.
+2. **Feasibility gate — ECHO removal-history (verify before building removal).** Does ECHO's object/edge
+   removal preserve reconstructable history, or is it destructive? Method = like the Edge gate (grep
+   `echo-client` / echo tests). If destructive → removal is realized as **tombstone / project-out events, never
+   `db.remove`** — which also **fixes the latent `mergeBackward` bug** (`db.remove` today violates `IP-4`). See §3 + §7.5.
+3. **UP-4/UP-5 collapse** (adjacent move-up) — `spec/user-primitives.mdl` `UP-4`/`UP-5` → one secondary-view
+   primitive, 2×2 (§4/§5); propagate to `design.md`.
+
+**Then:** writing-plans → phase 1 = **Edge generalization** (`Node` → `Obj.Unknown`, drop casts; traversal
+unchanged). Phased path in §7. **Text-schema residual** (A = native `Text.Text` · B = thin type) leans **A** —
+decide at build step 2 (the lifecycle argument for B dissolved: removal is uniform + non-destructive).
+
+**Key files:** this doc = the authoritative convergence design · `spec/internal-primitives.mdl` (`IP-4`) ·
+`spec/README.md` (divergence list) · `FLOW.md` (pending propagations) · `issues-ledger.md` `BR-16` (+ `BR-3`/`BR-2` reshaped).
+
+---
+
 ## 1. The foundational DAG (nodes + edges)
 
 - **Node = a role, not a schema.** A node is *any ECHO `Obj`*, keyed on its type-neutral identity
