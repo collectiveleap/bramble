@@ -58,10 +58,16 @@ reached. It is not itself a TDD task list.
 - BR-9, BR-10 (D5 — absorbed later by 1.4/1.5) · BR-13 (post-plugin visual diff) · BR-14 (D6 — out-of-plugin font)
 
 ## Autonomy guardrails
+- **Stop policy — a HARD BLOCKER is the only thing that halts the run and surfaces to Steve.** A hard blocker is:
+  (a) the build cannot be made green after the bounded fix retries; (b) a step needs a credential / permission, or an
+  out-of-plugin change, that genuinely *blocks* forward progress; or (c) a decision with no safe default AND no way to
+  defer it to a ticket. **Everything else does NOT block:** a review finding → the fix loop or a `BR`; a new decision
+  with any safe default → take the default (record it) and, if worth revisiting, spawn a `BR`; a non-blocking
+  out-of-plugin need → spawn a `BR` and continue the in-scope work. Milestones and phase boundaries do **not** pause the
+  run — the chain advances automatically.
 - **Never** merge the DXOS branch `claude/plugin-bramble-substrate`; **never** stage `.claude/launch.json` or `.changeset/config.json` (local-only).
-- Out-of-plugin edit → **stop and spawn a BR** (resolution protocol #3), never guess. With D1–D6 answered, mid-run stops should be rare; any *new* decision → spawn a ticket and keep going.
 - Every build item passes the delivery gate (FLOW clauses 1–6), incl. **clause 5** visual check for every new/changed surface.
-- BR-16 build runs **subagent-driven** (superpowers inner loop): per-task + whole-branch review, per the prior 2a–2e plans.
+- BR-16 build runs **subagent-driven** via the Workflow tool (deterministic orchestration — planner → build → review per phase), so the chain has no main-session pause points; per-task + whole-branch review as in the prior 2a–2e plans.
 
 ## Links
 - Ledger: [`issues-ledger.md`](../issues-ledger.md) · references: [`references-issue-ledger.md`](../references-issue-ledger.md)
