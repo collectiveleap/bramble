@@ -9,7 +9,7 @@ not only plugin bugs. References-specific design items live in
 [`references-issue-ledger.md`](./references-issue-ledger.md). The dependency- and risk-ordered execution
 sequence across these tickets is [`plans/2026-07-15-ledger-sequencing.md`](./plans/2026-07-15-ledger-sequencing.md).
 Each ticket has a unique `BR-<n>` id. `Status`: open · design · deferred · done. Root-cause guesses are
-marked **hyp** (unverified). Next id: **BR-20**.
+marked **hyp** (unverified). Next id: **BR-21**.
 
 > The green gate (unit 66/66, storybook 22/22) never covered BR-1…BR-6: Storybook runs the in-plugin
 > logic under `withClientProvider`; the app-framework create / nav / layout / anchor flow — where those
@@ -305,3 +305,34 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   - **`@`-picker scope** — offer *any* node as a mention target (not `Filter.type(Node)`); grounded by `UP-2`/`UP-3`/`IP-1.typed-node`. (`useMentionPicker.ts:33`.) **Open, UNVERIFIED refinement (not grounded — do not adopt without its own basis):** whether to *exclude* an object that is purely another object's `content`/ref-target (e.g. a `Markdown.Document`'s body `Text.Text`). By design §1 every `Obj` is a valid node/target, and `UP-3`/`IP-1.content` prefer the inner unit over its container — so any exclusion needs its own grounding (`IP-1.content-type`? a content-carrier vs a structural node) **and** a reverse-ref feasibility gate first.
   - **Surface routing** — no bramble-vs-markdown `Text.Text` collision arises because **schema A registers no `Text.Text` surface** (text renders via the inline row editor, `design-object-graph.md:70`); the Bramble *outline* is opened at its container/day root (D1/BR-3), and "render as an outline" is discriminated by **edge membership** (has bramble structural edges), not type.
 - **`grounded-by`:** `UP-2`, `UP-3`, `IP-1.typed-node` (spec). This is a **build task under D2/A**, not a reshape of it. Folds into 1.3 (routing) / 1.5 (picker).
+
+## BR-20 — Uniform text equivalent per node in the outline; native rendering on command
+`Status: open` · `Type: neutral requirement (move-up)` · `Source: design intent (Steve, 2026-07-16)` · `grounded-by: Steve design-intent 2026-07-16 (a Steve call); Tana precedent (R confirmation pending)` · `supersedes: design-object-graph §4:139 (native-inline default)` · `from: plan 1.3a/1.3b`
+- **Intent (Steve, 2026-07-16):** every node — a text bullet, an ECHO Person, an ECHO Sketch, any type — has a
+  **text equivalent** (its label). (a) The outline **row shows that text by default** (collapsed), uniformly for
+  every node regardless of type; (b) the node's **type-native rendering** (the Person card, the Sketch canvas)
+  appears **on command**, as a secondary view — *not* inline in the row by default.
+- **Altitude: NEUTRAL (Steve's call).** Primarily a **`PX`** requirement (the outline presents any node as a text
+  equivalent on its row) coupled with the existing secondary-view capability (`UP-5` / the 2×2 *native* cell) for the
+  on-command native rendering. Looks **floor-worthy**: this is Tana's model — a typed / supertag'd node still shows as
+  a text bullet in the outline; its fields / native view appear on expand. (Confirm against the Tana R realization
+  before promoting to floor.)
+- **Divergence to correct (the design + build currently do the INVERSE — native-first):**
+  - `design-object-graph.md` §4:139 — *"Inline row = compact type-content (text → editor; **Person → its Section
+    surface**; …)"* puts the native surface on the row line by default. §4 also has native as the 2×2 *secondary-view*
+    cell, so native appears in two places — this req resolves that: the line is always the text equivalent; native is
+    **only** the secondary view.
+  - Build **1.3a** — `OutlineRow` renders `Obj.instanceOf(Node) ? <RowEditor/> : <Surface Section/>` (a non-`Node` row
+    shows its native Section surface **inline**, with `Obj.getLabel` only as a *fallback*). Native-first; the intent is
+    text-first. The label the intent wants (`Obj.getLabel(obj)`) is already computed — wired as the fallback, needs to
+    become the default.
+- **Work (move-up → down):**
+  1. **Author the neutral req** (`PX`: uniform text equivalent per node in the outline row; native rendering is the
+     secondary view per `UP-5`/2×2) — present for review; confirm the Tana R instance.
+  2. **Propagate to `design-object-graph.md` §4** — row line = text equivalent for every node; native = 2×2
+     secondary-view only (drop the "Person → Section surface inline" default).
+  3. **Rework 1.3a** — invert the branch: every row renders its text equivalent by default; the native Section surface
+     moves to the secondary-view command (the 2×2 *native* cell).
+  4. **Re-scope 1.3b** — "non-text rows" is a misnomer (all rows are text by default); 1.3b becomes the
+     native-render-on-command gestures + any per-type label specifics.
+- **Cross-refs:** BR-16; `design-object-graph.md` §4 / §5 (`UP-4`/`UP-5` 2×2); plan 1.3a / 1.3b.
