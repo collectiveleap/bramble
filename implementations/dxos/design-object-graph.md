@@ -25,10 +25,12 @@ distinctive above-floor / substrate richness (divergent), NOT appendix.
 1. **`IX-reversible` fold** — make undo a *consequence* of `IP-4` (undo = append a corrective event), not a
    bolt-on. Edit `spec/interaction-primitives.mdl` (look for an `IX-reversible` req; `design.md` §2 gesture-map
    notes "Undo — gesture-granular — see open item"). Small propagation.
-2. **Feasibility gate — ECHO removal-history (verify before building removal).** Does ECHO's object/edge
-   removal preserve reconstructable history, or is it destructive? Method = like the Edge gate (grep
-   `echo-client` / echo tests). If destructive → removal is realized as **tombstone / project-out events, never
-   `db.remove`** — which also **fixes the latent `mergeBackward` bug** (`db.remove` today violates `IP-4`). See §3 + §7.5.
+2. **Feasibility gate — ECHO removal-history — VERIFIED GREEN (2026-07-15).** `db.remove` is already a
+   reversible tombstone: it flips `system.deleted = true`, leaves data inline, and the automerge history
+   survives (re-`add` restores; `getObjectById(id,{deleted:true})` reads removed data); relations remove the
+   same way. So `mergeBackward`'s `db.remove` is **already `IP-4`-compliant** — no custom tombstone needed. Two
+   provisos: no high-level reconstruct/`getHistory` API (re-`add` is the restore; a history affordance is a
+   future build), and keep compaction (`unlinkDeletedObjects`) off Bramble objects. See §3 + §7.5.
 3. **UP-4/UP-5 collapse** (adjacent move-up) — `spec/user-primitives.mdl` `UP-4`/`UP-5` → one secondary-view
    primitive, 2×2 (§4/§5); propagate to `design.md`.
 
@@ -95,11 +97,21 @@ decide at build step 2 (the lifecycle argument for B dissolved: removal is unifo
   projection*, the history retains it, and it is reversible.
 - **"Gone from Bramble" = out of the current projection when its edges are gone** — GC-like, but nothing is
   destroyed; and **never destroy the referenced ECHO object** (per `IP-4`, never destroy *anything*).
-- **Fixes a latent bug:** today's `mergeBackward` calls `db.remove` (destructive) and deletes on "last inbound
-  edge" — under `IP-4` it must append a removal event (project-out / tombstone), never `db.remove`.
-- **Feasibility gate (like the Edge gate — verify before building):** ECHO/automerge is versioned at the
-  *document* level (text edits carry history for free); confirm whether ECHO **object / edge removal** preserves
-  reconstructable history — if not, removal is realized as tombstone events, never `db.remove`.
+- **`db.remove` already satisfies `IP-4` — it is a reversible tombstone, not a purge (feasibility gate
+  VERIFIED GREEN, 2026-07-15).** `db.remove(obj)` flips one boolean (`system.deleted = true`) and leaves all
+  data inline; the mutation is an append-only automerge `change`, so the document's full history survives and
+  prior heads stay reachable. It is reversible: re-`add` clears the flag with data intact,
+  `getObjectById(id, {deleted:true})` reads a removed object's live data. **Relations/edges remove via the
+  identical path.** So `mergeBackward`'s existing `db.remove` is **already compliant** — no custom tombstone
+  mechanism is needed. (Evidence: `entity-manager.ts:487`, `object-core.ts:610`/`416`, `database.ts:384`;
+  tests `echo-handler.test.ts:384`, `relations.test.ts:40`.)
+- **Two provisos (record, don't block):** (1) full prior-state reconstruction needs reading automerge at an
+  earlier head — there is no high-level `getHistory`/`restore` API; the supported restore is re-`add` or
+  read-with-`{deleted:true}`. `IP-4.provenance` is satisfied at the substrate (data + history + `createdAt`
+  survive); a convenient history/restore affordance is a **future** build, not now. (2) Compaction
+  (`unlinkDeletedObjects` → `ObjectCore.delete()`) *can* hard-delete, but it is a **separate,
+  explicitly-invoked GC**, never part of `db.remove` — the build must **not** run compaction on Bramble
+  objects, to honour "nothing is truly deleted."
 
 ## 4. The uniform render model — one secondary-view primitive, 2×2
 
@@ -147,7 +159,7 @@ convergence, then propagate to `design.md`. This is a *simplification* of the sp
 3. **Heterogeneous row render** — inline row by type (text → editor; others → `Section` surface + fallback).
 4. **Secondary-view primitive** — the 2×2 (extend the built `expandedMentions` / inline-expand with a native
    toggle + a below/beside axis).
-5. **Joining + lifecycle** — create (`Enter` text / `/` typed) + reference (`@` in-text=linked, `@` empty-bullet=co-locate); `@`-picker + backlinks over any `Obj`. **Non-destructive removal (`IP-4`):** replace `mergeBackward`'s `db.remove` with a versioned removal (project-out / tombstone); verify the ECHO removal-history gate first.
+5. **Joining + lifecycle** — create (`Enter` text / `/` typed) + reference (`@` in-text=linked, `@` empty-bullet=co-locate); `@`-picker + backlinks over any `Obj`. **Non-destructive removal (`IP-4`):** removal uses `db.remove` as-is (gate VERIFIED — it is already a reversible tombstone with retained history); do **not** invoke compaction / `unlinkDeletedObjects` on Bramble objects.
 6. **UP-4/UP-5 collapse** (spec move-up) + `design.md` propagation.
 7. **Reshaped BR-3 / BR-2 / BR-1.**
 
