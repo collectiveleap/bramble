@@ -12,9 +12,10 @@ cmd="$(printf '%s' "$input" | python3 -c 'import sys,json; print(json.load(sys.s
 
 # Only git commits matter.
 case "$cmd" in *"git commit"*) ;; *) exit 0 ;; esac
-# A `cd`-prefixed commit targets another worktree (e.g. the DXOS plugin) that we cannot
-# reliably inspect from here — skip it. (Bramble doc commits run without a cd.)
-case "$cmd" in *"cd "*) exit 0 ;; esac
+# A command that *begins* with `cd ` targets another worktree (e.g. `cd /dxos/... && git commit`)
+# that we cannot reliably inspect from here — skip it. (Bramble doc commits run without a leading cd.)
+# Anchored to a leading `cd ` so a commit MESSAGE containing "cd " does not bypass the gate.
+case "$cmd" in "cd "*) exit 0 ;; esac
 
 root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null)}"
 { [ -n "$root" ] && cd "$root" 2>/dev/null; } || exit 0

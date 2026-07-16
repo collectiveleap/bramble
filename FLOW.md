@@ -193,9 +193,9 @@ committed as complete), validate it against traceability:
 6. **Behavioural decisions trace up at *authoring*, not only at delivery.** Any decision in a **plan (S5)** or a
    build-scoping **ticket** that fixes *what set an operation targets, or how it discriminates / routes* — a query
    filter, a picker's candidate set, a surface router, a type check — must cite the `UP-*/IP-*/IX-*` it realizes,
-   grep-verified, before an implementer runs. Every build-phase plan opens with a **`## Traces`** table (one row per
-   such decision → its req); the SDD Pre-Flight review greps each cited req in `spec/` and confirms every behavioural
-   decision in the plan body has a row. **State intent from the spec, never inferred from the current build** (the
+   grep-verified, before an implementer runs. Every **new** build-phase plan opens with a **`## Traces`** table (one
+   row per such decision → its req); the SDD Pre-Flight review greps each cited req in `spec/` and confirms every behavioural
+   decision in the plan body has a row (existing plans are grandfathered — backfill when next revised). **State intent from the spec, never inferred from the current build** (the
    build is what the flow converges — reading intent off it is circular). An un-cited decision blocks execution.
    (2026-07-16: BR-19 — "the `@`-picker targets bramble rows" was inferred from `Filter.type(Node)`; it contradicts
    `UP-2`/`UP-3`/`IP-1.typed-node` and the design, and steered a decision because no rung required it to cite a req.)
