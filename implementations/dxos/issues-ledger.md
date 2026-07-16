@@ -72,7 +72,20 @@ Resolving any ticket requires, as part of the work (not just a code patch):
   navigable collection, and what does a nav-visible plugin contribute that bramble doesn't? Interacts with BR-3.
 
 ## BR-3 — Bramble should be a singleton — 1 per space
-`Status: design · reshaped by BR-16 (re-settle under the object-graph model)` · `Type: design decision (Steve)` · `Source: smoke test :5174 (2026-07-14)`
+`Status: FIXED (live-verified in Composer, 2026-07-16)` · `Type: design decision (Steve) → build` · `Source: smoke test :5174 (2026-07-14)` · `Fix: 6d6b996876` · `Traces: D1 + UP-1`
+- **Fix (flow: down / build) — D1 interim: get-or-create one root per space.** `create-object.ts` now GET-or-creates
+  the per-space root; its `Ref` is stored as an annotation on `space.properties` — `BrambleRootAnnotation`
+  (`types/annotations.ts`), modeled on `AppAnnotation.RootCollectionAnnotation` (`app-toolkit/echo/AppAnnotation.ts:11`),
+  with get-or-create modeled on `CollectionModel.add` (`app-toolkit/types/CollectionModel.ts:45-63`).
+  **Verified idiom, not invented:** deliberately NOT `space.properties[<typename>]` — the legacy shape `plugin-space`
+  migrates away from (`spaces-ready.ts:165-170`). Reached via `options.db` + `ref.load()` because the `CreateObject`
+  contract's R channel provides no Database service. A recorded root that no longer resolves falls back to a fresh
+  create. `Node` unchanged (schema-A safe); rows keep `HiddenAnnotation` so bullets never reach the navtree.
+- **Live-verified (Composer :5180):** create #1 → new Bramble `01KXP39J70W6GPM7AXK56AKFRX`; create #2 → **reopened the
+  same id** (no second Bramble). Gate: 71/71 tests · lint · build green.
+- **Unblocks BR-2** — there is now a stable per-space root for the navtree to surface.
+- Nodes created before this change aren't reachable via the root (orphans) — harmless on a never-merged branch.
+- *(Historical framing below.)*
 - **⚠ Re-frame (BR-16 settled 2026-07-15):** a Bramble is now a **view** over Composer's object graph, not a bag of
   Nodes — so "one Bramble per space" may dissolve into "what is the Bramble view's root, and is it singleton?" Settle
   this question in the BR-16 convergence design, not standalone.
