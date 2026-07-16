@@ -9,7 +9,7 @@ not only plugin bugs. References-specific design items live in
 [`references-issue-ledger.md`](./references-issue-ledger.md). The dependency- and risk-ordered execution
 sequence across these tickets is [`plans/2026-07-15-ledger-sequencing.md`](./plans/2026-07-15-ledger-sequencing.md).
 Each ticket has a unique `BR-<n>` id. `Status`: open · design · deferred · done. Root-cause guesses are
-marked **hyp** (unverified). Next id: **BR-19**.
+marked **hyp** (unverified). Next id: **BR-20**.
 
 > The green gate (unit 66/66, storybook 22/22) never covered BR-1…BR-6: Storybook runs the in-plugin
 > logic under `withClientProvider`; the app-framework create / nav / layout / anchor flow — where those
@@ -281,3 +281,27 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 - **Provisos (recorded):** no high-level `getHistory`/`restore` API (re-`add` is the restore; a history affordance is a
   future build); keep compaction off Bramble objects. See [`design-object-graph.md`](./design-object-graph.md) §3/§7.5.
 - **Cross-links:** `FLOW.md` → Pending propagations (non-destructive substrate); the RESUME POINT in `design-object-graph.md`.
+
+## BR-19 — Schema-A (native `Text.Text`) breaks UI discrimination — A-vs-B needs re-settling
+`Status: open (needs Steve — reshapes D2)` · `Type: design decision (Steve)` · `Source: plan Phase 1.2 surface-map, 2026-07-15` · `from: BR-16` · `blocks: plan 1.2/1.3`
+- **Finding (mapped, 2026-07-15):** decision **D2 chose schema A** (retire the Bramble `Node` type, use native
+  `Text.Text` directly). The 1.2 surface-map shows pure-A breaks **UI discrimination** — the `Node` type is
+  load-bearing for UI, not data:
+  1. **Picker/query over-match** — `useMentionPicker.ts:33` uses `Filter.type(Node)` to scope the `@`-picker to
+     Bramble rows. Retargeted to `Filter.type(Text.Text)` it matches **every** `Text.Text` in the space,
+     including the content blob behind every `Markdown.Document` (`Markdown` stores `content: Ref(Text.Text)`).
+  2. **Surface collision** — `plugin-markdown` already registers Article/Section surfaces for `Text.Text`
+     (`plugin-markdown/react-surface.tsx`). Bramble registering surfaces for the same type creates a resolver
+     conflict over which plugin renders an opened `Text.Text`.
+- **Key point:** the graph model works with bare `Text.Text` (edges are `Obj.Unknown`, proven by BR-16/1.1). The
+  `Node` type earns its keep **only** as a UI discriminator (surface routing + picker scoping) — exactly where A
+  breaks. `Text.Text` already carries `HiddenAnnotation` + its own icon, so the create-menu/hide behaviour is not
+  the issue; discrimination is.
+- **Safe default taken (to keep the autonomous run moving, non-blocking):** **keep the Bramble `Node` type as the
+  discriminator** (status quo — effectively schema B / a hybrid: `Node` wraps `Text.Text` for content + provides
+  UI identity). Phase 1.2's pure-A flip is **deferred**; 1.2's substantive work folds into **1.3** (render/surface
+  dispatch), where discrimination is concrete. This is fully functional and reversible.
+- **Decision for Steve (reshapes D2):** given this evidence, (a) confirm **B / hybrid** (keep a Bramble
+  discriminator type — recommended), or (b) pursue **A** with an *alternate* discriminator (e.g. "a Bramble row =
+  a `Text.Text` with an inbound structural `Edge`", or a lightweight Bramble marker), accepting the surface-routing
+  work. Recommend settling at 1.3. Until then the safe default (a) governs.
