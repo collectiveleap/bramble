@@ -43,12 +43,20 @@ Resolving any ticket requires, as part of the work (not just a code patch):
 ---
 
 ## BR-1 — New Bramble: no focus cursor on create
-`Status: open` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)`
-- Symptom: creating a new Bramble shows no caret; must click around to find where to type, and it doesn't
-  always work.
-- **hyp:** the create flow doesn't focus the header/first-row editor on mount. `capabilities/create-object.ts`
-  adds the Node (`makeNode` → `SpaceOperation.AddObject`) but places no focus; `OutlineController` handles only
-  intra-outline (post-gesture) focus, not focus-on-first-open. Investigate how a freshly-opened surface takes focus.
+`Status: FIXED (storybook-verified) · live-verify pending` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)` · `Fix: 9117e6728d` · `Traces: UP-1.author + IX-direct`
+- Symptom: creating a new Bramble shows no caret; must click around to find where to type.
+- **Root cause (confirmed):** nothing focused the header on first open — `create-object.ts` adds the Node and
+  returns with no focus; `NodeOutline` mounted but never called the controller's `focusRow`. (The focus machinery
+  — `focusRow`/`pendingFocus`/`register` — already existed; `zoomTo` used it, but first-open didn't.)
+- **Decision (Steve, 2026-07-16):** focus on **every primary open** (not only on create).
+- **Fix (flow: down / build):** `NodeOutline` gains an `autoFocus` prop + a mount-once `focusRow(subject.id, 'end')`
+  effect; the surface is split so only the **Article** (primary) view passes `autoFocus` (Section / inline-embed never
+  steal focus). Story `AutoFocusOnOpen` asserts the caret lands in the header (green, 332ms; genuine red→green — nothing
+  else focuses on mount). Traces `UP-1.author` (view-top authored in place) + `IX-direct` (no intervening step). Plan:
+  [`plans/2026-07-16-plan-1.0-user-visible-fixes.md`](./plans/2026-07-16-plan-1.0-user-visible-fixes.md) Task 1.
+- **Live-verify pending (the real done-line, pre-mortem F1):** confirm in running Composer — create a Bramble → caret
+  in the header, type immediately, no click. (Storybook covers the focus-on-mount logic; the app-framework create flow
+  needs the live app, per the BR-1…6 note above.)
 
 ## BR-2 — Created Bramble has no left-nav presence
 `Status: open · reshaped by BR-16` · `Type: bug` · `Source: smoke test :5174 (2026-07-14)`
