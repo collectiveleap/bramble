@@ -1,7 +1,7 @@
 {
   "view": "composer-outline",
-  "note": "DXOS/Composer bramble outline conformance to Tana. expect/source verbatim from implementations/tana/visual/tana-outline.json (Tana's live-harvested values); app selectors target the NodeOutline Storybook surface rendered in chromium. Plan 2a scope: node-title (header), node-name (row), bullet, chevron. reference-chip + expansion-panel deferred to Plan 3.",
-  "mockup": "(live Tana web app — see source selectors in tana-outline.json)",
+  "note": "DXOS/Composer bramble outline conformance to Tana, pinned to LIGHT theme (Storybook default; the outline is separately spot-checked in dark via preview_resize colorScheme). expect/source verbatim from implementations/tana/visual-spec.md and implementations/tana/visual/tana-outline.json (Tana's live-harvested values); app selectors target the NodeOutline Storybook surface rendered in chromium. Covers every PX-* concern (mark, disclosure, nesting, state, rhythm, theme) as separate regions — the earlier 4-region mapping recorded the bullet's 15px hit-area as 'the bullet' and missed the 5px painted dot, the indent step, hover state, and the theme axis. reference-chip + expansion-panel remain deferred to Plan 3 (out of PX-* floor for this pass).",
+  "mockup": "(live Tana web app — see source selectors in tana-outline.json and implementations/tana/visual-spec.md)",
   "app": "plugin-bramble NodeOutline story (Storybook, chromium), Tree story",
   "viewport": { "width": 1456, "height": 813 },
   "tolerances": { "length": 1, "colorChannel": 6 },
@@ -10,37 +10,68 @@
       "name": "node-title",
       "source": ".editable.lockedName (Tana focused-node H1)",
       "app": "[data-testid=bramble-header] .cm-content",
+      "note": "color is PX-theme's authorized substitution — DXOS's own --color-base-fg text token (theme-adaptive) rather than Tana's literal ink hex; expect below is that token resolved under the pinned LIGHT theme, confirmed to resolve to a different (light) value under dark (spot-checked, not gated here since this mapping is single-theme-pinned).",
       "expect": {
-        "font-family": "InterVariable",
+        "font-family": "Inter Variable",
         "font-size": "29px",
         "line-height": "33.3615px",
         "font-weight": "550",
-        "color": "oklch(0.282985 0.00269329 240)"
+        "color": "oklch(0.145 0.001 190)"
       }
     },
     {
       "name": "node-name",
       "source": ".editable (Tana outline node name)",
       "app": "[data-testid=bramble-node-name] .cm-content",
+      "note": "color: see node-title's note — same PX-theme token substitution.",
       "expect": {
-        "font-family": "InterVariable",
+        "font-family": "Inter Variable",
         "font-size": "15px",
         "line-height": "21px",
         "font-weight": "400",
-        "color": "oklch(0.282985 0.00269329 240)"
+        "color": "oklch(0.145 0.001 190)"
       }
     },
     {
-      "name": "bullet",
-      "source": ".OutlinerItem-module_bullet__5DK3H",
+      "name": "bullet-dot",
+      "source": "span.bullet::after (PX-mark painted dot)",
+      "app": "[data-testid=bramble-bullet-dot]",
+      "expect": {
+        "width": "5px",
+        "height": "5px",
+        "border-radius": "50%",
+        "background-color": "oklch(0.606 0.0003 240)"
+      }
+    },
+    {
+      "name": "bullet-slot",
+      "source": ".OutlinerItem-module_bullet__5DK3H (PX-mark hit-area)",
       "app": "[data-testid=bramble-bullet]",
       "expect": { "width": "15px", "height": "15px" }
     },
     {
       "name": "chevron",
-      "source": ".BulletChevron-module_container__f3Np6",
+      "source": ".BulletChevron-module_container__f3Np6 (PX-disclosure slot)",
       "app": "[data-testid=bramble-chevron]",
-      "expect": { "padding": "3.75px 0px" }
+      "expect": { "width": "15px", "font-size": "15px", "padding": "3.75px 0px" }
+    },
+    {
+      "name": "gutter",
+      "source": ".Scrollable-module_scrollable padding-left (PX-rhythm)",
+      "app": "[data-testid=bramble-outline]",
+      "expect": { "padding-inline-start": "24px" }
+    },
+    {
+      "name": "row-gap",
+      "source": ".NodeAsListElement-module_main gap (PX-rhythm)",
+      "app": "[data-testid=bramble-row]",
+      "expect": { "gap": "7.5px" }
+    },
+    {
+      "name": "indent",
+      "source": "bullet left offset delta between depth n and n+1, 291.8px → 324px (PX-nesting)",
+      "app": "[data-testid=bramble-row][data-depth=\"1\"]",
+      "expect": { "padding-inline-start": "32px" }
     }
   ]
 }
