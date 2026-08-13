@@ -1,0 +1,592 @@
+<!-- derives-from: [none — originates Bramble's blend-engine architecture]; role: neutral; status: current -->
+<!-- Blend Engine architecture — visual & interactive spec, baseline v1 (2026-08-13). Medium-independent: durable blend-state, 8-operation catalog, mechanical/cognitive (deterministic/non-deterministic) split, anomaly model, four animated runs (simplex/mirror/mixed/double-scope). Tana baseline node: tGDlxwUz1xLa. -->
+<style>
+  :root {
+    --ground: #F3F6F1; --surface: #FBFCFA; --surface-2: #E9EEE6;
+    --ink: #19231D; --ink-soft: #4B584F; --ink-faint: #7C887F;
+    --line: #D2DBCD; --line-strong: #B7C2B1;
+    --accent: #2F6E52; --accent-ink: #235340; --accent-soft: #DDEAE1;
+    --clash: #A5641A; --clash-ink: #8A520F; --clash-soft: #F4E5CE;
+    --residue: #5E5390; --residue-ink: #4B4179; --residue-soft: #E5E0F0;
+    --shadow: 0 1px 2px rgba(25,35,29,.05), 0 6px 20px rgba(25,35,29,.06);
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0F1512; --surface: #161E19; --surface-2: #1E271F;
+      --ink: #E7EDE7; --ink-soft: #A6B2AA; --ink-faint: #7A867E;
+      --line: #2B342C; --line-strong: #3A463B;
+      --accent: #63BB8E; --accent-ink: #8FD3AE; --accent-soft: #17271F;
+      --clash: #DDA55A; --clash-ink: #E7B978; --clash-soft: #2A2113;
+      --residue: #A99BD6; --residue-ink: #BEB2E4; --residue-soft: #211C30;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 26px rgba(0,0,0,.32);
+    }
+  }
+  :root[data-theme="light"]{--ground:#F3F6F1;--surface:#FBFCFA;--surface-2:#E9EEE6;--ink:#19231D;--ink-soft:#4B584F;--ink-faint:#7C887F;--line:#D2DBCD;--line-strong:#B7C2B1;--accent:#2F6E52;--accent-ink:#235340;--accent-soft:#DDEAE1;--clash:#A5641A;--clash-ink:#8A520F;--clash-soft:#F4E5CE;--residue:#5E5390;--residue-ink:#4B4179;--residue-soft:#E5E0F0;--shadow:0 1px 2px rgba(25,35,29,.05),0 6px 20px rgba(25,35,29,.06);}
+  :root[data-theme="dark"]{--ground:#0F1512;--surface:#161E19;--surface-2:#1E271F;--ink:#E7EDE7;--ink-soft:#A6B2AA;--ink-faint:#7A867E;--line:#2B342C;--line-strong:#3A463B;--accent:#63BB8E;--accent-ink:#8FD3AE;--accent-soft:#17271F;--clash:#DDA55A;--clash-ink:#E7B978;--clash-soft:#2A2113;--residue:#A99BD6;--residue-ink:#BEB2E4;--residue-soft:#211C30;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32);}
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans); line-height:1.62; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:980px; margin:0 auto; padding:56px 28px 80px; }
+  .eyebrow { font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); margin:0 0 14px; }
+  h1 { font-family:var(--serif); font-weight:600; font-size:clamp(30px,5vw,42px); line-height:1.08; letter-spacing:-.01em; margin:0 0 14px; text-wrap:balance; }
+  .thesis { font-family:var(--serif); font-size:clamp(17px,2.4vw,20px); color:var(--ink-soft); max-width:62ch; margin:0 0 20px; font-style:italic; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 16px; font-family:var(--mono); font-size:12px; color:var(--ink-faint); padding-top:18px; border-top:1px solid var(--line); }
+  .meta b { color:var(--ink-soft); font-weight:600; }
+  section { margin-top:56px; }
+  h2 { font-family:var(--serif); font-weight:600; font-size:25px; letter-spacing:-.01em; margin:0 0 6px; display:flex; align-items:baseline; gap:12px; }
+  h2 .num { font-family:var(--mono); font-size:13px; color:var(--accent-ink); }
+  .lead { color:var(--ink-soft); max-width:68ch; margin:0 0 22px; }
+  p { max-width:68ch; }
+  .callout { background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px; padding:14px 18px; margin:18px 0; box-shadow:var(--shadow); }
+  .callout b { color:var(--ink); }
+
+  .schema { display:grid; gap:12px; }
+  .srow { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:15px 18px; box-shadow:var(--shadow); }
+  .srow h3 { font-family:var(--serif); font-size:18px; font-weight:600; margin:0 0 5px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .srow p { font-size:14.5px; color:var(--ink-soft); margin:0; max-width:none; }
+  .pill { font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; padding:2px 8px; border-radius:999px; font-weight:600; white-space:nowrap; }
+  .pill.core { background:var(--accent); color:var(--ground); }
+  .pill.type { background:var(--residue-soft); color:var(--residue-ink); }
+
+  .ops { border:1px solid var(--line); border-radius:13px; overflow:hidden; box-shadow:var(--shadow); }
+  .op { padding:13px 18px; border-top:1px solid var(--line); background:var(--surface); }
+  .op:first-child { border-top:0; }
+  .op .sig { font-family:var(--mono); font-size:12.5px; color:var(--ink); overflow-x:auto; }
+  .op .sig .fn { color:var(--accent-ink); font-weight:600; }
+  .op .meta-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
+  .op .desc { font-size:13.5px; color:var(--ink-soft); }
+  .tag { font-family:var(--mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase; padding:2px 7px; border-radius:5px; font-weight:600; white-space:nowrap; }
+  .tag.mech { background:var(--accent-soft); color:var(--accent-ink); }
+  .tag.cog { background:var(--residue-soft); color:var(--residue-ink); }
+  .tag.seam { background:var(--accent); color:var(--ground); }
+
+  .figwrap { overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow); }
+  .figwrap svg { width:100%; height:auto; display:block; min-width:640px; }
+  figure { margin:0; }
+  figcaption { font-size:13.5px; color:var(--ink-soft); margin-top:12px; max-width:70ch; }
+  figcaption b { color:var(--ink); }
+
+  /* run panel */
+  .stage { border:1px solid var(--line-strong); border-radius:16px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden; margin-top:22px; }
+  .controls { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:16px 18px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,var(--accent-soft),transparent); }
+  .tabs { display:flex; gap:6px; background:var(--surface-2); padding:4px; border-radius:10px; }
+  .tab { font-family:var(--sans); font-size:13px; font-weight:600; border:0; background:transparent; color:var(--ink-soft); padding:6px 12px; border-radius:7px; cursor:pointer; transition:.2s; }
+  .tab[aria-selected="true"] { background:var(--surface); color:var(--accent-ink); box-shadow:var(--shadow); }
+  .spacer { flex:1 1 auto; }
+  .btn { font-family:var(--sans); font-size:13px; font-weight:600; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); padding:7px 13px; border-radius:8px; cursor:pointer; transition:.15s; }
+  .btn:hover { border-color:var(--accent); color:var(--accent-ink); }
+  .btn.primary { background:var(--accent); color:var(--ground); border-color:var(--accent); }
+  .btn:disabled { opacity:.4; cursor:default; }
+  .btn:focus-visible,.tab:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .strat { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); }
+  .strat select { font-family:var(--mono); font-size:12px; padding:4px 6px; border-radius:6px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); }
+  .board-scroll { overflow-x:auto; padding:10px 12px 0; }
+  .spine-scroll { overflow-x:auto; padding:14px 12px 0; }
+  .board, .spine { min-width:720px; }
+  .board svg, .spine svg { width:100%; height:auto; display:block; }
+  .caption { display:flex; align-items:flex-start; gap:14px; padding:14px 20px 16px; }
+  .caption .idx { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--ground); background:var(--accent); border-radius:7px; padding:5px 9px; white-space:nowrap; }
+  .caption .op-name { font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-ink); }
+  .caption .op-text { font-size:14.5px; color:var(--ink); margin-top:2px; }
+  .legend { display:flex; flex-wrap:wrap; gap:14px; padding:12px 20px; font-family:var(--mono); font-size:11.5px; color:var(--ink-soft); border-top:1px solid var(--line); background:var(--surface-2); }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:11px; height:11px; border-radius:3px; display:inline-block; }
+
+  .grp { opacity:0; transition:opacity .4s ease; }
+  .grp.on { opacity:1; }
+  .card-rect { transition:fill .5s ease, stroke .5s ease; }
+  .rl-empty  { fill:var(--surface-2); stroke:var(--line-strong); }
+  .rl-bound,.rl-resolved { fill:var(--accent-soft); stroke:var(--accent); }
+  .rl-clash    { fill:var(--clash-soft); stroke:var(--clash); }
+  .rl-tension  { fill:var(--clash-soft); stroke:var(--residue); }
+  #ball { transition:cx .5s cubic-bezier(.5,-0.4,.5,1.4); }
+  #resultCard { transition:transform .5s ease; }
+  .bob { animation:bob 1.1s ease-in-out infinite; }
+  @keyframes bob { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce){ .grp,.card-rect,#ball,#resultCard{ transition:none; } .bob{ animation:none; } }
+
+  .endnote { margin-top:44px; padding:20px 22px; border-radius:12px; border:1px dashed var(--line-strong); color:var(--ink-soft); font-size:14.5px; }
+  .endnote b { color:var(--ink); }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Bramble · Conceptual Blending engine</p>
+    <h1>The Blend Engine</h1>
+    <p class="thesis">A durable core shaped for the hardest case, driven by a fixed line of operations — where frames enter either pre-supposed by goal or recruited from the flow, and a moving run shows exactly which.</p>
+    <div class="meta">
+      <span><b>Stance</b> · hybrid — mechanical kernel + cognitive core</span>
+      <span><b>Grounded in</b> · Fauconnier &amp; Turner</span>
+      <span><b>Date</b> · 2026-08-12</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="num">§1</span> The durable core: the blend-state</h2>
+    <p class="lead">One run builds one blend-state, shaped to hold a full four-network so expanding coverage never reshapes it. Simplex populates only a corner; double-scope fills the rest of the same slots.</p>
+    <div class="schema">
+      <div class="srow"><h3>Input spaces <span class="pill core">core</span></h3><p>One or more. Each carries an optional <b>frame</b> (its roles), its <b>elements</b> (role-bindings if framed, raw values if not — stamped with provenance and time), and its source provenance. The frame slot also carries a <b>frame-provenance</b>: <em>pre-supposed</em> (brought by the goal) or <em>recruited</em> (pulled from content by completion). One shape covers frame-only, value-only, and fully-framed instance.</p></div>
+      <div class="srow"><h3>Generic space <span class="pill core">core</span></h3><p>The shared skeleton abstracted from the inputs, licensing the mapping. Trivial for simplex; genuinely abstracted for double-scope.</p></div>
+      <div class="srow"><h3>Cross-space mappings <span class="pill core">core</span></h3><p>Counterpart links across inputs, each tagged identity / analogy / role-value / change.</p></div>
+      <div class="srow"><h3>Blended space <span class="pill core">core</span></h3><p><b>Projections</b>, <b>emergent structure</b> (tagged composition / completion / elaboration), <b>organizing frame(s)</b> (one → simplex/mirror, two → double-scope), and <b>clashes</b> (value and frame), each with resolution or held-tension, rationale, and strategy.</p></div>
+      <div class="srow"><h3>Residue <span class="pill core">core</span></h3><p>Elements that filled no role, classified by <b>reason</b>: an <b>anomaly</b> (a missing-frame signal — meaningful content no recruited frame organizes, which loops back to recruit-frame and, if that misses, is parked as an open FrameCandidate) or <b>noise</b> (unframable, discarded). <span style="font-family:var(--mono);font-size:12px;color:var(--residue-ink)">anomaly</span> is adopted from Klein's Data/Frame sensemaking — a marked cross-domain term, layered onto CB's completion.</p></div>
+      <div class="srow"><h3>Network type <span class="pill type">derived label</span></h3><p>Read off the organizing-frame count; emitted, never input.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§2</span> The operation catalog</h2>
+    <p class="lead">Each operation is a stable signature over the blend-state. The <span class="tag mech">mech</span> form is deterministic and auditable; the <span class="tag cog">cog</span> form is the cognitive core behind the same interface. Simplex v1 implements only the mechanical forms.</p>
+    <div class="ops">
+      <div class="op"><div class="sig"><span class="fn">add-input</span>(state, { frame?, elements[], provenance, t }) → InputSpace</div><div class="meta-row"><span class="tag mech">mech</span><span class="desc">Register an input — raw values, or a pre-supposed framed instance.</span></div></div>
+      <div class="op"><div class="sig"><span class="fn">recruit-frame</span>(state, input, catalog, trigger) → Frame</div><div class="meta-row"><span class="tag mech">mech</span><span class="tag cog">cog</span><span class="desc">Attach a frame to an input. <b>Two triggers:</b> goal-driven (pre-supposed, at setup) or content-driven (recruited, when content or residue demands it). Mech = match a catalogued frame; cog = complete a new one. A <b>miss</b> — no fitting frame — parks the content as an <b>anomaly</b> (an open FrameCandidate), not silently dropped.</span></div></div>
+      <div class="op"><div class="sig"><span class="fn">build-generic-space</span>(state) → GenericSpace</div><div class="meta-row"><span class="tag mech">mech</span><span class="tag cog">cog</span><span class="desc">Frame's roles (simplex) → abstract a shared skeleton (double-scope).</span></div></div>
+      <div class="op"><div class="sig"><span class="fn">map-counterparts</span>(state) → Mapping[]</div><div class="meta-row"><span class="tag mech">mech</span><span class="tag cog">cog</span><span class="desc">value→role, identity → analogy across frames.</span></div></div>
+      <div class="op"><div class="sig"><span class="fn">selective-project</span>(state) → Projection[]</div><div class="meta-row"><span class="tag mech">mech</span><span class="tag cog">cog</span><span class="desc">Project-all → genuine selection under the pressures. Unplaced elements become residue — classified anomaly (missing-frame → loops to recruit-frame) or noise (discarded).</span></div></div>
+      <div class="op"><div class="sig"><span class="fn">resolve-clash</span>(role, candidates[], purpose) → { value | held, rationale, strategy }</div><div class="meta-row"><span class="tag seam">the seam</span><span class="desc">Value-clash by hard-rule / weighted / hold-tension → frame-clash (cog).</span></div></div>
+      <div class="op"><div class="sig"><span class="fn">compose</span> · <span class="fn">complete</span> · <span class="fn">elaborate</span> · <span class="fn">compress</span>(state) → EmergentStructure[]</div><div class="meta-row"><span class="tag mech">mech</span><span class="tag cog">cog</span><span class="desc">Change→delta is mechanical; recruiting frames, running the blend, and general compression are the cognitive core.</span></div></div>
+      <div class="op"><div class="sig"><span class="fn">settle</span>(state) → { sediment[], candidates[] }</div><div class="meta-row"><span class="tag mech">mech</span><span class="desc">Stamp cognition-authored, discard scaffolding, write sediment.</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§3</span> The architecture</h2>
+    <p class="lead">An orchestration runs a fixed line of operations; all read and write the one blend-state beneath. The bar under each operation marks its <b>determinism</b> — <b>deterministic</b> (fully mechanical, reproducible), <b>combination</b> (a deterministic default with a non-deterministic cognitive escalation), or the <b>tunable seam</b> (resolve, spanning the whole range by strategy). Frames enter through two doors — <b>pre-supposed</b> into add-input, or <b>recruited</b> at recruit-frame — and residue loops back to recruit a new frame when a pre-supposed one leaves something unplaced.</p>
+    <div class="figwrap">
+      <figure>
+        <svg viewBox="0 0 900 430" role="img" aria-label="Bramble architecture: an orchestration over a fixed spine of eight operations, each marked by its determinism — deterministic, combination, or the tunable resolve seam — all reading and writing a shared blend-state, with two frame-entry doors and a residue-to-recruit loop.">
+          <defs>
+            <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+            <marker id="a-res" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--residue)"/></marker>
+            <linearGradient id="detgrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" style="stop-color:var(--accent)"></stop>
+              <stop offset="1" style="stop-color:var(--residue)"></stop>
+            </linearGradient>
+          </defs>
+          <!-- orchestration bar -->
+          <rect x="20" y="24" width="860" height="30" rx="8" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+          <text x="34" y="43" font-family="var(--mono)" font-size="11" letter-spacing=".08em" fill="var(--ink-soft)">ORCHESTRATION</text>
+          <text x="866" y="43" font-family="var(--sans)" font-size="12" fill="var(--ink-faint)" text-anchor="end">sequences the operations</text>
+
+          <!-- spine of operations -->
+          <g font-family="var(--sans)" font-size="12">
+            <!-- generated stations -->
+            <g>
+              <!-- 8 stations at y=92 -->
+            </g>
+          </g>
+          <!-- stations drawn explicitly -->
+          <g>
+            <!-- macro via repetition -->
+          </g>
+          <!-- Station group (hand-placed) -->
+          <g id="archStations"></g>
+
+          <!-- blend-state store -->
+          <rect x="20" y="250" width="860" height="92" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/>
+          <text x="34" y="272" font-family="var(--serif)" font-size="16" font-weight="600" fill="var(--ink)">Blend-state</text>
+          <text x="34" y="290" font-family="var(--mono)" font-size="10.5" fill="var(--accent-ink)">the durable core — every operation reads &amp; writes it</text>
+          <g font-family="var(--mono)" font-size="10.5" fill="var(--ink-soft)">
+            <text x="34" y="322">input spaces</text><text x="150" y="322">· generic</text><text x="232" y="322">· mappings</text><text x="326" y="322">· blend</text><text x="398" y="322">· residue</text><text x="474" y="322">· type</text>
+          </g>
+
+          <!-- frame doors -->
+          <text x="34" y="372" font-family="var(--mono)" font-size="10.5" fill="var(--ink-faint)">frames enter →</text>
+          <g font-family="var(--sans)" font-size="11">
+            <rect x="118" y="358" width="150" height="24" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-opacity=".6"/>
+            <text x="128" y="374" fill="var(--accent-ink)">pre-supposed · into add-input</text>
+            <rect x="284" y="358" width="150" height="24" rx="6" fill="var(--surface)" stroke="var(--residue)" stroke-opacity=".6"/>
+            <text x="294" y="374" fill="var(--residue-ink)">recruited · at recruit-frame</text>
+          </g>
+        </svg>
+      </figure>
+      <figcaption><b>The whole engine on one line.</b> The eight operations are fixed; an orchestration chooses the sequence, and the <b>blend-state</b> beneath is the single thing they all read and write. The bar under each marks determinism: <span style="color:var(--accent-ink)">solid</span> = deterministic, split = a deterministic default with a <span style="color:var(--residue-ink)">non-deterministic</span> escalation, gradient = the tunable resolve seam that spans the whole range. The dashed loop is residue returning to <b>recruit-frame</b> — the path from a pre-supposed frame's leftovers to a newly recruited one.</figcaption>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§4</span> Watch a run</h2>
+    <p class="lead">The ball travels the same line of operations, station by station. As it lands, that operation's result appears just beneath it, and the four-space blend-state below fills in. Watch <b>recruit-frame</b>. In <b>Scenario 1</b> (open-ended) it frames all the content at once — recruiting Client-Engagement and, in the same pass, <b>missing</b> on "Notion" (flagged an anomaly right there). In <b>Scenario 3</b> (pre-supposed frame) the anomaly instead surfaces as residue during projection, and the ball <b>bounces back to recruit-frame</b> — the residue→recruit loop firing and missing. Scenario 2 passes through recruit-frame cleanly.</p>
+    <div class="stage">
+      <div class="controls">
+        <div class="tabs" role="tablist" aria-label="Scenario">
+          <button class="tab" role="tab" data-scn="s1" aria-selected="true">1 · Simplex fill</button>
+          <button class="tab" role="tab" data-scn="s2" aria-selected="false">2 · Mirror reconcile</button>
+          <button class="tab" role="tab" data-scn="s3" aria-selected="false">3 · Mixed run</button>
+          <button class="tab" role="tab" data-scn="s4" aria-selected="false">4 · Double-scope</button>
+        </div>
+        <div class="spacer"></div>
+        <div class="strat" id="stratWrap" hidden><label for="strat">resolve&nbsp;strategy</label>
+          <select id="strat"><option value="hard">hard-rule</option><option value="tension">hold-tension</option></select>
+        </div>
+        <button class="btn" id="prev" aria-label="Previous step">◀</button>
+        <button class="btn primary" id="play">▶ Play</button>
+        <button class="btn" id="next" aria-label="Next step">▶</button>
+        <button class="btn" id="reset">↺</button>
+      </div>
+      <div class="spine-scroll"><div class="spine"><svg id="spine" viewBox="0 0 780 210" role="img" aria-label="Operation spine with a moving ball indicating the current operation and a result card beneath it."></svg></div></div>
+      <div class="board-scroll"><div class="board"><svg id="svg" viewBox="0 0 780 620" role="img" aria-label="Four-space blend-state board filling in as the run proceeds."></svg></div></div>
+      <div class="caption"><span class="idx" id="cIdx">0 / 0</span><div><div class="op-name" id="cOp">—</div><div class="op-text" id="cText">Press play, or step through the run.</div></div></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--accent)"></i> bound / resolved · mechanical</span>
+        <span><i class="dot" style="background:var(--clash)"></i> clash</span>
+        <span><i class="dot" style="background:var(--residue)"></i> residue / cognitive</span>
+        <span><i class="dot" style="background:var(--line-strong)"></i> empty / pass-through</span>
+      </div>
+    </div>
+    <div class="endnote"><b>Scenario 4 is the durability claim, realized.</b> The same spine and blend-state run a genuine double-scope blend — two organizing frames, an analogical mapping, a <em>frame</em>-clash resolved by selective projection, and an emergent-structure row filled by completion and elaboration. Nothing in the core changed; double-scope only <em>fills slots</em> that simplex and mirror leave empty — and it lights up the <span style="color:var(--residue-ink)">cognitive</span> lane where the simpler runs used the <span style="color:var(--accent-ink)">mechanical</span> one.</div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const SVGNS="http://www.w3.org/2000/svg";
+  function E(t,a,txt){const e=document.createElementNS(SVGNS,t);if(a)for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+
+  // ---------- static architecture spine (in §3) ----------
+  (function archSpine(){
+    const g=document.getElementById("archStations"); if(!g) return;
+    const names=["add-input","recruit-frame","build-generic","map","project","resolve","compose","settle"];
+    const det=["det","combo","combo","combo","combo","seam","combo","det"]; // determinism per operation
+    const n=names.length, x0=24, W=852, pitch=W/n, bw=pitch-14;
+    function detBar(cx,cls){
+      const w=Math.min(bw-24,54), bx=cx-w/2, by=143, h=9;
+      if(cls==="det"){ g.appendChild(E("rect",{x:bx,y:by,width:w,height:h,rx:3,fill:"var(--accent)"})); }
+      else if(cls==="combo"){ g.appendChild(E("rect",{x:bx,y:by,width:w*0.55,height:h,rx:3,fill:"var(--accent)"})); g.appendChild(E("rect",{x:bx+w*0.55,y:by,width:w*0.45,height:h,rx:3,fill:"var(--residue)"})); }
+      else { g.appendChild(E("rect",{x:bx,y:by,width:w,height:h,rx:3,fill:"url(#detgrad)",stroke:"var(--accent-ink)","stroke-width":.5,"stroke-opacity":.5})); }
+      const lab= cls==="det"?"deterministic":cls==="combo"?"combination":"tunable seam";
+      g.appendChild(E("text",{x:cx,y:167,"font-family":"var(--mono)","font-size":8,fill:cls==="seam"?"var(--residue-ink)":"var(--ink-faint)","text-anchor":"middle"},lab));
+    }
+    names.forEach((nm,i)=>{
+      const x=x0+i*pitch+7, cx=x+bw/2;
+      const seam=(nm==="resolve");
+      g.appendChild(E("rect",{x,y:92,width:bw,height:38,rx:9,fill:seam?"var(--accent-soft)":"var(--surface)",stroke:seam?"var(--accent)":"var(--line-strong)","stroke-width":seam?1.5:1}));
+      g.appendChild(E("text",{x:cx,y:110,"font-family":"var(--mono)","font-size":9.5,fill:"var(--ink-faint)","text-anchor":"middle"},"0"+(i+1)));
+      g.appendChild(E("text",{x:cx,y:123,"font-family":"var(--sans)","font-size":10.5,"font-weight":600,fill:"var(--ink)","text-anchor":"middle"},nm));
+      detBar(cx,det[i]);
+      // read/write line to store
+      g.appendChild(E("line",{x1:cx,y1:176,x2:cx,y2:250,stroke:"currentColor","stroke-width":1,"stroke-opacity":.18}));
+      // flow arrow to next
+      if(i<n-1) g.appendChild(E("line",{x1:x+bw,y1:111,x2:x0+(i+1)*pitch+7,y2:111,stroke:"currentColor","stroke-width":1.3,"stroke-opacity":.5,"marker-end":"url(#a1)"}));
+    });
+    // residue -> recruit loop (project back up to recruit)
+    const cxP=x0+4*pitch+7+bw/2, cxR=x0+1*pitch+7+bw/2;
+    g.appendChild(E("path",{d:"M "+cxP+" 250 C "+cxP+" 214, "+cxR+" 214, "+cxR+" 132",fill:"none",stroke:"var(--residue)","stroke-width":1.5,"stroke-dasharray":"5 4","marker-end":"url(#a-res)"}));
+    g.appendChild(E("text",{x:(cxP+cxR)/2,y:206,"font-family":"var(--mono)","font-size":10,fill:"var(--residue-ink)","text-anchor":"middle"},"residue → recruit"));
+    // determinism legend
+    const leg=[["solid","deterministic (mechanical)"],["split","non-det → combination"],["grad","tunable seam (resolve)"]];
+    let lx=90;
+    leg.forEach(item=>{
+      if(item[0]==="split"){ g.appendChild(E("rect",{x:lx,y:400,width:11,height:10,rx:2,fill:"var(--accent)"})); g.appendChild(E("rect",{x:lx+11,y:400,width:9,height:10,rx:2,fill:"var(--residue)"})); }
+      else if(item[0]==="grad"){ g.appendChild(E("rect",{x:lx,y:400,width:20,height:10,rx:2,fill:"url(#detgrad)"})); }
+      else { g.appendChild(E("rect",{x:lx,y:400,width:20,height:10,rx:2,fill:"var(--accent)"})); }
+      g.appendChild(E("text",{x:lx+27,y:409,"font-family":"var(--mono)","font-size":10.5,fill:"var(--ink-soft)"},item[1]));
+      lx += 27 + item[1].length*6.0 + 26;
+    });
+  })();
+
+  // ---------- run: geometry ----------
+  const AX=24, BX=536, IW=220, IY=150, IH=262;
+  const rowY=i=>200+i*52, rowC=i=>rowY(i)+22;
+  const GX=290, GY=16, GW=200, GH=60;
+  const BLX=250, BLY=436, BLW=280;
+  const rY=j=>470+j*40, rC=j=>rY(j)+16;
+  const RX=24, RSX=556, RY=452;
+
+  // spine geometry
+  const SP_N=8, SP_X0=18, SP_PITCH=(780-36)/8, SP_BW=SP_PITCH-12;
+  const spNames=["add-input","recruit","generic","map","project","resolve","compose","settle"];
+  const spC=i=>SP_X0+i*SP_PITCH+7+SP_BW/2;
+
+  // ---------- scenarios ----------
+  const S={
+    s1:{ strat:false, orch:"Orchestration · simplex run (open-ended · recruits its frame)",
+      A:{title:"Frame · Client engagement", sub:"recruited",
+         rows:[["Desired outcome","—"],["Runway","—"],["Team size","—"]]},
+      B:{title:"Discovery call", sub:"said-in-call · t₀",
+         rows:[['"ship redesign · Q3"',""],['"~12mo runway"',""],['"8 of us"',""],['"all-in on Notion"',""]]},
+      roles:["Desired outcome","Runway","Team size"], generic:["outcome","runway","team"],
+      steps:[
+        {st:0,mode:"active",op:"add-input",res:["+ Discovery call","4 raw statements","said-in-call"],text:"Raw statements arrive as an unframed input.",do:["showB"]},
+        {st:1,mode:"active",op:"recruit-frame",res:["Recruited:","Client-Engagement","— miss: “Notion”","→ open anomaly"],text:"recruit-frame frames all the content at once: Client-Engagement is recruited, and the “Notion” cluster matches no frame — flagged an anomaly right here.",do:["showA","showR",["res","⚠ “Notion” — anomaly"],["res","recruit miss · open"]]},
+        {st:2,mode:"active",op:"build-generic",res:["Generic space","= frame roles"],text:"Trivially the recruited frame's roles.",do:["showG"]},
+        {st:3,mode:"active",op:"map",res:["value → role","3 counterparts"],text:"The three framed statements map to their roles; “Notion” is already set aside.",do:["showBlend",["lb",0,0],["lb",1,1],["lb",2,2]]},
+        {st:4,mode:"active",op:"project",res:["3 roles bound"],text:"Values fill the roles. The anomaly was already caught at recruitment.",do:[["bind",0,"ship redesign · Q3"],["bind",1,"12 months"],["bind",2,"8"]]},
+        {st:5,mode:"skip",op:"resolve",res:["no clash","pass-through"],text:"Every bound role holds one value — nothing to resolve.",do:[]},
+        {st:6,mode:"skip",op:"compose",res:["nothing to compress","pass-through"],text:"No Change over Time — the ball passes straight through.",do:[]},
+        {st:7,mode:"active",op:"settle",res:["Sediment ← 3 roles","anomaly stays open","type: SIMPLEX"],text:"Write sediment. The anomaly persists as an open FrameCandidate — not everything resolves.",do:["showS",["sed","Desired outcome","ship redesign · Q3"],["sed","Runway","12 months"],["sed","Team size","8"],["type","SIMPLEX"]]}
+      ]},
+    s2:{ strat:true, orch:"Orchestration · mirror run (frame carried · pre-supposed)",
+      A:{title:"Sediment · prior", sub:"pre-supposed", rows:[["Runway","12 months"]]},
+      B:{title:"CEO call", sub:"said-in-call · t₀", rows:[["Runway","10 months"]]},
+      roles:["Runway"], generic:["runway"],
+      steps:[
+        {st:0,mode:"active",op:"add-input",res:["+ CEO call: 10","+ prior: 12"],text:"A new call value meets a prior framed instance.",do:["showA","showB"]},
+        {st:1,mode:"skip",op:"recruit-frame",res:["frame already present","pre-supposed","(carried from prior)"],text:"The frame is carried from prior sediment — recruit-frame passes through.",do:[]},
+        {st:2,mode:"active",op:"build-generic",res:["both share the frame","→ generic = frame"],text:"Both inputs share the one frame.",do:["showG"]},
+        {st:3,mode:"active",op:"map",res:["identity on Runway"],text:"The two runway figures are the same metric — an identity counterpart.",do:["showBlend",["la",0,0],["lb",0,0]]},
+        {st:4,mode:"active",op:"project",res:["12 and 10","→ one role"],text:"Both values arrive at the runway role.",do:[["clash",0,"12","10"]]},
+        {st:5,mode:"active",op:"resolve",res:[],text:"",do:[["resolveStrat",0]]},
+        {st:6,mode:"active",op:"compose",res:["compress Change","Runway ↓ 12→10"],text:"Compress the Change over Time into a delta — emergent structure.",do:[["emg","Runway ↓ 12 → 10 (Change / Time)"]]},
+        {st:7,mode:"active",op:"settle",res:["Sediment ← runway","type: MIRROR"],text:"Write sediment. Type emitted: mirror.",do:["showS",["settleStrat"],["type","MIRROR"]]}
+      ]},
+    s3:{ strat:false, orch:"Orchestration · mixed run (frame carried · per-role branch)",
+      A:{title:"Sediment · prior", sub:"pre-supposed", rows:[["Runway","12 months"],["Team size","8"],["Decision maker","—"]]},
+      B:{title:"Review call", sub:"said-in-call · t₀", rows:[["Runway","10 months"],["Decision maker","the CFO"],['"we love Notion"',""]]},
+      roles:["Runway","Team size","Decision maker"], generic:["runway","team","decision"],
+      steps:[
+        {st:0,mode:"active",op:"add-input",res:["+ Review call","+ prior sediment"],text:"A new call and a prior framed instance — some roles overlap, some don't.",do:["showA","showB"]},
+        {st:1,mode:"skip",op:"recruit-frame",res:["frame carried","pre-supposed"],text:"Frame carried from sediment — recruit passes through.",do:[]},
+        {st:2,mode:"active",op:"build-generic",res:["shared frame"],text:"The shared client-engagement frame.",do:["showG"]},
+        {st:3,mode:"active",op:"map",res:["Runway: identity","Decision: new","Notion: none"],text:"Runway matches both; decision-maker is new; “Notion” matches nothing.",do:["showBlend",["la",0,0],["lb",0,0],["la",1,1],["lb",1,2]]},
+        {st:4,mode:"active",op:"project",res:["Runway → clash","Team → carry","Decision → CFO","Notion → residue"],text:"Per-role branch: Runway clashes, Team carries, Decision extends, and “Notion” falls out as residue against the carried frame.",do:[["clash",0,"12","10"],["carry",1,"8"],["bind",2,"the CFO"],"showR",["res","“Notion” — residue (unframed)"]]},
+        {st:1,mode:"miss",op:"recruit-frame",loop:true,res:["residue → recruit","retry for “Notion”","MISS — no frame","→ open anomaly"],text:"The residue loops back to recruit-frame — the pre-supposed frame left it unplaced. No fitting frame exists, so it's parked as an open anomaly.",do:[["res","→ anomaly · open"]]},
+        {st:5,mode:"active",op:"resolve",res:["Runway → 10","(latest)"],text:"Resolve the one clash — 10, said-in-call and latest.",do:[["resolve",0,"10","↓ 12"]]},
+        {st:6,mode:"active",op:"compose",res:["Runway ↓ 12→10"],text:"Keep the delta as emergent structure.",do:[["emg","Runway ↓ 12 → 10"]]},
+        {st:7,mode:"active",op:"settle",res:["Sediment ← 3 roles","anomaly stays open","type: MIRROR + EXTEND"],text:"Write sediment; the anomaly persists as an open FrameCandidate. Type: mirror + extension.",do:["showS",["sed","Runway","10 months","↓ 12"],["sed","Team size","8"],["sed","Decision maker","the CFO"],["type","MIRROR + EXTEND"]]}
+      ]},
+    s4:{ strat:false, orch:"Orchestration · double-scope run (two frames · frame-clash · emergent)",
+      A:{title:"Frame · Personal finance", sub:"topic · pre-supposed",
+         rows:[["spender (you)",""],["debt — rising",""],["monthly spending",""]]},
+      B:{title:"Frame · Grave-digging", sub:"source · recruited",
+         rows:[["the digger",""],["the hole",""],["deeper each dig",""]]},
+      roles:["identity","analogy","intent (frame)"], generic:["agent","repeated act","worsening"],
+      steps:[
+        {st:0,mode:"active",op:"add-input",res:["+ Personal finance","the topic frame"],text:"The topic arrives already framed — personal finance.",do:["showA"]},
+        {st:1,mode:"active",op:"recruit-frame",res:["Recruited 2nd frame:","Grave-digging","two frames · cognitive"],text:"A second organizing frame is recruited for the blend — grave-digging. Two frames now organize one blend: the double-scope case.",do:["showB"]},
+        {st:2,mode:"active",op:"build-generic",res:["Generic (abstracted):","agent worsening","· cognitive"],text:"The generic space is genuinely abstracted across two different frames — the cognitive form, not the trivial simplex one.",do:["showG"]},
+        {st:3,mode:"active",op:"map",res:["Analogy across frames","you ↔ digger","debt ↔ depth","· cognitive"],text:"Counterparts are analogical, across two frames — not value→role.",do:["showBlend",["la",0,0],["lb",0,0],["la",1,1],["lb",1,1]]},
+        {st:4,mode:"active",op:"project",res:["project 2 elements","frame-clash: intent","drop burial → residue"],text:"Selective projection integrates you=digger and debt=depth, flags a frame-clash on intent, and drops grave-digging's burial as residue.",do:[["bind",0,"you = the digger"],["bind",1,"debt = the depth"],["clash",2,"purposeful","not"],"showR",["res","grave: burial, corpse"],["res","— not projected"]]},
+        {st:5,mode:"active",op:"resolve",res:["Resolve frame-clash","project: irreversible","descent either way","· cognitive"],text:"The frames clash on intent — digging is chosen, going broke isn't. Selective projection keeps the shared truth: an irreversible descent.",do:[["resolve",2,"irreversible descent"]]},
+        {st:6,mode:"active",op:"compose",res:["compose · complete","· elaborate","emergent insight","· cognitive"],text:"Running the blend yields structure in neither input: each payment digs deeper, and unlike a real hole you can't climb out.",do:[["emg","each payment digs deeper — and you can't climb out"]]},
+        {st:7,mode:"active",op:"settle",res:["Sediment ← insight","type: DOUBLE-SCOPE"],text:"Settle the emergent insight. Both frames organized the blend — type: double-scope.",do:["showS",["sed","insight","irreversible debt-spiral"],["type","DOUBLE-SCOPE"]]}
+      ]}
+  };
+
+  // ---------- build board (persistent nodes) ----------
+  const svg=document.getElementById("svg"), spine=document.getElementById("spine");
+  let N={}, SP={}, curKey="s1", curStep=0, timer=null, strategy="hard";
+
+  function buildBoard(key){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    N={roles:[],aRows:[],bRows:[]};
+    const sc=S[key];
+    N.links=E("g"); svg.appendChild(N.links);
+    N.gConn=E("g",{class:"grp"});
+    [[330,GY+GH,140,IY],[450,GY+GH,646,IY],[390,GY+GH,390,BLY]].forEach(c=>N.gConn.appendChild(E("line",{x1:c[0],y1:c[1],x2:c[2],y2:c[3],stroke:"currentColor","stroke-width":1,"stroke-opacity":.2,"stroke-dasharray":"3 4"})));
+    svg.appendChild(N.gConn);
+    function box(x,y,w,h,title,sub){
+      const g=E("g",{class:"grp"});
+      g.appendChild(E("rect",{x,y,width:w,height:h,rx:13,fill:"var(--surface-2)",stroke:"var(--line-strong)"}));
+      g.appendChild(E("text",{x:x+14,y:y+24,"font-family":"var(--serif)","font-size":15,"font-weight":600,fill:"currentColor"},title));
+      if(sub)g.appendChild(E("text",{x:x+14,y:y+40,"font-family":"var(--mono)","font-size":10.5,fill:"var(--ink-faint)"},sub));
+      svg.appendChild(g); return g;
+    }
+    N.G=box(GX,GY,GW,GH,"Generic space","");
+    N.G.appendChild(E("text",{x:GX+14,y:GY+46,"font-family":"var(--mono)","font-size":11,fill:"var(--accent-ink)"},sc.generic.join(" · ")));
+    N.A=box(AX,IY,IW,IH,sc.A.title,sc.A.sub);
+    sc.A.rows.forEach((r,i)=>N.aRows.push(mkRow(N.A,AX,i,r[0],r[1])));
+    N.B=box(BX,IY,IW,IH,sc.B.title,sc.B.sub);
+    sc.B.rows.forEach((r,i)=>N.bRows.push(mkRow(N.B,BX,i,r[0],r[1])));
+    N.Blend=box(BLX,BLY,BLW,150,"Blended space","");
+    N.typeBadge=E("g",{class:"grp"});
+    N.typeBadge.appendChild(E("rect",{x:BLX+BLW-128,y:BLY+10,width:118,height:22,rx:6,fill:"var(--accent)"}));
+    N.typeText=E("text",{x:BLX+BLW-69,y:BLY+25,"font-family":"var(--mono)","font-size":10.5,fill:"var(--ground)","text-anchor":"middle"},"");
+    N.typeBadge.appendChild(N.typeText); N.Blend.appendChild(N.typeBadge);
+    sc.roles.forEach((r,j)=>N.roles.push(mkRole(N.Blend,j,r)));
+    N.emg=E("text",{x:BLX+14,y:BLY+150+22,"font-family":"var(--mono)","font-size":11.5,fill:"var(--accent-ink)",class:"grp"},"");
+    svg.appendChild(N.emg);
+    N.R=binBox(RX,RY,"Residue","var(--residue)");
+    N.S=binBox(RSX,RY,"Sediment","var(--accent)");
+  }
+  function mkRow(parent,bx,i,label,val){
+    const g=E("g");
+    g.appendChild(E("rect",{x:bx+12,y:rowY(i),width:IW-24,height:44,rx:8,fill:"var(--surface)",stroke:"var(--line)"}));
+    g.appendChild(E("text",{x:bx+24,y:rowY(i)+(val?20:27),"font-family":"var(--sans)","font-size":12.5,fill:"currentColor"},label));
+    if(val) g.appendChild(E("text",{x:bx+24,y:rowY(i)+36,"font-family":"var(--mono)","font-size":11,fill:val==="—"?"var(--ink-faint)":"var(--accent-ink)"},val));
+    parent.appendChild(g); return g;
+  }
+  function mkRole(parent,j,name){
+    const g=E("g");
+    const rect=E("rect",{x:BLX+12,y:rY(j),width:BLW-24,height:34,rx:8,class:"card-rect rl-empty"});
+    g.appendChild(rect);
+    g.appendChild(E("text",{x:BLX+24,y:rY(j)+21,"font-family":"var(--sans)","font-size":12.5,"font-weight":600,fill:"currentColor"},name));
+    const val=E("text",{x:BLX+BLW-24,y:rY(j)+21,"font-family":"var(--mono)","font-size":12,"text-anchor":"end",fill:"currentColor"},"");
+    g.appendChild(val); parent.appendChild(g); return {g,rect,val};
+  }
+  function binBox(x,y,title,color){
+    const g=E("g",{class:"grp"});
+    g.appendChild(E("rect",{x,y,width:IW,height:118,rx:12,fill:"var(--surface-2)",stroke:color,"stroke-opacity":.5}));
+    g.appendChild(E("text",{x:x+14,y:y+22,"font-family":"var(--serif)","font-size":14,"font-weight":600,fill:color},title));
+    const lines=E("g"); g.appendChild(lines); svg.appendChild(g); return {g,lines,x,y};
+  }
+
+  // ---------- build spine (persistent) ----------
+  function buildSpine(){
+    while(spine.firstChild) spine.removeChild(spine.firstChild);
+    SP={stations:[]};
+    const defs=E("defs");
+    const mk=(id,color)=>{const m=E("marker",{id,viewBox:"0 0 10 10",refX:8,refY:5,markerWidth:7,markerHeight:7,orient:"auto-start-reverse"});m.appendChild(E("path",{d:"M0,0 L10,5 L0,10 z",fill:color}));return m;};
+    defs.appendChild(mk("sp-a","currentColor")); defs.appendChild(mk("sp-res","var(--residue)"));
+    spine.appendChild(defs);
+    SP.orch=E("text",{x:16,y:16,"font-family":"var(--mono)","font-size":10.5,"letter-spacing":".06em",fill:"var(--ink-soft)"},"");
+    spine.appendChild(SP.orch);
+    // residue -> recruit loop arc (shown only on loop steps)
+    SP.loopArc=E("g",{class:"grp"});
+    (function(){ const aF=spC(4), aT=spC(1);
+      SP.loopArc.appendChild(E("path",{d:"M "+aF+" 70 C "+aF+" 88, "+aT+" 88, "+aT+" 70",fill:"none",stroke:"var(--residue)","stroke-width":1.5,"stroke-dasharray":"5 4","marker-end":"url(#sp-res)"}));
+      SP.loopArc.appendChild(E("text",{x:(aF+aT)/2,y:85,"font-family":"var(--mono)","font-size":9.5,fill:"var(--residue-ink)","text-anchor":"middle"},"residue → recruit (anomaly)"));
+    })();
+    spine.appendChild(SP.loopArc);
+    // arrows between stations
+    for(let i=0;i<SP_N-1;i++){
+      const x1=SP_X0+i*SP_PITCH+7+SP_BW, x2=SP_X0+(i+1)*SP_PITCH+7;
+      spine.appendChild(E("line",{x1,y1:52,x2,y2:52,stroke:"currentColor","stroke-width":1.2,"stroke-opacity":.4,"marker-end":"url(#sp-a)"}));
+    }
+    spNames.forEach((nm,i)=>{
+      const x=SP_X0+i*SP_PITCH+7, cx=spC(i);
+      const g=E("g");
+      const rect=E("rect",{x,y:36,width:SP_BW,height:32,rx:8,class:"st-rect",fill:"var(--surface-2)",stroke:"var(--line-strong)"});
+      g.appendChild(rect);
+      g.appendChild(E("text",{x:cx,y:49,"font-family":"var(--mono)","font-size":9,fill:"var(--ink-faint)","text-anchor":"middle"},"0"+(i+1)));
+      const lab=E("text",{x:cx,y:61,"font-family":"var(--sans)","font-size":10,"font-weight":600,fill:"currentColor","text-anchor":"middle"},nm);
+      g.appendChild(lab);
+      spine.appendChild(g);
+      SP.stations.push({rect,lab,cx});
+    });
+    // ball
+    SP.ball=E("circle",{id:"ball",cx:spC(0),cy:26,r:8,fill:"var(--accent)",class:"bob"});
+    spine.appendChild(SP.ball);
+    // result card (moves with ball)
+    SP.card=E("g",{id:"resultCard"});
+    SP.cardRect=E("rect",{x:0,y:92,width:196,height:96,rx:10,fill:"var(--surface)",stroke:"var(--accent)","stroke-width":1.5});
+    SP.card.appendChild(SP.cardRect);
+    SP.cardOp=E("text",{x:12,y:112,"font-family":"var(--mono)","font-size":10,"letter-spacing":".06em",fill:"var(--accent-ink)"},"");
+    SP.card.appendChild(SP.cardOp);
+    SP.cardLines=[0,1,2,3].map(k=>{const t=E("text",{x:12,y:130+k*16,"font-family":"var(--sans)","font-size":11.5,fill:"var(--ink)"},"");SP.card.appendChild(t);return t;});
+    SP.connector=E("line",{x1:0,y1:70,x2:0,y2:92,stroke:"var(--accent)","stroke-width":1.5,"stroke-dasharray":"3 3"});
+    spine.appendChild(SP.connector);
+    spine.appendChild(SP.card);
+  }
+
+  // ---------- fold board state ----------
+  function compute(key,upto){
+    const sc=S[key];
+    const vs={a:0,b:0,g:0,blend:0,r:0,s:0,type:null,emg:"",roles:sc.roles.map(()=>({st:"empty",val:""})),links:[],res:[],sed:[]};
+    for(let s=0;s<=upto;s++) for(const act of sc.steps[s].do) applyAct(vs,act);
+    return vs;
+  }
+  function applyAct(vs,act){
+    const a=Array.isArray(act)?act:[act];
+    switch(a[0]){
+      case"showA":vs.a=1;break; case"showB":vs.b=1;break; case"showG":vs.g=1;break;
+      case"showBlend":vs.blend=1;break; case"showR":vs.r=1;break; case"showS":vs.s=1;break;
+      case"lb":vs.links.push(["b",a[1],a[2]]);break; case"la":vs.links.push(["a",a[1],a[2]]);break;
+      case"bind":case"carry":vs.roles[a[1]]={st:"bound",val:a[2]};break;
+      case"clash":vs.roles[a[1]]={st:"clash",val:a[2]+"  ⚡  "+a[3]};break;
+      case"resolve":vs.roles[a[1]]={st:"resolved",val:a[2]+(a[3]?"  ("+a[3]+")":"")};break;
+      case"hold":vs.roles[a[1]]={st:"tension",val:a[2]};break;
+      case"res":vs.res.push(a[1]);break; case"sed":vs.sed.push([a[1],a[2],a[3]||""]);break;
+      case"emg":vs.emg=a[1];break; case"type":vs.type=a[1];break;
+      case"resolveStrat":vs.roles[a[1]]=strategy==="hard"?{st:"resolved",val:"10 · said-in-call"}:{st:"tension",val:"10 | 12 held"};break;
+      case"settleStrat":vs.sed.push(strategy==="hard"?["Runway","10 months","↓ 12"]:["Runway","10 | 12","tension held"]);break;
+    }
+  }
+
+  // ---------- render ----------
+  function cls(node,on){ if(!node)return; node.classList.add("grp"); node.classList.toggle("on",!!on); }
+  function fillLines(bin,arr){
+    while(bin.lines.firstChild) bin.lines.removeChild(bin.lines.firstChild);
+    arr.forEach((t,i)=>bin.lines.appendChild(E("text",{x:bin.x+14,y:bin.y+44+i*22,"font-family":"var(--mono)","font-size":11,fill:t[1]},t[0])));
+  }
+  function render(){
+    const sc=S[curKey], step=sc.steps[curStep], vs=compute(curKey,curStep);
+    // board
+    cls(N.A,vs.a); cls(N.B,vs.b); cls(N.G,vs.g); cls(N.gConn,vs.g);
+    cls(N.Blend,vs.blend); cls(N.R.g,vs.r); cls(N.S.g,vs.s);
+    cls(N.typeBadge,vs.type?1:0); N.typeText.textContent=vs.type||"";
+    cls(N.emg,vs.emg?1:0); N.emg.textContent=vs.emg?("✦ "+vs.emg):"";
+    vs.roles.forEach((r,j)=>{
+      const node=N.roles[j];
+      node.rect.setAttribute("class","card-rect rl-"+(r.st==="empty"?"empty":r.st));
+      node.val.textContent=r.val;
+      node.val.setAttribute("fill", r.st==="clash"?"var(--clash-ink)":r.st==="tension"?"var(--residue-ink)":r.st==="empty"?"var(--ink-faint)":"var(--accent-ink)");
+    });
+    while(N.links.firstChild) N.links.removeChild(N.links.firstChild);
+    vs.links.forEach(l=>{
+      const isA=l[0]==="a", ri=l[2], src=isA?N.aRows[l[1]]:N.bRows[l[1]]; if(!src)return;
+      const x1=isA?AX+IW-12:BX+12, y1=rowC(l[1]), x2=isA?BLX+12:BLX+BLW-12, y2=rC(ri);
+      const role=vs.roles[ri], stroke=role.st==="clash"?"var(--clash)":(role.st==="resolved"||role.st==="bound")?"var(--accent)":"var(--ink-faint)";
+      N.links.appendChild(E("line",{x1,y1,x2,y2,stroke,"stroke-width":1.6,"stroke-opacity":.85}));
+    });
+    fillLines(N.R,vs.res.map(t=>[t,"var(--residue-ink)"]));
+    fillLines(N.S,vs.sed.map(s=>[s[0]+" · "+s[1]+(s[2]?"  "+s[2]:""),"var(--accent-ink)"]));
+
+    // spine
+    SP.orch.textContent=sc.orch;
+    const visited=new Set(sc.steps.slice(0,curStep+1).map(s=>s.st));
+    const modeColor = step.mode==="miss"?"var(--residue)":step.mode==="skip"?"var(--line-strong)":"var(--accent)";
+    SP.stations.forEach((st,i)=>{
+      let fill="var(--surface-2)", stroke="var(--line-strong)", labFill="currentColor", dash="none";
+      if(visited.has(i) && i!==step.st){ fill="var(--accent-soft)"; stroke="var(--accent)"; labFill="var(--accent-ink)"; }
+      if(i===step.st){
+        if(step.mode==="skip"){ fill="var(--surface-2)"; stroke="var(--line-strong)"; labFill="var(--ink-faint)"; dash="5 3"; }
+        else if(step.mode==="miss"){ fill="var(--residue-soft)"; stroke="var(--residue)"; labFill="var(--residue-ink)"; dash="5 3"; }
+        else { fill="var(--accent)"; stroke="var(--accent)"; labFill="var(--ground)"; }
+      }
+      st.rect.setAttribute("fill",fill); st.rect.setAttribute("stroke",stroke);
+      st.rect.setAttribute("stroke-width", i===step.st?1.8:1);
+      st.rect.setAttribute("stroke-dasharray", dash);
+      st.lab.setAttribute("fill", labFill);
+    });
+    cls(SP.loopArc, step.loop?1:0);
+    const cx=spC(step.st);
+    SP.ball.setAttribute("cx",cx);
+    SP.ball.setAttribute("fill", step.mode==="miss"?"var(--residue)":step.mode==="skip"?"var(--ink-faint)":"var(--accent)");
+    // result card position (clamped)
+    const cardX=Math.max(6, Math.min(cx-98, 780-202));
+    SP.card.setAttribute("transform","translate("+cardX+",0)");
+    SP.connector.setAttribute("x1",cx); SP.connector.setAttribute("x2",cx);
+    SP.connector.setAttribute("stroke",modeColor);
+    SP.cardRect.setAttribute("stroke", modeColor);
+    SP.cardRect.setAttribute("stroke-dasharray", step.mode==="active"?"none":"5 4");
+    SP.cardOp.textContent=step.op.toUpperCase()+(step.mode==="skip"?" · pass-through":step.mode==="miss"?" · MISS":"");
+    SP.cardOp.setAttribute("fill", step.mode==="miss"?"var(--residue-ink)":step.mode==="skip"?"var(--ink-faint)":"var(--accent-ink)");
+    const rlines = (curKey==="s2"&&step.op==="resolve") ? (strategy==="hard"?["hard-rule:","project 10 (latest)","one value wins"]:["hold-tension:","keep 10 | 12","flagged unresolved"]) : step.res;
+    SP.cardLines.forEach((t,k)=>t.textContent=rlines[k]||"");
+
+    // caption
+    document.getElementById("cIdx").textContent=(curStep+1)+" / "+sc.steps.length;
+    document.getElementById("cOp").textContent=step.op;
+    document.getElementById("cText").textContent=(curKey==="s2"&&step.op==="resolve")?(strategy==="hard"?"Hard-rule: project 10 — said-in-call and latest. One value wins.":"Hold-tension: keep both 10 and 12, flagged unresolved. The seam swapped; nothing else moved."):step.text;
+    document.getElementById("prev").disabled=(curStep===0);
+    document.getElementById("next").disabled=(curStep===sc.steps.length-1);
+  }
+
+  // ---------- controls ----------
+  function stop(){ if(timer){clearInterval(timer);timer=null;} document.getElementById("play").textContent="▶ Play"; }
+  function play(){
+    if(timer){stop();return;}
+    const sc=S[curKey]; if(curStep>=sc.steps.length-1){curStep=0;render();}
+    document.getElementById("play").textContent="∥ Pause";
+    timer=setInterval(()=>{ if(curStep>=S[curKey].steps.length-1){stop();return;} curStep++; render(); },1600);
+  }
+  function selScn(key){
+    stop(); curKey=key; curStep=0;
+    document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.scn===key));
+    document.getElementById("stratWrap").hidden=!S[key].strat;
+    buildBoard(key); render();
+  }
+  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>selScn(t.dataset.scn)));
+  document.getElementById("play").addEventListener("click",play);
+  document.getElementById("next").addEventListener("click",()=>{stop(); if(curStep<S[curKey].steps.length-1){curStep++;render();}});
+  document.getElementById("prev").addEventListener("click",()=>{stop(); if(curStep>0){curStep--;render();}});
+  document.getElementById("reset").addEventListener("click",()=>{stop();curStep=0;render();});
+  document.getElementById("strat").addEventListener("change",e=>{strategy=e.target.value;render();});
+
+  buildSpine(); buildBoard("s1"); render();
+})();
+</script>
