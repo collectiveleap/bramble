@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bramble View Sketches</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f4f3ef; --paper: #fffefa; --ink: #26241f; --muted: #77736a; --line: #b9b4a8; --faint: #e7e3d9;
+  --said: #2a7ab0; --restated: #7a55b8; --inferred: #c0612b; --chosen: #9a7a12; --none: #c03a33;
+  --font-sketch: "Kalam", "Comic Sans MS", cursive; --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #191815; --paper: #22211d; --ink: #ece8de; --muted: #a39e92; --line: #5a564d; --faint: #302e29;
+    --said: #74b6e0; --restated: #b79be6; --inferred: #ee9a63; --chosen: #d8b850; --none: #f08079; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #191815; --paper: #22211d; --ink: #ece8de; --muted: #a39e92; --line: #5a564d; --faint: #302e29;
+  --said: #74b6e0; --restated: #b79be6; --inferred: #ee9a63; --chosen: #d8b850; --none: #f08079; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-sketch); font-size: 16px; line-height: 1.45; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 30px; }
+h1 { font-size: 2rem; margin: 0; line-height: 1.1; }
+.lede { color: var(--muted); margin: 6px 0 0; max-width: 70ch; }
+.mono { font-family: var(--font-mono); font-size: .72rem; }
+section.sk { background: var(--paper); border: 2px solid var(--ink); border-radius: 4px 10px 6px 12px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.skhead { display: grid; gap: 2px; }
+.skhead h2 { margin: 0; font-size: 1.35rem; line-height: 1.2; }
+.skhead .from { color: var(--muted); font-size: .95rem; }
+.tag { font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.note { color: var(--muted); font-size: .92rem; border-top: 1px dashed var(--line); padding-top: 8px; }
+.box { border: 1.5px dashed var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0; }
+.solid { border-style: solid; border-color: var(--ink); }
+.k { font-family: var(--font-mono); font-size: .66rem; text-transform: uppercase; color: var(--muted); display: block; }
+sup { font-family: var(--font-mono); font-size: .62rem; color: var(--muted); }
+.said { color: var(--said); } .restated { color: var(--restated); } .inferred { color: var(--inferred); } .chosen { color: var(--chosen); } .none { color: var(--none); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .9rem; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+
+/* 1 commentary around the email */
+.talmud { display: grid; grid-template-columns: 1fr 1.3fr 1fr; grid-template-areas: "q email s" "b b b"; gap: 10px; }
+.talmud .email { grid-area: email; font-size: 1.1rem; }
+.talmud .q { grid-area: q; display: grid; gap: 6px; font-size: .88rem; align-content: start; }
+.talmud .s { grid-area: s; display: grid; gap: 6px; font-size: .88rem; align-content: start; }
+.talmud .b { grid-area: b; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px; font-size: .86rem; }
+@media (max-width: 640px) { .talmud { grid-template-columns: 1fr; grid-template-areas: "email" "q" "s" "b"; } }
+
+/* 2 interlinear */
+.inter { display: grid; gap: 16px; }
+.inter .unit { display: grid; gap: 2px; border-left: 3px solid var(--ink); padding-left: 10px; }
+.inter .lvl { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; }
+.inter .lvl .k { padding-top: 4px; }
+.inter .src { font-size: 1.12rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1.5px solid var(--ink); border-radius: 999px; padding: 0 9px; font-size: .88rem; }
+
+/* 3 coloured by role */
+.marked { font-size: 1.15rem; line-height: 2.6; }
+.marked .sent { position: relative; padding-bottom: 2px; }
+.marked .bars { display: inline-flex; gap: 2px; vertical-align: -14px; margin-left: 4px; }
+.marked .bar { font-family: var(--font-mono); font-size: .58rem; padding: 0 4px; border-radius: 3px; color: var(--paper); }
+.r-seeker { background: #3f7f5f; } .r-stakes { background: #b06a1c; } .r-presup { background: #6650a6; } .r-gaps { background: #2f6f9f; } .r-resp { background: transparent; color: var(--none) !important; border: 1.5px dashed var(--none); }
+.rolepick { display: flex; flex-wrap: wrap; gap: 6px; }
+.rolepick span { padding: 2px 9px; border-radius: 999px; font-size: .9rem; color: var(--paper); }
+
+/* 4 chain of hands */
+.chain { display: grid; gap: 14px; }
+.steps { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
+.step { border: 1.5px solid var(--ink); border-radius: 6px; padding: 6px 9px; font-size: .86rem; max-width: 200px; background: var(--paper); }
+.arrow { align-self: center; padding: 0 6px; color: var(--muted); }
+.step .k { margin-bottom: 2px; }
+.step.gapstep { border-style: dashed; color: var(--muted); }
+
+/* 5 notes at the foot */
+.reading { font-size: 1.08rem; display: grid; gap: 6px; }
+.reading b { font-weight: 700; }
+.notes { font-size: .85rem; display: grid; gap: 4px; border-top: 2px solid var(--ink); padding-top: 8px; }
+.notes div { display: grid; grid-template-columns: 26px minmax(0, 1fr); }
+
+/* 6 flow */
+.flowwrap { overflow-x: auto; }
+svg.flow { display: block; min-width: 640px; width: 100%; height: auto; }
+svg.flow text { fill: var(--ink); font-family: var(--font-sketch); font-size: 14px; }
+svg.flow .lab { fill: var(--muted); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; }
+svg.flow .node { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+svg.flow .nodeless { fill: none; stroke: var(--none); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg.flow .band { fill: none; stroke: var(--line); stroke-opacity: .85; }
+
+/* 7 badges */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px 10px; display: grid; gap: 6px; font-size: .9rem; }
+.badge { justify-self: start; font-family: var(--font-mono); font-size: .68rem; border: 1.5px solid var(--ink); border-radius: 4px; padding: 1px 6px; }
+.badge.warn { border-color: var(--inferred); color: var(--inferred); }
+.card.warned { border-color: var(--inferred); border-width: 2px; }
+
+/* 8 shading by basis */
+.strata { display: grid; gap: 12px; }
+.strata .val { font-size: 1.12rem; line-height: 2; }
+.strata .seg { padding: 2px 3px; border-radius: 3px; }
+.seg.s-restated { background: color-mix(in srgb, var(--restated) 22%, transparent); }
+.seg.s-inferred { background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--inferred) 30%, transparent) 0 6px, transparent 6px 10px); }
+.seg.s-said { background: color-mix(in srgb, var(--said) 22%, transparent); }
+.seg.s-none { outline: 1.5px dashed var(--none); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">Low-fidelity sketches · Bramble experiments 1 and 2 · Composer Sandbox data</span>
+    <h1>Eight ways to show what the experiments produced</h1>
+    <p class="lede">Each sketch uses the real data from experiment 2: one invented email from Ana Ruiz, three quotes, three Bramble statements, and five Inquiry-frame bindings. These are layouts to react to, not working tools. Where a sketch shows something Bramble does not store today, it says so.</p>
+  </header>
+
+  <!-- 1 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">1 · Stance: keep the email at the centre</span><h2>Commentary around the email</h2><span class="from">Borrowed from the Talmud page, where a central text is surrounded by layers of commentary, each tied to the words it discusses.</span></div>
+    <div class="talmud">
+      <div class="box solid email"><span class="k">Email from Ana Ruiz</span>We have three pilot customers but none paying yet.<sup>1</sup> Should we raise a seed round now, or wait until at least one converts?<sup>2</sup> Our runway is about seven months.<sup>3</sup></div>
+      <div class="q"><span class="k">Quotes, cut by Claude</span><div class="box"><sup>1</sup> “We have three pilot customers but none paying yet.”</div><div class="box"><sup>2</sup> “Should we raise a seed round now, or wait…?”</div><div class="box"><sup>3</sup> “Our runway is about seven months.”</div></div>
+      <div class="s"><span class="k">Statements, restated by Claude</span><div class="box"><sup>1</sup> Three pilots, none paying. <span class="mono">fact</span></div><div class="box"><sup>2</sup> Ana asks: raise now or wait for a conversion. <span class="mono">question</span></div><div class="box"><sup>3</sup> About seven months of runway. <span class="mono">fact</span></div></div>
+      <div class="b"><div class="box"><span class="k">seeker <sup>2</sup></span>Ana Ruiz, the founder</div><div class="box"><span class="k">stakes <sup>1 3</sup></span>Seven months of runway, against dilution and pricing power</div><div class="box"><span class="k">presuppositions <sup>2</sup></span>A seed round is available now; waiting brings a conversion…</div><div class="box"><span class="k">gaps <sup>1 2 3</sup></span>Do investors expect revenue? Will a pilot convert in time?…</div><div class="box" style="border-color:var(--none)"><span class="k none">respondent · no anchor</span>The advisor she is writing to</div></div>
+    </div>
+    <p class="note">What it shows well: every layer is visible at once, and the superscripts tie each layer back to a sentence. What it hides: who made each link and on what basis.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">2 · Stance: keep the email at the centre</span><h2>Lines stacked under each sentence</h2><span class="from">Borrowed from interlinear translation, where each line of the original is printed with its translation directly beneath it.</span></div>
+    <div class="inter">
+      <div class="unit"><div class="lvl"><span class="k">email</span><span class="src">We have three pilot customers but none paying yet.</span></div><div class="lvl"><span class="k said">quote</span><span>same words, cut verbatim</span></div><div class="lvl"><span class="k restated">statement</span><span>The company has three pilot customers, none of them paying yet.</span></div><div class="lvl"><span class="k">supports</span><span class="chips"><span class="chip">stakes</span><span class="chip">gaps</span></span></div></div>
+      <div class="unit"><div class="lvl"><span class="k">email</span><span class="src">Should we raise a seed round now, or wait until at least one converts?</span></div><div class="lvl"><span class="k said">quote</span><span>same words, cut verbatim</span></div><div class="lvl"><span class="k restated">statement</span><span>Ana asks whether to raise a seed round now or wait until at least one pilot converts.</span></div><div class="lvl"><span class="k">supports</span><span class="chips"><span class="chip">seeker</span><span class="chip">presuppositions</span><span class="chip">gaps</span></span></div></div>
+      <div class="unit"><div class="lvl"><span class="k">email</span><span class="src">Our runway is about seven months.</span></div><div class="lvl"><span class="k said">quote</span><span>same words, cut verbatim</span></div><div class="lvl"><span class="k restated">statement</span><span>The company has about seven months of runway.</span></div><div class="lvl"><span class="k">supports</span><span class="chips"><span class="chip">stakes</span><span class="chip">gaps</span></span></div></div>
+      <div class="unit" style="border-left-color:var(--none)"><div class="lvl"><span class="k none">no sentence</span><span class="chips"><span class="chip" style="border-color:var(--none)">respondent</span></span></div></div>
+    </div>
+    <p class="note">What it shows well: read down to see what a sentence became; read the top lines alone to read the email. What it hides: a role resting on several sentences appears several times, with nothing joining the repeats.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">3 · Stance: keep the email at the centre</span><h2>The email coloured by role</h2><span class="from">Borrowed from contract markup, where each clause is tagged with the obligation it creates.</span></div>
+    <div class="rolepick"><span class="r-seeker">seeker</span><span class="r-stakes">stakes</span><span class="r-presup">presuppositions</span><span class="r-gaps">gaps</span><span class="r-resp" style="border-radius:999px;padding:0 9px">respondent</span></div>
+    <div class="marked box solid">
+      <span class="sent">We have three pilot customers but none paying yet.</span><span class="bars"><span class="bar r-stakes">stakes</span><span class="bar r-gaps">gaps</span></span>
+      <span class="sent">Should we raise a seed round now, or wait until at least one converts?</span><span class="bars"><span class="bar r-seeker">seeker</span><span class="bar r-presup">presup.</span><span class="bar r-gaps">gaps</span></span>
+      <span class="sent">Our runway is about seven months.</span><span class="bars"><span class="bar r-stakes">stakes</span><span class="bar r-gaps">gaps</span></span>
+    </div>
+    <p>Pointing at <b class="none">respondent</b> lights up nothing in the email.</p>
+    <p class="note">What it shows well: missing grounding is visible at a glance. Limit today: Bramble grounds roles in whole statements, so the colouring can only be by sentence, not by phrase. Phrase-level colouring would need quotes cut smaller.</p>
+  </section>
+
+  <!-- 4 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">4 · Stance: show the reasoning</span><h2>Every hand an item passed through</h2><span class="from">Borrowed from museum provenance records, which list each owner of a work in order with the evidence for each transfer.</span></div>
+    <div class="chain">
+      <div><span class="k">Experiment 2 · stakes binding</span>
+        <div class="steps">
+          <div class="step"><span class="k said">said in email</span>“Our runway is about seven months.” and “…none paying yet.”</div><span class="arrow">→</span>
+          <div class="step"><span class="k said">quoted · Claude</span>one quote per sentence, verbatim</div><span class="arrow">→</span>
+          <div class="step"><span class="k restated">restated · Claude</span>two statements, truth-neutral</div><span class="arrow">→</span>
+          <div class="step"><span class="k chosen">chosen as input · Steve</span>all three statements into the blend</div><span class="arrow">→</span>
+          <div class="step"><span class="k restated">bound to stakes · Claude</span>runway and no revenue; dilution and pricing power inferred</div>
+        </div>
+      </div>
+      <div><span class="k">Experiment 1 · stakes, for comparison</span>
+        <div class="steps">
+          <div class="step"><span class="k said">said in email</span>the whole email</div><span class="arrow">→</span>
+          <div class="step gapstep"><span class="k">no record</span>quoting, restating and choosing were not stored</div><span class="arrow">→</span>
+          <div class="step"><span class="k restated">written as text · Claude</span>one record holding all five roles</div>
+        </div>
+      </div>
+    </div>
+    <p class="note">What it shows well: the difference between the two experiments, step by step. What it hides: the shared structure. The same question statement feeds three roles, and this view shows one role at a time.</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">5 · Stance: show the reasoning</span><h2>Notes at the foot of the page</h2><span class="from">Borrowed from scholarly editions, which print a clean reading text and put every source decision in numbered notes below it.</span></div>
+    <div class="reading">
+      <div><b>Seeker:</b> Ana Ruiz, the founder.<sup>1</sup></div>
+      <div><b>Respondent:</b> the advisor she is writing to.<sup>2</sup></div>
+      <div><b>Stakes:</b> about seven months of runway,<sup>3</sup> weighed against dilution and pricing power<sup>4</sup> if she raises before any revenue.<sup>5</sup></div>
+      <div><b>Presuppositions:</b> that a seed round is available now; that waiting brings a conversion; that the timing is hers.<sup>6</sup></div>
+      <div><b>Gaps:</b> whether investors expect revenue; whether a pilot converts in time; what dilution costs now against later.<sup>7</sup></div>
+    </div>
+    <div class="notes">
+      <div><span>1</span><span>Grounded in the question statement · cognition-derived · Claude · “her name comes from the source's sender.”</span></div>
+      <div><span>2</span><span class="none">No grounding. Nothing in the email names who she is writing to.</span></div>
+      <div><span>3</span><span>Grounded in the runway statement · cognition-derived · Claude.</span></div>
+      <div><span>4</span><span class="inferred">Inferred; not grounded in any statement (from the link's note).</span></div>
+      <div><span>5</span><span>Grounded in the pilots statement · cognition-derived · Claude.</span></div>
+      <div><span>6</span><span>Grounded in the question statement · “taken for granted by the way the question is framed.”</span></div>
+      <div><span>7</span><span>Grounded in all three statements · “what would have to be known to answer the question as asked.”</span></div>
+    </div>
+    <p class="note">What it shows well: the result reads cleanly and every claim has a findable note. Limit today: notes 3, 4 and 5 split one value into phrases. Bramble stores grounding per binding, not per phrase, so I made that split by hand from the link's note.</p>
+  </section>
+
+  <!-- 6 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">6 · Stance: show where it is weak</span><h2>A flow chart whose band widths show weight</h2><span class="from">Borrowed from the flow diagrams engineers use for energy and materials, where each band's width is the quantity flowing.</span></div>
+    <div class="flowwrap">
+      <svg class="flow" viewBox="0 0 720 320" role="img" aria-label="Flow from three email sentences through three statements to five Inquiry roles">
+        <text class="lab" x="20" y="20">email sentence</text><text class="lab" x="300" y="20">statement</text><text class="lab" x="560" y="20">inquiry role</text>
+        <!-- sentence to statement, width = roles resting on it (8 px each) -->
+        <path class="band" stroke-width="16" d="M160,60 C230,60 230,60 300,60"/>
+        <path class="band" stroke-width="24" d="M160,150 C230,150 230,150 300,150"/>
+        <path class="band" stroke-width="16" d="M160,240 C230,240 230,240 300,240"/>
+        <!-- statement to role, 8 px each -->
+        <path class="band" stroke-width="8" d="M440,56 C500,56 500,103 560,103"/>
+        <path class="band" stroke-width="8" d="M440,64 C500,64 500,203 560,203"/>
+        <path class="band" stroke-width="8" d="M440,142 C500,142 500,53 560,53"/>
+        <path class="band" stroke-width="8" d="M440,150 C500,150 500,153 560,153"/>
+        <path class="band" stroke-width="8" d="M440,158 C500,158 500,211 560,211"/>
+        <path class="band" stroke-width="8" d="M440,236 C500,236 500,111 560,111"/>
+        <path class="band" stroke-width="8" d="M440,244 C500,244 500,219 560,219"/>
+        <rect class="node" x="20" y="40" width="140" height="40" rx="5"/><text x="30" y="65">pilots, none paying</text>
+        <rect class="node" x="20" y="130" width="140" height="40" rx="5"/><text x="30" y="155">raise now or wait?</text>
+        <rect class="node" x="20" y="220" width="140" height="40" rx="5"/><text x="30" y="245">7 months runway</text>
+        <rect class="node" x="300" y="40" width="140" height="40" rx="5"/><text x="310" y="65">fact · 2 rest on it</text>
+        <rect class="node" x="300" y="130" width="140" height="40" rx="5"/><text x="310" y="155">question · 3 rest</text>
+        <rect class="node" x="300" y="220" width="140" height="40" rx="5"/><text x="310" y="245">fact · 2 rest on it</text>
+        <rect class="node" x="560" y="38" width="140" height="30" rx="5"/><text x="570" y="58">seeker</text>
+        <rect class="node" x="560" y="90" width="140" height="30" rx="5"/><text x="570" y="110">stakes</text>
+        <rect class="node" x="560" y="140" width="140" height="30" rx="5"/><text x="570" y="160">presuppositions</text>
+        <rect class="node" x="560" y="192" width="140" height="36" rx="5"/><text x="570" y="215">gaps</text>
+        <rect class="nodeless" x="560" y="270" width="140" height="30" rx="5"/><text x="570" y="290" style="fill:var(--none)">respondent · no flow in</text>
+      </svg>
+    </div>
+    <p class="note">What it shows well: the question sentence carries the most, and respondent stands alone with nothing flowing in. What it hides: the wording of everything, and who made each link.</p>
+  </section>
+
+  <!-- 7 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">7 · Stance: show where it is weak</span><h2>A badge on each item showing what rests on it</h2><span class="from">Borrowed from legal citation services, which flag a cited case once it has been overturned or questioned.</span></div>
+    <div class="cards">
+      <div class="card"><span class="k">quote</span>“We have three pilot customers but none paying yet.”<span class="badge">1 statement · 2 roles rest on this</span></div>
+      <div class="card warned"><span class="k">quote · edited (imagined)</span>“Our runway is about <s>seven</s> four months.”<span class="badge warn">changed · 1 statement and 2 roles now need review</span></div>
+      <div class="card warned"><span class="k">binding · stakes</span>About seven months of runway, weighed against…<span class="badge warn">rests on a changed quote, two steps back</span></div>
+      <div class="card warned"><span class="k">binding · gaps</span>Whether investors at this stage expect revenue…<span class="badge warn">rests on a changed quote, two steps back</span></div>
+      <div class="card"><span class="k">binding · seeker</span>Ana Ruiz, the founder<span class="badge">unaffected</span></div>
+    </div>
+    <p class="note">The edit is imagined to show the warning state; nothing changed in the Sandbox. What it shows well: what a change would disturb, which is what experiment 3 (propagating a change) would test. What it hides: the email as a whole.</p>
+  </section>
+
+  <!-- 8 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">8 · Stance: show where it is weak</span><h2>Shading by how each part was established</h2><span class="from">Borrowed from geological maps, where each area is shaded by how its age was established as well as by what it is.</span></div>
+    <div class="legend"><span><span class="sw" style="background:color-mix(in srgb, var(--said) 40%, transparent)"></span>said in the email</span><span><span class="sw" style="background:color-mix(in srgb, var(--restated) 40%, transparent)"></span>rests on a restated statement</span><span><span class="sw" style="background:repeating-linear-gradient(45deg, var(--inferred) 0 3px, transparent 3px 6px)"></span>inferred, rests on nothing</span><span><span class="sw" style="outline:1.5px dashed var(--none)"></span>no grounding at all</span></div>
+    <div class="strata">
+      <div class="val"><span class="k">stakes</span><span class="seg s-restated">About seven months of runway,</span> <span class="seg s-inferred">weighed against dilution and pricing power</span> <span class="seg s-restated">if she raises before any revenue</span></div>
+      <div class="val"><span class="k">seeker</span><span class="seg s-restated">Ana Ruiz,</span> <span class="seg s-inferred">the founder</span></div>
+      <div class="val"><span class="k">respondent</span><span class="seg s-none">The advisor she is writing to</span></div>
+    </div>
+    <p class="note">What it shows well: how much of a value is inferred, without opening anything. Limit today: Bramble records basis per binding, not per phrase, so these phrase splits are mine, taken from the link notes. “The founder” as inferred is my reading; the email does not say she founded the company.</p>
+  </section>
+</div>
+</body>
+</html>

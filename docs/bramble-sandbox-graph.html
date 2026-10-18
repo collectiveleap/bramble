@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bramble Sandbox Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a header naming the run, a view switcher, then the outline beside a detail panel that stacks under it on phones. */
+:root {
+  --bg: #f6f7f5;
+  --panel: #ffffff;
+  --fg: #1d2420;
+  --muted: #5d6a63;
+  --line: #d9dfdb;
+  --accent: #2f6f5e;
+  --accent-soft: #e2efea;
+  --said: #1f6f8b;
+  --said-soft: #e1eff5;
+  --derived: #6b4fa0;
+  --derived-soft: #ece6f6;
+  --operator: #9a5b12;
+  --operator-soft: #f6ebdc;
+  --gap: #b4372f;
+  --gap-soft: #f8e5e3;
+  --hl: #fff2b8;
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141917; --panel: #1b211e; --fg: #e6ece8; --muted: #9aa8a0; --line: #2d3632;
+    --accent: #7cc3ac; --accent-soft: #1f322b;
+    --said: #7cc0db; --said-soft: #172b33; --derived: #b9a2e6; --derived-soft: #261f36;
+    --operator: #e2a85c; --operator-soft: #33271a; --gap: #f08b82; --gap-soft: #3a1f1d; --hl: #4a4222;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141917; --panel: #1b211e; --fg: #e6ece8; --muted: #9aa8a0; --line: #2d3632;
+  --accent: #7cc3ac; --accent-soft: #1f322b;
+  --said: #7cc0db; --said-soft: #172b33; --derived: #b9a2e6; --derived-soft: #261f36;
+  --operator: #e2a85c; --operator-soft: #33271a; --gap: #f08b82; --gap-soft: #3a1f1d; --hl: #4a4222;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 48px; display: grid; gap: 22px; }
+header { display: grid; gap: 6px; }
+h1 { font-family: var(--font-display); font-weight: 650; font-size: 1.9rem; line-height: 1.15; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+.eyebrow { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+nav.views { display: flex; flex-wrap: wrap; gap: 8px; }
+nav.views button { font: 500 .9rem var(--font-body); border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
+nav.views button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+nav.views button:focus-visible, .row:focus-visible, .toggle:focus-visible, .jump:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.viewnote { color: var(--muted); font-size: .9rem; margin: -8px 0 0; max-width: 80ch; }
+.stackbar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: .85rem; color: var(--muted); }
+.stackbar button { font: 500 .82rem var(--font-body); border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+.stackbar button:disabled { opacity: .45; cursor: default; }
+.stack { position: relative; display: flex; gap: 40px; align-items: flex-start; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; padding-bottom: 12px; }
+.panel { flex: 0 0 min(380px, 86vw); scroll-snap-align: start; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 18px; display: grid; gap: 14px; min-width: 0; }
+.panel { position: relative; z-index: 1; }
+.panel.first { flex-basis: min(560px, 90vw); }
+#wires { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 0; overflow: visible; }
+.wire { fill: var(--accent); fill-opacity: .16; stroke: var(--accent); stroke-opacity: .55; stroke-width: 1; }
+.wire.fresh { fill-opacity: .3; stroke-opacity: .9; }
+.origin { box-shadow: inset 0 0 0 1.5px var(--accent); background: var(--accent-soft); border-radius: 6px; }
+.panel.same { box-shadow: 0 0 0 2px var(--hl); }
+.panel.fresh { border-color: var(--accent); }
+.panel .phead { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.close { font: 500 1rem var(--font-body); width: 28px; height: 28px; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 6px; cursor: pointer; line-height: 1; }
+.close:hover { color: var(--fg); border-color: var(--fg); }
+.close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.outline { min-width: 0; overflow-x: auto; }
+ul.tree { list-style: none; margin: 0; padding: 0; }
+ul.tree ul.tree { margin-left: 18px; padding-left: 12px; border-left: 1px solid var(--line); }
+li.node { margin: 2px 0; }
+.edge { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: .72rem; color: var(--muted); margin: 8px 0 2px; }
+.edge .kind { color: var(--fg); font-weight: 500; }
+.edge.member .kind { color: var(--muted); font-style: italic; }
+.row { display: grid; grid-template-columns: 18px auto minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 5px 6px; border-radius: 6px; cursor: pointer; }
+.row:hover { background: var(--accent-soft); }
+.row.selected { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.row.same { background: var(--hl); }
+.toggle { width: 18px; height: 18px; border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 0; font-size: .8rem; line-height: 18px; }
+.chip { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; align-self: start; margin-top: 2px; }
+.chip.binding { background: transparent; border: 1px solid var(--line); color: var(--fg); }
+.text { min-width: 0; overflow-wrap: anywhere; }
+.text .role { font-weight: 600; margin-right: 6px; }
+.text .assert { color: var(--muted); font-size: .85rem; }
+.places { font-family: var(--font-mono); font-size: .7rem; color: var(--muted); white-space: nowrap; margin-top: 3px; }
+.places.multi { color: var(--accent); font-weight: 500; }
+.badge { padding: 1px 6px; border-radius: 4px; font-size: .68rem; }
+.b-said-in-source { background: var(--said-soft); color: var(--said); }
+.b-cognition-derived { background: var(--derived-soft); color: var(--derived); }
+.b-operator-asserted { background: var(--operator-soft); color: var(--operator); }
+.ungrounded { color: var(--gap); background: var(--gap-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: .68rem; margin-left: 6px; white-space: nowrap; }
+.cycle { color: var(--muted); font-style: italic; font-size: .85rem; }
+.panel h2 { font-family: var(--font-display); font-weight: 650; font-size: 1.15rem; margin: 0; overflow-wrap: anywhere; }
+.panel h3 { font: 600 .72rem var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+dl.fields { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 10px; margin: 0; font-size: .88rem; }
+dl.fields dt { color: var(--muted); font-family: var(--font-mono); font-size: .75rem; padding-top: 2px; }
+dl.fields dd { margin: 0; overflow-wrap: anywhere; }
+ul.links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+ul.links li { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: .86rem; display: grid; gap: 4px; }
+ul.links .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: var(--font-mono); font-size: .7rem; color: var(--muted); }
+.jump { font: inherit; text-align: left; background: none; border: 0; padding: 0; color: var(--fg); cursor: pointer; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.jump:hover { text-decoration-color: var(--accent); }
+.empty { color: var(--muted); font-size: .86rem; margin: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .8rem; color: var(--muted); align-items: center; }
+section.exp1 { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 10px; }
+section.exp1 h2 { font-family: var(--font-display); font-weight: 650; font-size: 1.2rem; margin: 0; }
+.compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 700px) { .compare { grid-template-columns: minmax(0, 1fr); } }
+.compare > div { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.flat { font-family: var(--font-mono); font-size: .78rem; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+footer { color: var(--muted); font-size: .8rem; }
+@media (prefers-reduced-motion: no-preference) { .row { transition: background .12s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">DXOS Composer · Sandbox · captured 12 Oct 2026, 1:40 pm MDT</span>
+    <h1>One email, seen through the Inquiry frame</h1>
+    <p class="lede">Experiment 2 as a graph. Every item is the real object, and an item that rests on several others appears in each of those places, not as a reference to one home. Each connection is shown with who made it and on what basis.</p>
+  </header>
+
+  <nav class="views" aria-label="Start the outline from">
+    <button type="button" id="v-source" data-view="source" aria-pressed="true">From the source</button>
+    <button type="button" id="v-space" data-view="space" aria-pressed="false">From the blended space</button>
+    <button type="button" id="v-exec" data-view="exec" aria-pressed="false">From the execution</button>
+  </nav>
+  <p class="viewnote" id="viewnote"></p>
+
+  <div class="legend" aria-label="Basis">
+    <span>Basis of each connection:</span>
+    <span class="badge b-said-in-source">said in source</span>
+    <span class="badge b-cognition-derived">cognition-derived</span>
+    <span class="badge b-operator-asserted">operator-asserted</span>
+    <span>Highlighted rows are the same item shown in another place.</span>
+  </div>
+
+  <div class="stackbar">
+    <span id="stackcount"></span>
+    <button type="button" id="closeall" disabled>Close all panels</button>
+    <span>Each click opens the item in a new panel to the right of the panel you clicked in. Scroll sideways to move along the set.</span>
+  </div>
+
+  <div class="stack" id="stack">
+    <svg id="wires" aria-hidden="true"></svg>
+    <section class="panel first" aria-label="Outline">
+      <div class="outline" id="outline"></div>
+    </section>
+    <div id="panels" style="display: contents" aria-live="polite"></div>
+  </div>
+
+  <section class="exp1">
+    <span class="eyebrow">Experiment 1, for comparison</span>
+    <h2>Before: one flat record</h2>
+    <div class="compare">
+      <div>
+        <h3 class="eyebrow">Experiment 1 stored this</h3>
+        <pre class="flat" id="exp1flat"></pre>
+      </div>
+      <div>
+        <h3 class="eyebrow">What was missing</h3>
+        <p class="empty" style="color:var(--fg)">The role values were plain text on one record, with a single pointer from the whole record to the email. Nothing said which words in the email each role rested on, who decided it, or what would need revisiting if the email changed. Experiment 2 gives each of those connections its own object.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Read from the Composer MCP server; this page is a snapshot and does not update. Object ids are DXOS ids in space BM7PHHAP5RO5BE64MFUHVJSHRJSJSQZGP.</footer>
+</div>
+
+<script>
+const DATA = [{"id":"01M4RN9TQRXFBR37A5DMM0XM8V","type":"content.statement","source":"email","speaker":"Ana Ruiz (fictional founder, invented for this experiment)","text":"We have three pilot customers but none paying yet. Should we raise a seed round now, or wait until at least one converts? Our runway is about seven months."},{"id":"01M4RNAR4GRTB7B550S0E2EY95","type":"blend.inquiry","basis":"cognition-derived","gaps":"Whether investors at this stage expect revenue; how likely any of the three pilots is to convert within the runway; what a raise now would cost in dilution compared with a raise after one conversion","presuppositions":"That a seed round is available to her now; that waiting will bring a paying conversion; that the decision is hers to time","respondent":"The advisor she is writing to","seeker":"Ana Ruiz, the founder","stakes":"About seven months of runway, weighed against dilution and pricing power if she raises before any revenue","valueInput":{"ref":"01M4RN9TQRXFBR37A5DMM0XM8V"}},{"id":"01M4RSJBW6QCCBZJYAX20JCR00","type":"execution","cognition":"Claude Opus 5.5 (claude-opus-5-5)","limits":"Invented content; one frame; no residue or frame candidates; links are ordinary objects because relations cannot be created through the Composer MCP.","operator":"Steve Sanderson","performedOn":"2026-10-12","purpose":"Experiment 2 - hold every Bramble relationship as its own object with provenance, applying the Inquiry frame to one invented email."},{"id":"01M4RSJEPN9CYK0XVB29HZQ61G","type":"l1.source","from":"Ana Ruiz (fictional founder, invented for this experiment)","kind":"email","text":"We have three pilot customers but none paying yet. Should we raise a seed round now, or wait until at least one converts? Our runway is about seven months."},{"id":"01M4RSJKAWSKGPBFPCC4T3W9W5","type":"l1.quote","text":"We have three pilot customers but none paying yet."},{"id":"01M4RSJP8KT03QZ1QJEK8M51A0","type":"link.wasQuotedFrom","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"said-in-source","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSJKAWSKGPBFPCC4T3W9W5"},"note":"The quote is a sentence of the source, cut without change.","rule":"One quote per sentence, verbatim.","to":{"ref":"01M4RSJEPN9CYK0XVB29HZQ61G"}},{"id":"01M4RSJSMDBKF96G2G7FSE4DBE","type":"l1.quote","text":"Should we raise a seed round now, or wait until at least one converts?"},{"id":"01M4RSJWAAHRR8TSE178GZHMZC","type":"link.wasQuotedFrom","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"said-in-source","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSJSMDBKF96G2G7FSE4DBE"},"note":"The quote is a sentence of the source, cut without change.","rule":"One quote per sentence, verbatim.","to":{"ref":"01M4RSJEPN9CYK0XVB29HZQ61G"}},{"id":"01M4RSJZ22QV6H0VDAX66K24G3","type":"l1.quote","text":"Our runway is about seven months."},{"id":"01M4RSK2ANNPJD3SM1FD13PDYG","type":"link.wasQuotedFrom","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"said-in-source","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSJZ22QV6H0VDAX66K24G3"},"note":"The quote is a sentence of the source, cut without change.","rule":"One quote per sentence, verbatim.","to":{"ref":"01M4RSJEPN9CYK0XVB29HZQ61G"}},{"id":"01M4RSK7AVSM5SCJ91KCA8PQGE","type":"l1.statement","assertion":"The company has three pilot customers, none of them paying yet.","kind":"fact"},{"id":"01M4RSKAF9PH5WBQXGB6HJ3B86","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSK7AVSM5SCJ91KCA8PQGE"},"note":"A truth-neutral restatement of this quote.","to":{"ref":"01M4RSJKAWSKGPBFPCC4T3W9W5"}},{"id":"01M4RSKDJTBK73FSFXAZNW9QKK","type":"l1.statement","assertion":"Ana asks whether to raise a seed round now or wait until at least one pilot converts.","kind":"question"},{"id":"01M4RSKH6SGPY7BJRJYJM6NY1C","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSKDJTBK73FSFXAZNW9QKK"},"note":"A truth-neutral restatement of this quote.","to":{"ref":"01M4RSJSMDBKF96G2G7FSE4DBE"}},{"id":"01M4RSKKAWTM9XQE15H1H4S1CQ","type":"l1.statement","assertion":"The company has about seven months of runway.","kind":"fact"},{"id":"01M4RSKPE1KS66PEGT2YTRDQZQ","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSKKAWTM9XQE15H1H4S1CQ"},"note":"A truth-neutral restatement of this quote.","to":{"ref":"01M4RSJZ22QV6H0VDAX66K24G3"}},{"id":"01M4RSKTFTSV9YNP4TYZW5748Y","type":"blend","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"frame":"Inquiry","produced":{"ref":"01M4RSN4C1G0EKRN3G7BHQ2X0A"}},{"id":"01M4RSKXAS2DG5ZTEA0F3WF3XR","type":"link.valueInput","assertedBy":"Steve Sanderson","basis":"operator-asserted","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSKTFTSV9YNP4TYZW5748Y"},"note":"Designated into the blend by Steve's instruction to run the experiment on this content.","to":{"ref":"01M4RSK7AVSM5SCJ91KCA8PQGE"}},{"id":"01M4RSKZDGE2YKDRK9ZNDWXSJZ","type":"link.valueInput","assertedBy":"Steve Sanderson","basis":"operator-asserted","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSKTFTSV9YNP4TYZW5748Y"},"note":"Designated into the blend by Steve's instruction to run the experiment on this content.","to":{"ref":"01M4RSKDJTBK73FSFXAZNW9QKK"}},{"id":"01M4RSN1R5NQ28JZAEG7R053AS","type":"link.valueInput","assertedBy":"Steve Sanderson","basis":"operator-asserted","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSKTFTSV9YNP4TYZW5748Y"},"note":"Designated into the blend by Steve's instruction to run the experiment on this content.","to":{"ref":"01M4RSKKAWTM9XQE15H1H4S1CQ"}},{"id":"01M4RSN4C1G0EKRN3G7BHQ2X0A","type":"blendedSpace","blend":{"ref":"01M4RSKTFTSV9YNP4TYZW5748Y"},"frame":"Inquiry"},{"id":"01M4RSNQGMJ2BTC4MWQVF52897","type":"binding","basis":"cognition-derived","blendedSpace":{"ref":"01M4RSN4C1G0EKRN3G7BHQ2X0A"},"role":"seeker","value":"Ana Ruiz, the founder"},{"id":"01M4RSNSY8K0B5DQGRDNGZJ24R","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSNQGMJ2BTC4MWQVF52897"},"note":"She is the one asking; her name comes from the source's sender.","to":{"ref":"01M4RSKDJTBK73FSFXAZNW9QKK"}},{"id":"01M4RSNW6FJ0V4QKYEQ94GE63G","type":"binding","basis":"cognition-derived","blendedSpace":{"ref":"01M4RSN4C1G0EKRN3G7BHQ2X0A"},"role":"respondent","value":"The advisor she is writing to"},{"id":"01M4RSNYAFKZXCYNZYMR0ZM8D9","type":"binding","basis":"cognition-derived","blendedSpace":{"ref":"01M4RSN4C1G0EKRN3G7BHQ2X0A"},"role":"stakes","value":"About seven months of runway, weighed against dilution and pricing power if she raises before any revenue"},{"id":"01M4RSP0KF6449WENXQZ0VWSE3","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSNYAFKZXCYNZYMR0ZM8D9"},"note":"Runway from one statement, no revenue from the other; dilution and pricing power are inferred.","to":{"ref":"01M4RSKKAWTM9XQE15H1H4S1CQ"}},{"id":"01M4RSP37RFHMCZEBBSVNP03X9","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSNYAFKZXCYNZYMR0ZM8D9"},"note":"Runway from one statement, no revenue from the other; dilution and pricing power are inferred.","to":{"ref":"01M4RSK7AVSM5SCJ91KCA8PQGE"}},{"id":"01M4RSPK5BPFFF3S46V3Q3HP4W","type":"binding","basis":"cognition-derived","blendedSpace":{"ref":"01M4RSN4C1G0EKRN3G7BHQ2X0A"},"role":"presuppositions","value":"That a seed round is available to her now; that waiting will bring a paying conversion; that the decision is hers to time"},{"id":"01M4RSPMWEBW9GJQZQ564TK20X","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSPK5BPFFF3S46V3Q3HP4W"},"note":"Each is taken for granted by the way the question is framed.","to":{"ref":"01M4RSKDJTBK73FSFXAZNW9QKK"}},{"id":"01M4RSPQFN721GXWPY7TGJQ0HQ","type":"binding","basis":"cognition-derived","blendedSpace":{"ref":"01M4RSN4C1G0EKRN3G7BHQ2X0A"},"role":"gaps","value":"Whether investors at this stage expect revenue; how likely any of the three pilots is to convert within the runway; what a raise now would cost in dilution compared with a raise after one conversion"},{"id":"01M4RSPSHHSCQ2RNT8C1Q5QXAB","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSPQFN721GXWPY7TGJQ0HQ"},"note":"What would have to be known to answer the question as asked.","to":{"ref":"01M4RSK7AVSM5SCJ91KCA8PQGE"}},{"id":"01M4RSPW7MXNCSWZJT0E3Y8YJE","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSPQFN721GXWPY7TGJQ0HQ"},"note":"What would have to be known to answer the question as asked.","to":{"ref":"01M4RSKDJTBK73FSFXAZNW9QKK"}},{"id":"01M4RSPY3MBRKRBWXCP8BNTZ3Z","type":"link.grounding","assertedBy":"Claude Opus 5.5 (claude-opus-5-5)","basis":"cognition-derived","execution":{"ref":"01M4RSJBW6QCCBZJYAX20JCR00"},"from":{"ref":"01M4RSPQFN721GXWPY7TGJQ0HQ"},"note":"What would have to be known to answer the question as asked.","to":{"ref":"01M4RSKKAWTM9XQE15H1H4S1CQ"}}];
+
+const byId = new Map(DATA.map((o) => [o.id, o]));
+const LINK_NAMES = { "link.wasQuotedFrom": "prov:wasQuotedFrom", "link.grounding": "grounding", "link.valueInput": "value input" };
+const TYPE_NAMES = { "l1.source": "source", "l1.quote": "quote", "l1.statement": "statement", execution: "execution", blend: "blend", blendedSpace: "blended space", binding: "binding" };
+
+// Edges: link objects carry provenance; membership fields do not.
+const edges = [];
+for (const o of DATA) {
+  if (LINK_NAMES[o.type]) edges.push({ from: o.from.ref, to: o.to.ref, kind: LINK_NAMES[o.type], link: o });
+  if (o.type === "binding") edges.push({ from: o.id, to: o.blendedSpace.ref, kind: "part of", member: true });
+  if (o.type === "blend") {
+    edges.push({ from: o.id, to: o.execution.ref, kind: "part of", member: true });
+    edges.push({ from: o.id, to: o.produced.ref, kind: "produced", member: true });
+  }
+}
+const outgoing = (id) => edges.filter((e) => e.from === id);
+const incoming = (id) => edges.filter((e) => e.to === id);
+
+// Each view is a direction of travel through the same graph.
+const VIEWS = {
+  source: {
+    root: () => DATA.find((o) => o.type === "l1.source").id,
+    note: "Starting at the email and following what rests on it: quotes cut from it, statements resting on the quotes, then bindings and the blend resting on the statements. The stakes and gaps bindings appear under every statement they rest on.",
+    children: (id) => incoming(id).filter((e) => !e.member).map((e) => ({ id: e.from, edge: e })),
+  },
+  space: {
+    root: () => DATA.find((o) => o.type === "blendedSpace").id,
+    note: "Starting at the Inquiry blended space and following what each binding rests on, down to the email. Statements appear under every binding grounded in them; the quotes and the email repeat beneath each.",
+    children: (id) => {
+      const o = byId.get(id);
+      if (o.type === "blendedSpace") return incoming(id).filter((e) => e.kind === "part of").map((e) => ({ id: e.from, edge: e }));
+      return outgoing(id).filter((e) => !e.member).map((e) => ({ id: e.to, edge: e }));
+    },
+  },
+  exec: {
+    root: () => DATA.find((o) => o.type === "execution").id,
+    note: "Starting at the execution: the blend it holds, the statements the blend took as value input, and the blended space it produced with its bindings.",
+    children: (id) => {
+      const o = byId.get(id);
+      if (o.type === "execution") return incoming(id).filter((e) => e.kind === "part of").map((e) => ({ id: e.from, edge: e }));
+      if (o.type === "blendedSpace") return incoming(id).filter((e) => e.kind === "part of").map((e) => ({ id: e.from, edge: e }));
+      return outgoing(id).filter((e) => e.kind !== "part of").map((e) => ({ id: e.to, edge: e }));
+    },
+  },
+};
+
+let view = "source";
+let selected = null;
+const collapsed = new Set();
+try { const v = localStorage.getItem("bramble-view"); if (v && VIEWS[v]) view = v; } catch {}
+
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const basisBadge = (b) => b ? `<span class="badge b-${esc(b)}">${esc(b.replace(/-/g, " "))}</span>` : "";
+const who = (s) => esc(String(s).replace(/ \(claude-opus-5-5\)/, ""));
+
+function labelOf(o) {
+  switch (o.type) {
+    case "l1.source": return `<span class="role">Email from Ana Ruiz</span><span class="assert">${esc(o.text)}</span>`;
+    case "l1.quote": return `“${esc(o.text)}”`;
+    case "l1.statement": return `${esc(o.assertion)} <span class="assert">· ${esc(o.kind)}</span>`;
+    case "binding": {
+      const grounded = outgoing(o.id).some((e) => e.kind === "grounding");
+      return `<span class="role">${esc(o.role)}</span>${esc(o.value)}${grounded ? "" : '<span class="ungrounded">no grounding</span>'}`;
+    }
+    case "blend": return `Blend under the ${esc(o.frame)} frame`;
+    case "blendedSpace": return `${esc(o.frame)} blended space`;
+    case "execution": return `${esc(o.purpose)}`;
+    default: return esc(o.id);
+  }
+}
+const titleOf = (o) => ({ "l1.source": "Email from Ana Ruiz", "l1.quote": `“${o.text}”`, "l1.statement": o.assertion, binding: `${o.role}: ${o.value}`, blend: `Blend under the ${o.frame} frame`, blendedSpace: `${o.frame} blended space`, execution: "Experiment 2 execution" }[o.type] ?? o.id);
+
+// Count how many places each item occupies in the current outline, so repeats can say so.
+function placesIn(viewKey) {
+  const counts = new Map();
+  const walk = (id, path) => {
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+    if (path.has(id)) return;
+    const next = new Set(path); next.add(id);
+    for (const c of VIEWS[viewKey].children(id)) walk(c.id, next);
+  };
+  walk(VIEWS[viewKey].root(), new Set());
+  return counts;
+}
+
+function edgeLine(e) {
+  if (e.member) return `<div class="edge member"><span class="kind">${esc(e.kind)}</span><span>field, no provenance</span></div>`;
+  const l = e.link;
+  return `<div class="edge"><span class="kind">${esc(e.kind)}</span>${basisBadge(l.basis)}<span>by ${who(l.assertedBy)}</span></div>`;
+}
+
+function renderNode(id, path, keyPath, counts) {
+  const o = byId.get(id);
+  const key = keyPath + "/" + id;
+  const kids = path.has(id) ? [] : VIEWS[view].children(id);
+  const isOpen = !collapsed.has(key);
+  const n = counts.get(id) ?? 1;
+  const chipClass = o.type === "binding" ? "chip binding" : "chip";
+  let html = `<div class="row${selected === id ? " selected" : ""}" data-id="${id}" data-key="${esc(key)}" tabindex="0" role="treeitem" aria-expanded="${kids.length ? isOpen : "false"}">`;
+  html += kids.length ? `<button class="toggle" type="button" data-toggle="${esc(key)}" aria-label="${isOpen ? "Collapse" : "Expand"}">${isOpen ? "▾" : "▸"}</button>` : `<span></span>`;
+  html += `<span class="${chipClass}">${esc(TYPE_NAMES[o.type] ?? o.type)}</span><span class="text">${labelOf(o)}</span>`;
+  html += `<span class="places${n > 1 ? " multi" : ""}" title="Places this item appears in this outline">${n > 1 ? `in ${n} places` : ""}</span></div>`;
+  if (kids.length && isOpen) {
+    const next = new Set(path); next.add(id);
+    html += `<ul class="tree" role="group">` + kids.map((k) => `<li class="node">${edgeLine(k.edge)}${renderNode(k.id, next, key, counts)}</li>`).join("") + `</ul>`;
+  }
+  return html;
+}
+
+function renderOutline() {
+  const counts = placesIn(view);
+  document.getElementById("outline").innerHTML = `<ul class="tree" role="tree"><li class="node">${renderNode(VIEWS[view].root(), new Set(), "", counts)}</li></ul>`;
+  document.getElementById("viewnote").textContent = VIEWS[view].note;
+  document.querySelectorAll("nav.views button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === view)));
+  markSame();
+}
+
+// Open panels, left to right after the outline; the key keeps two panels on one item distinct.
+let panels = [];
+let seq = 0;
+let freshKey = null;
+
+function markSame() {
+  document.querySelectorAll(".row").forEach((r) => r.classList.toggle("same", !!selected && r.dataset.id === selected));
+  document.querySelectorAll(".panel[data-key]").forEach((p) => {
+    p.classList.toggle("same", !!selected && p.dataset.id === selected && Number(p.dataset.key) !== freshKey);
+    p.classList.toggle("fresh", Number(p.dataset.key) === freshKey);
+  });
+}
+
+function linkItem(e, otherId, dir, at, idx) {
+  const other = byId.get(otherId);
+  const l = e.link;
+  const meta = e.member ? `<span>field, no provenance</span>` : `${basisBadge(l.basis)}<span>by ${who(l.assertedBy)}</span>`;
+  const note = l?.note ? `<span>${esc(l.note)}</span>` : "";
+  const rule = l?.rule ? `<span class="meta">rule: ${esc(l.rule)}</span>` : "";
+  return `<li data-idx="${idx}"><span class="meta"><strong>${esc(e.kind)}</strong> ${dir}</span><button class="jump" type="button" data-open="${otherId}" data-at="${at}" data-idx="${idx}">${esc(titleOf(other))}</button><span class="meta">${meta}</span>${note}${rule}</li>`;
+}
+
+function panelHtml(p, at) {
+  const o = byId.get(p.id);
+  const fields = Object.entries(o).filter(([k]) => !["id", "type"].includes(k)).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v && typeof v === "object" && v.ref ? esc(titleOf(byId.get(v.ref) ?? { id: v.ref })) : esc(v)}</dd>`).join("");
+  const out = outgoing(p.id); const inn = incoming(p.id);
+  const counts = placesIn(view);
+  return `<section class="panel" data-key="${p.key}" data-id="${p.id}" aria-label="${esc(titleOf(o))}">
+    <div class="phead"><div><span class="eyebrow">${esc(TYPE_NAMES[o.type] ?? o.type)}</span><h2>${esc(titleOf(o))}</h2></div><button class="close" type="button" data-close="${p.key}" aria-label="Close this panel">×</button></div>
+    <dl class="fields">${fields}<dt>id</dt><dd>${esc(o.id)}</dd><dt>in outline</dt><dd>${counts.get(p.id) ?? 0} place(s)</dd></dl>
+    <div><h3>Rests on / points to</h3>${out.length ? `<ul class="links">${out.map((e, idx) => linkItem(e, e.to, "→", at, `o${idx}`)).join("")}</ul>` : `<p class="empty">Nothing. ${o.type === "binding" ? "This role has no grounding: nothing in the content supports it." : ""}</p>`}</div>
+    <div><h3>Rested on by / pointed at by</h3>${inn.length ? `<ul class="links">${inn.map((e, idx) => linkItem(e, e.from, "←", at, `i${idx}`)).join("")}</ul>` : `<p class="empty">Nothing.</p>`}</div>
+  </section>`;
+}
+
+function renderPanels() {
+  document.getElementById("panels").innerHTML = panels.map((p, at) => panelHtml(p, at)).join("");
+  document.getElementById("stackcount").textContent = panels.length ? `${panels.length} panel${panels.length > 1 ? "s" : ""} open` : "No panels open. Select any row in the outline.";
+  document.getElementById("closeall").disabled = panels.length === 0;
+  markSame();
+  drawWires();
+}
+
+// Selector for the element a panel was opened from; null once that element is gone.
+const originOf = (p) => (p.from ? document.querySelector(p.from) : null);
+
+// A band from the clicked item to the head of the panel it opened, drawn under the panels so it shows in the gaps.
+function drawWires() {
+  const stack = document.getElementById("stack");
+  const svg = document.getElementById("wires");
+  const box = stack.getBoundingClientRect();
+  const local = (r) => ({ left: r.left - box.left + stack.scrollLeft, right: r.right - box.left + stack.scrollLeft, top: r.top - box.top + stack.scrollTop, bottom: r.bottom - box.top + stack.scrollTop });
+  svg.setAttribute("width", stack.scrollWidth);
+  svg.setAttribute("height", stack.scrollHeight);
+  document.querySelectorAll(".origin").forEach((el) => el.classList.remove("origin"));
+  const paths = [];
+  for (const p of panels) {
+    const src = originOf(p);
+    const target = document.querySelector(`.panel[data-key="${p.key}"]`);
+    if (!src || !target) continue;
+    src.classList.add("origin");
+    const srcPanel = local(src.closest(".panel").getBoundingClientRect());
+    const item = local(src.getBoundingClientRect());
+    const tgt = local(target.getBoundingClientRect());
+    const head = local(target.querySelector(".phead").getBoundingClientRect());
+    const x1 = srcPanel.right, x2 = tgt.left;
+    const mid = x1 + Math.max(24, (x2 - x1) / 2);
+    const [a1, b1, a2, b2] = [item.top, item.bottom, head.top - 4, head.bottom + 4];
+    const fresh = p.key === freshKey ? " fresh" : "";
+    paths.push(`<path class="wire${fresh}" d="M${item.right},${a1} L${x1},${a1} C${mid},${a1} ${x2 - (mid - x1)},${a2} ${x2},${a2} L${x2},${b2} C${x2 - (mid - x1)},${b2} ${mid},${b1} ${x1},${b1} L${item.right},${b1} Z"/>`);
+  }
+  svg.innerHTML = paths.join("");
+}
+window.addEventListener("resize", drawWires);
+document.fonts?.ready.then(drawWires);
+
+// at is the index of the panel clicked in; -1 is the outline.
+function openPanel(id, at, from) {
+  const p = { key: ++seq, id, from };
+  panels.splice(at + 1, 0, p);
+  selected = id;
+  freshKey = p.key;
+  renderPanels();
+  const el = document.querySelector(`.panel[data-key="${p.key}"]`);
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el?.scrollIntoView({ inline: "nearest", block: "nearest", behavior: reduce ? "auto" : "smooth" });
+}
+
+function closePanel(key) {
+  panels = panels.filter((p) => p.key !== key);
+  if (freshKey === key) freshKey = null;
+  if (!panels.some((p) => p.id === selected)) selected = null;
+  renderPanels();
+}
+
+document.addEventListener("click", (ev) => {
+  const t = ev.target.closest("[data-toggle]");
+  if (t) { const k = t.dataset.toggle; collapsed.has(k) ? collapsed.delete(k) : collapsed.add(k); renderOutline(); drawWires(); return; }
+  const v = ev.target.closest("[data-view]");
+  if (v) { view = v.dataset.view; try { localStorage.setItem("bramble-view", view); } catch {} renderOutline(); renderPanels(); return; }
+  const c = ev.target.closest("[data-close]");
+  if (c) { closePanel(Number(c.dataset.close)); return; }
+  if (ev.target.closest("#closeall")) { panels = []; selected = null; freshKey = null; renderPanels(); return; }
+  const j = ev.target.closest("[data-open]");
+  if (j) {
+    const key = j.closest(".panel").dataset.key;
+    openPanel(j.dataset.open, Number(j.dataset.at), `.panel[data-key="${key}"] li[data-idx="${j.dataset.idx}"]`);
+    return;
+  }
+  const r = ev.target.closest(".row");
+  if (r) openPanel(r.dataset.id, -1, `.row[data-key="${CSS.escape(r.dataset.key)}"]`);
+});
+document.addEventListener("keydown", (ev) => {
+  const r = ev.target.closest?.(".row");
+  if (r && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); r.click(); }
+});
+
+const e1 = DATA.find((o) => o.type === "blend.inquiry");
+document.getElementById("exp1flat").textContent =
+  `Inquiry blended space (one object)\n  seeker:          ${e1.seeker}\n  respondent:      ${e1.respondent}\n  stakes:          ${e1.stakes}\n  presuppositions: ${e1.presuppositions}\n  gaps:            ${e1.gaps}\n  basis:           ${e1.basis}\n  valueInput  →    the whole email`;
+
+renderOutline();
+renderPanels();
+</script>
+</body>
+</html>

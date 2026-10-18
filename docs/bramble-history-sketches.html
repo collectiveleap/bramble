@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bramble History Sketches</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f4f3ef; --paper: #fffefa; --ink: #26241f; --muted: #77736a; --line: #b9b4a8; --faint: #e7e3d9;
+  --new: #2f7d5b; --newsoft: #dcefe5; --rev: #b0651c; --revsoft: #f6e6d3; --gone: #b8382f; --imag: #6b52ad; --imagsoft: #ebe5f7;
+  --font-sketch: "Kalam", "Comic Sans MS", cursive; --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #191815; --paper: #22211d; --ink: #ece8de; --muted: #a39e92; --line: #5a564d; --faint: #302e29;
+    --new: #74c79f; --newsoft: #1d3329; --rev: #eaa25f; --revsoft: #3a2a19; --gone: #f08079; --imag: #b9a2ee; --imagsoft: #2a2340; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #191815; --paper: #22211d; --ink: #ece8de; --muted: #a39e92; --line: #5a564d; --faint: #302e29;
+  --new: #74c79f; --newsoft: #1d3329; --rev: #eaa25f; --revsoft: #3a2a19; --gone: #f08079; --imag: #b9a2ee; --imagsoft: #2a2340; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-sketch); font-size: 16px; line-height: 1.45; }
+.wrap { max-width: 1060px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 28px; }
+h1 { font-size: 2rem; margin: 0; line-height: 1.1; }
+.lede { color: var(--muted); margin: 6px 0 0; max-width: 72ch; }
+.tag, .k { font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.k { display: block; }
+.imagined { color: var(--imag); }
+.banner { border: 2px dashed var(--imag); background: var(--imagsoft); border-radius: 8px; padding: 10px 14px; display: grid; gap: 4px; }
+.banner ol { margin: 0; padding-left: 22px; }
+section.sk { background: var(--paper); border: 2px solid var(--ink); border-radius: 4px 10px 6px 12px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.skhead { display: grid; gap: 2px; }
+.skhead h2 { margin: 0; font-size: 1.35rem; line-height: 1.2; }
+.skhead .from { color: var(--muted); font-size: .95rem; }
+.note { color: var(--muted); font-size: .92rem; border-top: 1px dashed var(--line); padding-top: 8px; margin: 0; }
+button { font: 700 .95rem var(--font-sketch); color: var(--ink); background: var(--paper); border: 1.5px solid var(--ink); border-radius: 6px; padding: 2px 10px; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--new); outline-offset: 2px; }
+button:disabled { opacity: .4; cursor: default; }
+
+/* The state of the graph after a step: four columns, oldest kind on the left. */
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+@media (max-width: 620px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.col { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.item { border: 1.5px solid var(--ink); border-radius: 6px; padding: 5px 7px; font-size: .84rem; min-width: 0; overflow-wrap: anywhere; background: var(--paper); }
+.item.new { border-color: var(--new); background: var(--newsoft); }
+.item.rev { border-color: var(--rev); background: var(--revsoft); }
+.item .was { display: block; color: var(--muted); text-decoration: line-through; font-size: .78rem; }
+.item .ghostline { display: block; color: var(--muted); font-size: .78rem; opacity: .7; }
+.item.ghost { border-style: dashed; color: var(--muted); opacity: .55; }
+.item .im { font-family: var(--font-mono); font-size: .58rem; color: var(--imag); text-transform: uppercase; }
+
+/* 1 move list */
+.replay { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 760px) { .replay { grid-template-columns: minmax(0, 1fr); } }
+.moves { display: grid; gap: 2px; font-size: .9rem; }
+.move { text-align: left; font: 400 .9rem var(--font-sketch); border: 0; border-radius: 4px; padding: 3px 6px; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 4px; }
+.move.on { background: var(--ink); color: var(--paper); }
+.move.var { margin-left: 22px; border-left: 2px solid var(--line); border-radius: 0 4px 4px 0; }
+.moves .vlabel { margin: 6px 0 0 22px; }
+.ctrl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.hindsight { display: flex; gap: 6px; align-items: center; font-size: .9rem; }
+
+/* 3 family tree */
+.treewrap { overflow-x: auto; }
+svg.tree { display: block; min-width: 700px; width: 100%; height: auto; }
+svg.tree text { fill: var(--ink); font-family: var(--font-sketch); font-size: 13px; }
+svg.tree .lab { fill: var(--muted); font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; }
+svg.tree rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
+svg.tree rect.sel { stroke: var(--new); stroke-width: 2.5; }
+svg.tree rect.imag { stroke: var(--imag); stroke-dasharray: 5 3; }
+svg.tree path { fill: none; stroke: var(--line); stroke-width: 1.6; }
+svg.tree path.hot { stroke: var(--new); stroke-width: 2.6; }
+
+/* 4 palimpsest */
+.palim { display: grid; gap: 14px; }
+.layer { position: relative; font-size: 1.08rem; }
+.layer .under { display: block; color: var(--muted); opacity: .6; text-decoration: line-through; font-size: .92rem; }
+.layer .under.older { opacity: .38; font-size: .85rem; }
+.layer ins { text-decoration: none; background: var(--newsoft); border-bottom: 2px solid var(--new); }
+
+/* 5 side by side */
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 620px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+.pair > div { border: 1.5px dashed var(--line); border-radius: 6px; padding: 10px; display: grid; gap: 6px; align-content: start; font-size: .92rem; }
+del { color: var(--gone); }
+.pair ins { text-decoration: none; background: var(--newsoft); }
+.pick { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: .9rem; }
+.pick span { border: 1.5px solid var(--ink); border-radius: 4px; padding: 0 8px; }
+
+/* 6 core sample */
+.core { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 0; max-width: 620px; }
+.core .when { font-family: var(--font-mono); font-size: .66rem; color: var(--muted); padding: 8px 8px 8px 0; text-align: right; border-right: 2px solid var(--ink); }
+.core .stratum { padding: 8px 12px; border-bottom: 1px dashed var(--line); font-size: .92rem; }
+.core .stratum:nth-of-type(odd) { background: var(--faint); }
+
+/* 7 hindsight */
+.diary { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 0 16px; }
+@media (max-width: 620px) { .diary { grid-template-columns: minmax(0, 1fr); } }
+.diary .sent { font-size: 1.1rem; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.diary .margin { font-size: .86rem; color: var(--new); padding: 6px 0 6px 10px; border-left: 2px solid var(--new); border-bottom: 1px dashed var(--line); }
+.diary.off .margin { visibility: hidden; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">Low-fidelity sketches · history of Bramble content · Composer Sandbox data plus an imagined second pass</span>
+    <h1>Seven ways to move through how the content changed</h1>
+    <p class="lede">Steps 1 to 5 are what experiment 2 actually did on 12 October 2026. The experiments have produced no later changes yet, so steps 6 to 8 and the alternative line are imagined to give the sketches something to move through. They are not in the Sandbox.</p>
+  </header>
+
+  <div class="banner">
+    <span class="tag imagined">Imagined steps used in these sketches</span>
+    <ol start="6">
+      <li>A follow-up email from Ana: “Update: one of the pilots just signed a paid contract.” Claude quotes it and restates it as a statement.</li>
+      <li>Claude revises the pilots statement in light of the follow-up.</li>
+      <li>Claude re-binds the Inquiry roles. Stakes, presuppositions and gaps change; seeker and respondent do not.</li>
+    </ol>
+    <span>Alternative line from step 4: Steve leaves the runway statement out of the blend, and Claude binds the roles from the other two.</span>
+  </div>
+
+  <!-- 1 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">1 · Stance: an audit record, and something to branch from</span><h2>Replay with a move list</h2><span class="from">Borrowed from chess notation: a numbered list of moves beside the board, with alternative lines printed as indented variations.</span></div>
+    <div class="replay">
+      <div>
+        <div class="ctrl"><button type="button" id="r-prev" aria-label="Previous step">←</button><button type="button" id="r-next" aria-label="Next step">→</button><label class="hindsight"><input type="checkbox" id="r-hind"> show from the latest point of view</label></div>
+        <div class="moves" id="r-moves"></div>
+      </div>
+      <div class="board" id="r-board"></div>
+    </div>
+    <p class="note">Green is what this step added; orange is what it revised. Clicking a step shows the graph as it stood then; the variation shows a different outcome from the same starting point. The switch adds notes saying what each item later became.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">2 · Stance: an audit record</span><h2>A scrubber with a faint trace of the previous state</h2><span class="from">Borrowed from onion-skinning in animation, where the previous frame shows faintly under the current one.</span></div>
+    <div class="ctrl"><label for="s-range">Step</label><input type="range" id="s-range" min="1" max="8" value="8" style="flex:1;min-width:160px"><span id="s-label" class="tag"></span></div>
+    <div class="board" id="s-board"></div>
+    <p class="note">Drag to move through the main line. Each revised item shows its previous wording faintly beneath; dashed boxes are items the next step will add, shown as a faint preview. What it hides: alternative lines, since a slider has one direction.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">3 · Stance: something to branch from</span><h2>A family tree of descent</h2><span class="from">Borrowed from phylogenetic trees in biology, which draw each lineage and where it split.</span></div>
+    <div class="treewrap">
+      <svg class="tree" viewBox="0 0 760 330" role="img" aria-label="Descent of the stakes role from email sentences">
+        <text class="lab" x="10" y="16">email</text><text class="lab" x="170" y="16">quote</text><text class="lab" x="330" y="16">statement</text><text class="lab" x="490" y="16">statement, revised</text><text class="lab" x="640" y="16">stakes role</text>
+        <path class="hot" d="M140,50 C155,50 155,50 170,50"/><path d="M140,120 C155,120 155,120 170,120"/><path class="hot" d="M140,190 C155,190 155,190 170,190"/><path class="hot" d="M140,270 C155,270 155,270 170,270"/>
+        <path class="hot" d="M300,50 C315,50 315,50 330,50"/><path d="M300,120 C315,120 315,120 330,120"/><path class="hot" d="M300,190 C315,190 315,190 330,190"/><path class="hot" d="M300,270 C315,270 315,270 330,270"/>
+        <path class="hot" d="M460,50 C475,50 475,50 490,50"/><path class="hot" d="M460,270 C475,270 475,60 490,60"/>
+        <path class="hot" d="M460,190 C550,190 560,90 640,90"/><path class="hot" d="M460,46 C560,46 560,84 640,84"/>
+        <path class="hot" d="M620,55 C630,55 630,150 640,150"/><path class="hot" d="M460,196 C550,196 560,156 640,156"/>
+        <path d="M460,120 C550,120 560,220 640,220"/>
+        <rect x="10" y="35" width="130" height="30" rx="5"/><text x="18" y="55">pilots, none paying</text>
+        <rect x="10" y="105" width="130" height="30" rx="5"/><text x="18" y="125">raise now or wait?</text>
+        <rect x="10" y="175" width="130" height="30" rx="5"/><text x="18" y="195">7 months runway</text>
+        <rect class="imag" x="10" y="255" width="130" height="30" rx="5"/><text x="18" y="275">follow-up: one paid</text>
+        <rect x="170" y="35" width="130" height="30" rx="5"/><text x="178" y="55">quote 1</text>
+        <rect x="170" y="105" width="130" height="30" rx="5"/><text x="178" y="125">quote 2</text>
+        <rect x="170" y="175" width="130" height="30" rx="5"/><text x="178" y="195">quote 3</text>
+        <rect class="imag" x="170" y="255" width="130" height="30" rx="5"/><text x="178" y="275">quote 4</text>
+        <rect x="330" y="35" width="130" height="30" rx="5"/><text x="338" y="55">none paying yet</text>
+        <rect x="330" y="105" width="130" height="30" rx="5"/><text x="338" y="125">the question</text>
+        <rect x="330" y="175" width="130" height="30" rx="5"/><text x="338" y="195">7 months runway</text>
+        <rect class="imag" x="330" y="255" width="130" height="30" rx="5"/><text x="338" y="275">one pilot paying</text>
+        <rect class="imag" x="490" y="40" width="130" height="30" rx="5"/><text x="498" y="60">one of three paying</text>
+        <rect x="640" y="72" width="115" height="30" rx="5"/><text x="648" y="92">stakes, version 1</text>
+        <rect class="sel imag" x="640" y="138" width="115" height="30" rx="5"/><text x="648" y="158">stakes, version 2</text>
+        <rect class="imag" x="640" y="205" width="115" height="30" rx="5"/><text x="648" y="225">stakes, alt. line</text>
+        <text class="lab" x="640" y="190">selected: latest</text>
+        <text class="lab" x="490" y="100">dashed = imagined</text>
+      </svg>
+    </div>
+    <p class="note">The selected item is the latest stakes role; its whole ancestry is drawn in green. Clicking any box would show the graph as it stood when that box was made. What it hides: the wording; the tree is about descent, not content. The alternative line is drawn only roughly here.</p>
+  </section>
+
+  <!-- 4 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">4 · Stance: the present first, history on demand</span><h2>Earlier versions faded under the current one</h2><span class="from">Borrowed from the palimpsest, a manuscript page reused with earlier writing still visible beneath, and from tracked changes in word processors.</span></div>
+    <div class="palim">
+      <div class="layer"><span class="k">statement · pilots</span>The company has three pilot customers, <ins>one of them now paying</ins>.<span class="under">The company has three pilot customers, none of them paying yet. · 12 Oct, Claude</span></div>
+      <div class="layer"><span class="k">stakes role</span>About seven months of runway, <ins>with one paying customer to point to</ins>, weighed against dilution and pricing power.<span class="under">About seven months of runway, weighed against dilution and pricing power if she raises before any revenue. · 12 Oct, Claude</span></div>
+      <div class="layer"><span class="k">presuppositions role</span>That a seed round is available to her now; that the decision is hers to time.<span class="under">…that waiting will bring a paying conversion… · removed, 12 Oct</span></div>
+    </div>
+    <p class="note">The current wording reads normally; the previous wording sits faintly underneath with its date and author, and older versions would sit fainter still. All revised items here are imagined. What it hides: the derivation steps, which are not revisions of one item but new items.</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">5 · Stance: an audit record, and something to branch from</span><h2>Two moments side by side</h2><span class="from">Borrowed from legal comparisons of drafts, which show one version against another with insertions and deletions marked.</span></div>
+    <div class="pick"><span>Compare</span><span>after step 5 · 12 Oct</span><span>with</span><span>after step 8 · imagined</span></div>
+    <div class="pair">
+      <div><span class="k">after step 5</span><div><b>stakes:</b> About seven months of runway, weighed against dilution and pricing power <del>if she raises before any revenue</del></div><div><b>presuppositions:</b> A seed round is available now; <del>waiting will bring a paying conversion;</del> the decision is hers to time</div><div><b>gaps:</b> Whether investors expect revenue; <del>how likely any pilot is to convert within the runway;</del> what a raise now would cost in dilution</div><div class="k">statements: 3 · roles grounded: 4 of 5</div></div>
+      <div><span class="k">after step 8</span><div><b>stakes:</b> About seven months of runway, <ins>with one paying customer to point to,</ins> weighed against dilution and pricing power</div><div><b>presuppositions:</b> A seed round is available now; the decision is hers to time</div><div><b>gaps:</b> Whether investors expect <ins>more than one paying customer</ins>; what a raise now would cost in dilution</div><div class="k">statements: 4 <ins>(+1)</ins> · roles grounded: 4 of 5</div></div>
+    </div>
+    <p class="note">Any two points can be compared, including two lines that split (the main line against the alternative line), or experiment 1's flat record against today. What it hides: how the change happened between the two points.</p>
+  </section>
+
+  <!-- 6 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">6 · Stance: the present first, history on demand</span><h2>Layers in a core sample</h2><span class="from">Borrowed from geology, where a drilled core shows the layers under one spot, oldest at the bottom.</span></div>
+    <div><span class="k">Drilled at: the stakes role</span></div>
+    <div class="core">
+      <span class="when">step 8 · imagined</span><div class="stratum"><b>stakes, version 2:</b> About seven months of runway, with one paying customer to point to…</div>
+      <span class="when">step 7 · imagined</span><div class="stratum">Pilots statement revised: one of three now paying.</div>
+      <span class="when">step 6 · imagined</span><div class="stratum">Follow-up email quoted and restated: one pilot signed a paid contract.</div>
+      <span class="when">step 5 · 12 Oct</span><div class="stratum"><b>stakes, version 1:</b> bound by Claude from the runway and pilots statements; dilution and pricing power inferred.</div>
+      <span class="when">step 4 · 12 Oct</span><div class="stratum">Steve chose the three statements as input to the Inquiry blend.</div>
+      <span class="when">step 3 · 12 Oct</span><div class="stratum">Claude restated quotes 1 and 3 as statements.</div>
+      <span class="when">step 2 · 12 Oct</span><div class="stratum">Claude cut quotes 1 and 3, verbatim.</div>
+      <span class="when">step 1 · 12 Oct</span><div class="stratum">Email sentences: “…none paying yet.” “Our runway is about seven months.”</div>
+    </div>
+    <p class="note">Only the layers under the chosen item appear; the question sentence is absent because stakes does not rest on it. What it hides: everything else that shares those layers.</p>
+  </section>
+
+  <!-- 7 -->
+  <section class="sk">
+    <div class="skhead"><span class="tag">7 · Stance: the present first, history on demand</span><h2>The original annotated with what it later became</h2><span class="from">Borrowed from historians annotating a diary with hindsight: the entry is unchanged, and the margin says what came of it.</span></div>
+    <label class="hindsight"><input type="checkbox" id="h-toggle" checked> show from the latest point of view</label>
+    <div class="diary" id="h-diary">
+      <div class="sent">We have three pilot customers but none paying yet.</div><div class="margin">Later: grounds stakes and gaps under Inquiry. Overtaken by the follow-up (imagined): one pilot now pays.</div>
+      <div class="sent">Should we raise a seed round now, or wait until at least one converts?</div><div class="margin">Later: grounds seeker, presuppositions and gaps. “Wait until one converts” no longer applies after the follow-up (imagined).</div>
+      <div class="sent">Our runway is about seven months.</div><div class="margin">Later: grounds stakes and gaps. Left out of the alternative line (imagined).</div>
+      <div class="sent" style="color:var(--muted)">(nothing in the email names the advisor)</div><div class="margin" style="color:var(--gone);border-left-color:var(--gone)">Later: the respondent role was bound with no grounding.</div>
+    </div>
+    <p class="note">The email is never altered; the switch turns the latest reading on and off. The same switch appears in sketch 1. What it hides: the steps in between; the margin jumps straight to the outcome.</p>
+  </section>
+</div>
+
+<script>
+// Each step adds items or revises existing ones; a line is the list of steps taken from the start.
+const STEPS = {
+  1: { who: "email", text: "Email from Ana arrives", add: { e1: ["email", "We have three pilot customers but none paying yet. Should we raise…? Our runway is about seven months."] } },
+  2: { who: "Claude", text: "Cut three quotes, one per sentence", add: { q1: ["quote", "“…three pilot customers but none paying yet.”"], q2: ["quote", "“Should we raise a seed round now, or wait…?”"], q3: ["quote", "“Our runway is about seven months.”"] } },
+  3: { who: "Claude", text: "Restated each quote as a statement", add: { s1: ["statement", "Three pilot customers, none paying yet."], s2: ["statement", "Ana asks: raise now, or wait for a conversion?"], s3: ["statement", "About seven months of runway."] } },
+  4: { who: "Steve", text: "Chose statements 1–3 as input to an Inquiry blend", add: { blend: ["role", "Inquiry blend · input: statements 1, 2, 3"] } },
+  5: { who: "Claude", text: "Bound five Inquiry roles", add: { seeker: ["role", "seeker: Ana Ruiz, the founder"], resp: ["role", "respondent: the advisor (no grounding)"], stakes: ["role", "stakes: seven months of runway, against dilution and pricing power before any revenue"], presup: ["role", "presuppositions: a round is available; waiting brings a conversion; timing is hers"], gaps: ["role", "gaps: do investors expect revenue? will a pilot convert in time? dilution now vs later"] } },
+  6: { who: "Claude", text: "Follow-up email quoted and restated", imagined: true, add: { e2: ["email", "Update: one of the pilots just signed a paid contract."], q4: ["quote", "“…one of the pilots just signed a paid contract.”"], s4: ["statement", "One pilot has signed a paid contract."] } },
+  7: { who: "Claude", text: "Revised the pilots statement", imagined: true, revise: { s1: "Three pilot customers, one of them now paying." } },
+  8: { who: "Claude", text: "Re-bound three roles", imagined: true, revise: { stakes: "stakes: seven months of runway, one paying customer to point to, against dilution", presup: "presuppositions: a round is available; timing is hers", gaps: "gaps: do investors expect more than one paying customer? dilution now vs later" } },
+  "4a": { who: "Steve", text: "Chose statements 1 and 2 only, leaving runway out", imagined: true, add: { blend: ["role", "Inquiry blend · input: statements 1, 2"] } },
+  "5a": { who: "Claude", text: "Bound the roles without runway", imagined: true, add: { seeker: ["role", "seeker: Ana Ruiz, the founder"], resp: ["role", "respondent: the advisor (no grounding)"], stakes: ["role", "stakes: dilution and pricing power if she raises before any revenue"], presup: ["role", "presuppositions: a round is available; waiting brings a conversion"], gaps: ["role", "gaps: how long can she wait? do investors expect revenue?"] } },
+};
+const MAIN = ["1", "2", "3", "4", "5", "6", "7", "8"];
+const ALT = ["1", "2", "3", "4a", "5a"];
+const LATER = { e1: "later grounds 5 roles", q1: "later revised via the follow-up", q3: "left out in the alternative line", s1: "revised at step 7", s2: "grounds seeker, presuppositions, gaps", s3: "grounds stakes and gaps", stakes: "revised at step 8", presup: "revised at step 8", gaps: "revised at step 8", resp: "never grounded" };
+const COLS = ["email", "quote", "statement", "role"];
+
+const stateAt = (line, upto) => {
+  const items = new Map();
+  let changed = { added: new Set(), revised: new Map() };
+  line.slice(0, upto).forEach((id, index) => {
+    const step = STEPS[id];
+    const last = index === upto - 1;
+    for (const [key, [col, text]] of Object.entries(step.add ?? {})) { items.set(key, { col, text, imagined: !!step.imagined }); if (last) changed.added.add(key); }
+    for (const [key, text] of Object.entries(step.revise ?? {})) { const prev = items.get(key); if (last) changed.revised.set(key, prev.text); items.set(key, { ...prev, text, imagined: true }); }
+  });
+  return { items, changed };
+};
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const renderBoard = (el, line, upto, { hindsight = false, onion = false } = {}) => {
+  const { items, changed } = stateAt(line, upto);
+  const next = onion && upto < line.length ? stateAt(line, upto + 1).changed.added : new Set();
+  const nextItems = onion && upto < line.length ? stateAt(line, upto + 1).items : new Map();
+  el.innerHTML = COLS.map((col) => {
+    const own = [...items].filter(([, item]) => item.col === col).map(([key, item]) => {
+      const cls = changed.added.has(key) ? " new" : changed.revised.has(key) ? " rev" : "";
+      const was = changed.revised.has(key) ? `<span class="${onion ? "ghostline" : "was"}">${esc(changed.revised.get(key))}</span>` : "";
+      const later = hindsight && LATER[key] ? `<span class="k" style="color:var(--new)">${esc(LATER[key])}</span>` : "";
+      const im = item.imagined ? `<span class="im">imagined</span>` : "";
+      return `<div class="item${cls}">${im}${esc(item.text)}${was}${later}</div>`;
+    });
+    const ghosts = [...next].filter((key) => nextItems.get(key).col === col).map((key) => `<div class="item ghost">${esc(nextItems.get(key).text)}</div>`);
+    return `<div class="col"><span class="k">${col}</span>${own.join("")}${ghosts.join("")}</div>`;
+  }).join("");
+};
+
+// 1 replay
+let line = MAIN, at = MAIN.length;
+const moves = document.getElementById("r-moves");
+const drawReplay = () => {
+  const row = (id, ln, index) => {
+    const on = line === ln && at === index + 1;
+    const step = STEPS[id];
+    return `<button type="button" class="move${ln === ALT ? " var" : ""}${on ? " on" : ""}" data-line="${ln === ALT ? "alt" : "main"}" data-at="${index + 1}"><span>${esc(id)}.</span><span>${esc(step.who)}: ${esc(step.text)}${step.imagined ? ' <span class="imagined">· imagined</span>' : ""}</span></button>`;
+  };
+  moves.innerHTML = MAIN.slice(0, 3).map((id, index) => row(id, MAIN, index)).join("")
+    + `<span class="k vlabel">variation</span>` + ALT.slice(3).map((id, index) => row(id, ALT, index + 3)).join("")
+    + MAIN.slice(3).map((id, index) => row(id, MAIN, index + 3)).join("");
+  renderBoard(document.getElementById("r-board"), line, at, { hindsight: document.getElementById("r-hind").checked });
+  document.getElementById("r-prev").disabled = at <= 1;
+  document.getElementById("r-next").disabled = at >= line.length;
+};
+moves.addEventListener("click", (ev) => { const b = ev.target.closest(".move"); if (!b) return; line = b.dataset.line === "alt" ? ALT : MAIN; at = Number(b.dataset.at); drawReplay(); });
+document.getElementById("r-prev").addEventListener("click", () => { at = Math.max(1, at - 1); drawReplay(); });
+document.getElementById("r-next").addEventListener("click", () => { at = Math.min(line.length, at + 1); drawReplay(); });
+document.getElementById("r-hind").addEventListener("change", drawReplay);
+drawReplay();
+
+// 2 scrubber
+const range = document.getElementById("s-range");
+const drawScrub = () => {
+  const upto = Number(range.value);
+  const step = STEPS[MAIN[upto - 1]];
+  document.getElementById("s-label").textContent = `${upto}. ${step.who}: ${step.text}${step.imagined ? " (imagined)" : ""}`;
+  renderBoard(document.getElementById("s-board"), MAIN, upto, { onion: true });
+};
+range.addEventListener("input", drawScrub);
+drawScrub();
+
+// 7 hindsight switch
+document.getElementById("h-toggle").addEventListener("change", (ev) => document.getElementById("h-diary").classList.toggle("off", !ev.target.checked));
+</script>
+</body>
+</html>
